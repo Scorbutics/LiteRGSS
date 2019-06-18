@@ -11,7 +11,7 @@
 #include "CGraphicsDraw.h"
 #include "CGraphics.h"
 
-CGraphicsDraw::CGraphicsDraw(CGraphicsSnapshot& snapshot) : 
+CGraphicsDraw::CGraphicsDraw(CGraphicsSnapshot& snapshot) :
 	m_snapshot(snapshot) {
 }
 
@@ -24,13 +24,13 @@ void CGraphicsDraw::init(sf::RenderWindow& window, const CGraphicsConfig& config
 	if(!config.vSync) {
 		m_gameWindow->setFramerateLimit(config.frameRate);
 	}
-	
+
 	m_screenWidth = config.video.width;
 	m_screenHeight = config.video.height;
 	m_smoothScreen = config.smoothScreen;
 	m_scale = config.video.scale;
 	m_frameRate = config.frameRate;
-	
+
 	/* Render resize */
 	if (m_renderTexture != nullptr) {
 		m_renderTexture->create(m_screenWidth, m_screenHeight);
@@ -39,10 +39,10 @@ void CGraphicsDraw::init(sf::RenderWindow& window, const CGraphicsConfig& config
 
 void CGraphicsDraw::resizeScreen(int width, int height) {
 	CGraphics::Get().protect();
-	
+
 	/* Restart Graphics */
 	CGraphics::Get().init();
-	
+
 	/* Reset viewport render */
 	if (CViewport_Element::render) {
 		CViewport_Element::render->create(width, height);
@@ -120,7 +120,7 @@ bool CGraphicsDraw::isGameWindowOpen() const {
 void* GraphicsDraw_Update_Internal(void* dataPtr) {
 	//NO RUBY API ACCESS MUST BE DONE HERE
 	auto& self = *reinterpret_cast<CGraphicsDraw*>(dataPtr);
-	if(self.isGameWindowOpen()) {	   
+	if(self.isGameWindowOpen()) {
 		self.updateInternal();
 		return nullptr;
 	}
@@ -139,7 +139,7 @@ std::unique_ptr<GraphicsUpdateMessage> CGraphicsDraw::update() {
 void CGraphicsDraw::updateInternal() {
 	//NO RUBY API ACCESS MUST BE DONE HERE
 	m_gameWindow->clear();
-   
+
 	sf::View defview = m_gameWindow->getDefaultView();
 	auto& render_target = configureAndGetRenderTarget(defview);
 	// Rendering C++ sprite stack
@@ -177,7 +177,6 @@ void CGraphicsDraw::stop() {
 	m_gameWindow = nullptr;
 
 	m_stack->clear();
-	m_globalBitmaps.clear();  
 }
 
 CGraphicsDraw::~CGraphicsDraw() {

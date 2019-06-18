@@ -1,7 +1,6 @@
 #ifndef CGraphicsDraw_H
 #define CGraphicsDraw_H
 #include <memory>
-#include "CRubyGlobalBitmaps.h"
 #include "CDrawableStack.h"
 #include "CGraphicsUpdateMessage.h"
 
@@ -23,7 +22,7 @@ public:
 	unsigned long frameRate() const { return m_frameRate; }
 
 	void init(sf::RenderWindow& window, const CGraphicsConfig& vSync);
-	void resizeScreen(int width, int height); 
+	void resizeScreen(int width, int height);
 	void setShader(sf::RenderStates* shader);
 
 	std::unique_ptr<GraphicsUpdateMessage> update();
@@ -39,14 +38,13 @@ public:
 
 private:
 	void initRender();
-	
+
 	void drawBrightness();
 
 	sf::RenderTarget& configureAndGetRenderTarget(sf::View& defview);
 	void postProcessing();
 
 	std::unique_ptr<CDrawableStack> m_stack;
-	CRubyGlobalBitmaps m_globalBitmaps;
 
 	sf::RenderStates* m_renderState = nullptr;
 	sf::RenderWindow* m_gameWindow = nullptr;
