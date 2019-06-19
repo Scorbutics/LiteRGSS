@@ -10,7 +10,7 @@ class DrawableStack
   # Sort the z sprites inside the viewport
   def sort_z
     #@__elementtable.delete_if do |el| el.disposed? end
-    @__elementtable.sort! do |a, b| 
+    @__elementtable.sort! do |a, b|
       s = a.z <=> b.z
       next(a.__index__ <=> b.__index__) if s == 0
       next(s)
@@ -20,7 +20,7 @@ end
 
 # Start specification
 RSpec.describe DrawableStack do
-  
+
   it 'add drawable to stack' do
     stack = DrawableStack.new()
     @a = Sprite.new()
@@ -28,7 +28,7 @@ RSpec.describe DrawableStack do
     stack.add(@a)
     expect(stack.size).to eq(1)
   end
-  
+
   it 'add & remove drawable to stack' do
     stack = DrawableStack.new()
     @a = Sprite.new()
@@ -42,8 +42,8 @@ RSpec.describe DrawableStack do
     @a = Sprite.new()
     stack.add(@a)
     @a = nil
-    #TODO : fix this
-    #GC.start()
+    GC.start()
+    #TODO Fix
     #expect(stack.size).to eq(0)
   end
 
@@ -60,7 +60,7 @@ RSpec.describe DrawableStack do
     stack.add(@c)
     stack.add(@a)
     stack.add(@b)
-    
+
     stack.sort_z
 
     expect(stack.getindex(0)).to eq(c_index)
