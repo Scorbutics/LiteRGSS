@@ -4,9 +4,12 @@
 #include "ruby.h"
 #include "CShaderFactory.h"
 #include "CGraphicsConfig.h"
-#include "CGraphicsDraw.h"
 #include "CGraphicsSnapshot.h"
 #include "CDrawableStack.h"
+#include "CGraphicsUpdateMessage.h"
+#include "CDrawable_Element.h"
+
+#include "Views/DisplayWindow.h"
 
 class CGraphics {
 public:
@@ -15,25 +18,25 @@ public:
 		return cg;
 	}
 
-	virtual ~CGraphics();
+	virtual ~CGraphics() = default;
 
 	unsigned long frameCount() const { return frame_count; }
 	void setFrameCount(unsigned long frameCount) { frame_count = frameCount; }
-	void setBrightness(unsigned char brightness) { m_draw.setBrightness(brightness); }
-	unsigned char brightness() const { return m_draw.brightness(); }
-	long screenWidth() const { return m_draw.screenWidth(); }
-	long screenHeight() const { return m_draw.screenHeight(); }
-	bool smoothScreen() const { return m_draw.smoothScreen(); }
-	double scale() const { return m_draw.scale(); }
-	auto frameRate() const { return m_draw.frameRate(); }
+	void setBrightness(unsigned char brightness) { m_gameWindow.setBrightness(brightness); }
+	unsigned char brightness() const { return m_gameWindow.brightness(); }
+	long screenWidth() const { return m_gameWindow.screenWidth(); }
+	long screenHeight() const { return m_gameWindow.screenHeight(); }
+	bool smoothScreen() const { return m_gameWindow.smoothScreen(); }
+	double scale() const { return m_gameWindow.scale(); }
+	auto frameRate() const { return m_gameWindow.frameRate(); }
 
-	void updateSelf(VALUE self);
 	void init();
 	void stop();
 	bool isGameWindowOpen() const;
-	void protect();
 	void update(VALUE self, bool input = true);
 	void updateOnlyInput(VALUE self);
+
+	void windowDraw();
 
 	VALUE takeSnapshot();
 	void freeze(VALUE self);
@@ -48,6 +51,7 @@ public:
 	bool areShadersEnabled() const;
 
 private:
+	std::unique_ptr<GraphicsUpdateMessage> draw();
 	void warnIfGraphicsUpdate() const;
 	CGraphics();
 
@@ -59,11 +63,10 @@ private:
 	bool InsideGraphicsUpdate = false;
 	unsigned long frame_count = 0;
 
-	std::unique_ptr<sf::RenderWindow> game_window = nullptr;
+	cgss::MainEventDispatcher m_eventDispatcher;
+	cgss::DisplayWindow m_gameWindow;
 
 	CGraphicsConfigLoader m_configLoader;
-	CGraphicsSnapshot m_snapshot;
-	CGraphicsDraw m_draw;
 	CShaderFactory m_shaderFactory;	
 };
 

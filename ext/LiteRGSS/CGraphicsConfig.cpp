@@ -2,7 +2,7 @@
 #include "common.h"
 #include "CGraphicsConfig.h"
 
-CGraphicsVideoConfig CGraphicsConfigLoader::loadVideoFromConfigs() const {
+cgss::DisplayWindowVideoSettings CGraphicsConfigLoader::loadVideoFromConfigs() const {
 	sf::VideoMode vmode(640, 480, 32);
 
 	ID swidth = rb_intern("ScreenWidth");
@@ -26,11 +26,7 @@ CGraphicsVideoConfig CGraphicsConfigLoader::loadVideoFromConfigs() const {
 	/* Adjust Scale */
 	if(rb_const_defined(rb_mConfig, sscale))
 		scale = normalize_double(NUM2DBL(rb_const_get(rb_mConfig, sscale)), 0.1, 10);
-	auto lastWidth = vmode.width;
-	auto lastHeight = vmode.height;
-	vmode.width *= scale;
-	vmode.height *= scale;
-	return {std::move(vmode), lastWidth, lastHeight, scale};
+	return {vmode.bitsPerPixel, vmode.width, vmode.height, scale};
 }
 
 bool CGraphicsConfigLoader::loadSmoothScreenFromConfigs() const {
@@ -38,7 +34,7 @@ bool CGraphicsConfigLoader::loadSmoothScreenFromConfigs() const {
 	return rb_const_defined(rb_mConfig, fsc) && RTEST(rb_const_get(rb_mConfig, fsc));
 }
 
-sf::String CGraphicsConfigLoader::loadTitleFromConfigs() const {
+std::string CGraphicsConfigLoader::loadTitleFromConfigs() const {
 	ID title = rb_intern("Title");
 	if(rb_const_defined(rb_mConfig, title)) {
 		VALUE str_title = rb_const_get(rb_mConfig, title);
@@ -46,7 +42,7 @@ sf::String CGraphicsConfigLoader::loadTitleFromConfigs() const {
 		std::string str(RSTRING_PTR(str_title));
 		return sf::String::fromUtf8(str.begin(), str.end());
 	}
-	return sf::String("LiteRGSS");
+	return "LiteRGSS2";
 }
 
 unsigned int CGraphicsConfigLoader::loadFrameRateFromConfigs() const {
@@ -73,7 +69,7 @@ bool CGraphicsConfigLoader::loadFullScreenFromConfigs() const {
 	return false;
 }
 
-CGraphicsConfig CGraphicsConfigLoader::load() const {
+cgss::DisplayWindowSettings CGraphicsConfigLoader::load() const {
 	auto vmode = loadVideoFromConfigs();
 	auto smoothScreen = loadSmoothScreenFromConfigs();
 	auto title = loadTitleFromConfigs();
@@ -81,11 +77,13 @@ CGraphicsConfig CGraphicsConfigLoader::load() const {
 	auto vSync = loadVSYNCFromConfigs();
 	auto fullscreen = loadFullScreenFromConfigs();
 	return {
+		false,
 		std::move(vmode),
 		smoothScreen,
-		std::move(title),
+		sf::String{std::move(title)},
 		frameRate,
 		vSync,
-		fullscreen
+		fullscreen,
+		false
 	};
 }

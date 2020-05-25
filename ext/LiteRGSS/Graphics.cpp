@@ -44,7 +44,6 @@ void Init_Graphics()
 }
 
 VALUE rb_Graphics_start(VALUE self) {
-	CGraphics::Get().updateSelf(self);
 	CGraphics::Get().init();
 	return self;
 }

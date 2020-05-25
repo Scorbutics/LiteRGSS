@@ -3,7 +3,9 @@
 
 #include <tuple>
 #include <SFML/Graphics.hpp>
+#include "LiteCGSS/Configuration/DisplayWindowSettings.h"
 
+/*
 struct CGraphicsVideoConfig {
 	sf::VideoMode vmode;
 	unsigned int width = 640;
@@ -19,15 +21,16 @@ struct CGraphicsConfig {
 	bool vSync = false;
 	bool fullscreen = false;
 };
+*/
 
 class CGraphicsConfigLoader {
 public:
-	CGraphicsConfig load() const;
+	cgss::DisplayWindowSettings load() const;
 
 private:
-	CGraphicsVideoConfig loadVideoFromConfigs() const;
+	cgss::DisplayWindowVideoSettings loadVideoFromConfigs() const;
 	bool loadSmoothScreenFromConfigs() const;
-	sf::String loadTitleFromConfigs() const;
+	std::string loadTitleFromConfigs() const;
 	unsigned int loadFrameRateFromConfigs() const;
 	bool loadVSYNCFromConfigs() const;
 	bool loadFullScreenFromConfigs() const;

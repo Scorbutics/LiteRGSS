@@ -1,5 +1,7 @@
 #include <cassert>
 #include "ruby_common.h"
+#include "ruby/thread.h"
+#include "log.h"
 #include "common.h"
 
 #include "Input.h"
@@ -7,12 +9,7 @@
 #include "CGraphics.h"
 
 CGraphics::CGraphics() : 
-	m_snapshot(), 
-	m_draw(m_snapshot) {		 
-}
-
-CGraphics::~CGraphics() {
-	if(game_window != nullptr) { stop(); }
+	m_gameWindow(m_eventDispatcher) {
 }
 
 std::unique_ptr<sf::Shader> CGraphics::createUniqueShader() const {
@@ -33,24 +30,14 @@ void CGraphics::init() {
 	/* Window Loading */
 	auto config = m_configLoader.load();
 	frame_count = 0;
-	
-	sf::Uint32 style = sf::Style::Close | sf::Style::Titlebar; // sf::Style::Resize = text issues !
-	if(config.fullscreen) {
-		style = sf::Style::Fullscreen;
-	}
-	game_window = std::make_unique<sf::RenderWindow>(config.video.vmode, std::move(config.title), style);
-	game_window->setMouseCursorVisible(false);
 
-	m_draw.init(*game_window, config);
-	m_snapshot.init();
+	m_gameWindow.reload(std::move(config));
+
+	LOG("[CGraphics] Init");
 
 	/* Input adjustement */
 	L_Input_Reset_Clocks();
 	L_Input_Setusec_threshold(1000000 / config.frameRate);
-}
-
-void CGraphics::updateSelf(VALUE self) {
-	m_draw.updateSelf(self);
 }
 
 void CGraphics::manageErrorMessage(VALUE self, const GraphicsUpdateMessage& message) {
@@ -81,7 +68,7 @@ void CGraphics::manageErrorMessage(VALUE self, const GraphicsUpdateMessage& mess
 void CGraphics::updateProcessEvent(GraphicsUpdateMessage& message) {
 	sf::Event event;
 	L_EnteredText.clear();
-	while(game_window->pollEvent(event))
+	while(m_gameWindow.pollEvent(event))
 	{
 		switch(event.type)
 		{
@@ -137,21 +124,37 @@ void CGraphics::updateProcessEvent(GraphicsUpdateMessage& message) {
 }
 
 bool CGraphics::isGameWindowOpen() const {
-	return game_window != nullptr && game_window->isOpen();
+	return m_gameWindow.isOpen();
 }
 
 void CGraphics::stop() {
-	protect();
-	m_draw.stop();
-	m_snapshot.stop();
+	m_gameWindow.stop();
+}
 
-	/* Close the window */
-	game_window->close();
-	game_window = nullptr;
+void CGraphics::windowDraw() {
+	m_gameWindow.draw();
+}
+
+void* GraphicsDraw_Update_Internal(void* dataPtr) {
+	//NO RUBY API ACCESS MUST BE DONE HERE
+	auto& self = *reinterpret_cast<CGraphics*>(dataPtr);
+	if(self.isGameWindowOpen()) {
+		self.windowDraw();
+		return nullptr;
+	}
+
+	auto message = std::make_unique<GraphicsUpdateMessage>();
+	message->errorObject = rb_eStoppedGraphics;
+	message->message = "Game Window was closed during Graphics.update by a unknow cause...";
+	return message.release();
+}
+
+std::unique_ptr<GraphicsUpdateMessage> CGraphics::draw() {
+	auto* result = rb_thread_call_without_gvl(GraphicsDraw_Update_Internal, static_cast<void*>(this), NULL, NULL);
+	return std::unique_ptr<GraphicsUpdateMessage>(reinterpret_cast<GraphicsUpdateMessage*>(result));
 }
 
 void CGraphics::update(VALUE self, bool input) {
-	protect();
 	// Prevent a Thread from calling Graphics.update during Graphics.update process
 	if(InsideGraphicsUpdate) { 
 		return;
@@ -159,7 +162,7 @@ void CGraphics::update(VALUE self, bool input) {
 	InsideGraphicsUpdate = true;
 
 	/* Graphics.update real process */
-	auto message = m_draw.update();
+	auto message = draw();
 	
 	/* Message Processing */
 	GraphicsUpdateMessage localMessage{};
@@ -182,7 +185,6 @@ void CGraphics::update(VALUE self, bool input) {
 }
 
 void CGraphics::updateOnlyInput(VALUE self) {
-	protect();
 	if (InsideGraphicsUpdate) {
 		return;
 	}
@@ -197,45 +199,38 @@ void CGraphics::updateOnlyInput(VALUE self) {
 	InsideGraphicsUpdate = false;
 }
 
-void CGraphics::protect()  {
-	if(game_window == nullptr) {
-		constexpr auto rawErrorMessage = "Graphics is not started, window closed thus no Graphics operation allowed. Please call Graphics.start before using other Graphics functions.";
-		rb_raise(rb_eStoppedGraphics, rawErrorMessage);
-		throw std::runtime_error(rawErrorMessage);
-	}
-}
-
 void CGraphics::resizeScreen(int width, int height) {
-	m_draw.resizeScreen(width, height);
+	m_gameWindow.resizeScreen(width, height);
 }
 
 void CGraphics::setShader(sf::RenderStates* shader) {
-	m_draw.setShader(shader);
+	//TODO
+	//m_gameWindow.setShader(shader);
 }
 
 VALUE CGraphics::takeSnapshot() {
-	if(InsideGraphicsUpdate) {
-		return Qnil;
-	}
-	return m_snapshot.takeSnapshot(*game_window);
+	auto outputTexture = m_gameWindow.takeSnapshot();
+	//TODO
+	return Qnil;
 }
 
 void CGraphics::transition(VALUE self, int argc, VALUE* argv) {
-	m_snapshot.transition(self, argc, argv);
+	//TODO
+	//m_gameWindow.transition(self, argc, argv);
 }
 
 void CGraphics::freeze(VALUE self) {
-	m_snapshot.freeze(*game_window, self);
+	//TODO
+	//m_gameWindow.freeze(*game_window, self);
 }
 
 void CGraphics::syncStackCppFromRuby() {
-	warnIfGraphicsUpdate();
-	m_draw.syncStackCppFromRuby();
 }
 
 void CGraphics::add(CDrawable_Element& element) {
-	warnIfGraphicsUpdate();
-	m_draw.add(element);
+	//warnIfGraphicsUpdate();
+	// ??? TODO ???
+	//m_gameWindow.add(element);
 }
 
 void CGraphics::warnIfGraphicsUpdate() const {

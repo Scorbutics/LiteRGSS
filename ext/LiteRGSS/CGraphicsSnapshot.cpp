@@ -33,7 +33,6 @@ void CGraphicsSnapshot::init() {
 }
 
 void CGraphicsSnapshot::freeze(sf::RenderWindow& window, VALUE self) {
-	CGraphics::Get().protect();
 	if(Graphics_freeze_texture != nullptr) {
 		return;
 	}
@@ -93,7 +92,6 @@ void CGraphicsSnapshot::transitionRGSS(VALUE self, long time, VALUE bitmap) {
 }
 
 void CGraphicsSnapshot::transition(VALUE self, int argc, VALUE* argv) {
-	CGraphics::Get().protect();
 	if(Graphics_freeze_sprite == nullptr) {
 		return;
 	}
@@ -112,7 +110,6 @@ void CGraphicsSnapshot::transition(VALUE self, int argc, VALUE* argv) {
 }
 
 VALUE CGraphicsSnapshot::takeSnapshot(sf::RenderWindow& window) {
-	CGraphics::Get().protect();
 
 	//Allocates memory ruby-side to take a snapshot
 	VALUE bmp = rb_obj_alloc(rb_cBitmap);
