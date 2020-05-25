@@ -4,6 +4,13 @@ ext_name = 'LiteRGSS'
 have_library('sfml-graphics')
 have_library('sfml-window')
 have_library('sfml-system')
+have_library('LiteCGSS_engine')
+
+# add include path to the internal folder
+# $(srcdir) is a root folder, where "extconf.rb" is stored
+$INCFLAGS << " -I/usr/include/LiteCGSS/"
+
+$CXXFLAGS += " -std=c++17 "
 
 # override normal build configuration to build debug friendly library
 # if installed via 'gem install oops-null -- --enable-debug'
