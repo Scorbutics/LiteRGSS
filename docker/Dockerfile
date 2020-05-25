@@ -23,8 +23,11 @@ RUN apt-get -y upgrade
 # LiteRGSS compilation requirements
 RUN apt-get install -y ruby-dev rake rake-compiler
 
+# LiteCGSS links
+RUN ln -s /psdk/litecgss/src/src/ /usr/include/LiteCGSS || true
+RUN ln -s /psdk/litecgss/lib/libLiteCGSS_engine.so /usr/lib/ || true
+
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 WORKDIR /psdk/litergss
-
