@@ -33,11 +33,4 @@ VALUE rb_Table_CopyModulo(VALUE self, VALUE source, VALUE source_origin_x, VALUE
 void rb_Table_internal_copyLine(short* &xheap1, short* &xheap2, long ini_x, long max_x);
 void rb_Table_internal_copyModuloYpart(short* xheap1, short* yheap2, long ox2, long target_x, long offsetx, long src_xsize, long m);
 
-namespace meta {
-	template<>
-	struct Log<rb_Table_Struct> {
-		static constexpr auto classname = "Table";
-	};
-}
-
 #endif

@@ -1,7 +1,6 @@
 #ifndef CBITMAP_ELEMENT_H
 #define CBITMAP_ELEMENT_H
 #include <SFML/Graphics.hpp>
-#include "metadata.h"
 
 class CBitmap_Element {
 public:
@@ -23,12 +22,5 @@ private:
 	sf::Texture text;
 	sf::Image img;
 };
-
-namespace meta {
-	template<>
-	struct Log<CBitmap_Element> {
-		static constexpr auto classname = "Bitmap";
-	};
-}
 
 #endif

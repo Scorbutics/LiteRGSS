@@ -41,10 +41,5 @@ public:
 	VALUE rRect = Qnil;
 	VALUE rMirror = Qnil;
 };
-namespace meta {
-	template<>
-	struct Log<CSprite_Element> {
-		static constexpr auto classname = "Sprite";
-	};
-}
+
 #endif

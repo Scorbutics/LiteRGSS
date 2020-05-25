@@ -23,11 +23,5 @@ struct rb_yuki_gif_data {
 	double counter = 0.0;
 };
 
-namespace meta {
-	template<>
-	struct Log<rb_yuki_gif_data> {
-		static constexpr auto classname = "GIF";
-	};
-}
 
 #endif // !YUKI_GIF_H

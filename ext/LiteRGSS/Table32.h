@@ -29,11 +29,4 @@ VALUE rb_Table32_Load(VALUE self, VALUE str);
 VALUE rb_Table32_Save(VALUE self, VALUE limit);
 VALUE rb_Table32_Fill(VALUE self, VALUE val);
 
-namespace meta {
-	template<>
-	struct Log<rb_Table32_Struct> {
-		static constexpr auto classname = "Table32";
-	};
-}
-
 #endif

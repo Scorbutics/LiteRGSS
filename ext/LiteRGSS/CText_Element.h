@@ -3,7 +3,6 @@
 #include "ruby.h"
 #include "CDrawable_Element.h"
 #include "sf_Text2.hpp"
-#include "metadata.h"
 
 class CText_Element : public CDrawable_Element {
 	private:
@@ -33,10 +32,5 @@ class CText_Element : public CDrawable_Element {
 		VALUE rtext = Qnil;
 		VALUE rAlign = Qnil;
 };
-namespace meta {
-	template<>
-	struct Log<CText_Element> {
-		static constexpr auto classname = "Text";
-	};
-}
+
 #endif

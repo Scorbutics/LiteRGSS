@@ -3,7 +3,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "CDrawable_Element.h"
-#include "metadata.h"
 
 class CRect_Element {
 private:
@@ -33,13 +32,6 @@ public:
 	}
 	CDrawable_Element* getElement() { return target_; }
 };
-
-namespace meta {
-	template<>
-	struct Log<CRect_Element> {
-		static constexpr auto classname = "Rect";
-	};
-}
 
 
 #endif

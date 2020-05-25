@@ -31,10 +31,4 @@ class CTone_Element {
 		CViewport_Element* getViewport() { return target_; }
 };
 
-namespace meta {
-	template<>
-	struct Log<CTone_Element> {
-		static constexpr auto classname = "Tone";
-	};
-}
 #endif

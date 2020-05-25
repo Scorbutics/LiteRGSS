@@ -47,10 +47,4 @@ public:
 	VALUE rOutlineThickness = Qnil;
 };
 
-namespace meta {
-	template<>
-	struct Log<CShape_Element> {
-		static constexpr auto classname = "Shape";
-	};
-}
 #endif

@@ -57,10 +57,5 @@ class CViewport_Element : public CView_Element {
 		sf::Shader* getRenderStateShader() const;
 		void setupView(sf::RenderTarget& target) const;
 };
-namespace meta {
-	template<>
-	struct Log<CViewport_Element> {
-		static constexpr auto classname = "Viewport";
-	};
-}
+
 #endif

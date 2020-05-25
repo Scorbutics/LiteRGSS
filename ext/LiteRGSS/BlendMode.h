@@ -18,11 +18,4 @@ VALUE rb_BlendMode_setBlendType(VALUE self, VALUE val);
 VALUE rb_BlendMode_getBlendType(VALUE self);
 VALUE rb_BlendMode_Copy(VALUE self);
 
-namespace meta {
-	template<>
-	struct Log<sf::RenderStates> {
-		static constexpr auto classname = "BlendMode";
-	};
-}
-
 #endif

@@ -45,12 +45,4 @@ public:
 	VALUE rScale = LONG2FIX(1);
 };
 
-
-namespace meta {
-	template<>
-	struct Log<CSpriteMap_Element> {
-		static constexpr auto classname = "SpriteMap";
-	};
-}
-
 #endif

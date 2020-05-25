@@ -3,7 +3,7 @@
 #include <string>
 #include <stdexcept>
 #include <ruby.h>
-#include "metadata.h"
+#include "Common/Meta/metadata.h"
 
 extern VALUE rb_eRGSSError;
 
@@ -12,7 +12,7 @@ namespace rb {
 	void Protect(VALUE self) {
 		if(RDATA(self)->data == nullptr) { 
 			auto errorMessage = std::string { "Disposed "}; 
-			errorMessage += meta::Log<T>::classname;
+			errorMessage += cgss::meta::Log<T>::classname;
 			errorMessage += ".";
 			rb_raise(rb_eRGSSError, "%s", errorMessage.c_str());
 			throw std::runtime_error(errorMessage);
@@ -34,7 +34,7 @@ namespace rb {
 	auto& GetSafe(VALUE self, VALUE expectedType) {
 		if (rb_obj_is_kind_of(self, expectedType) != Qtrue) {
 			auto errorMessage = std::string { "Expected " };
-			errorMessage += meta::Log<T>::classname;
+			errorMessage += cgss::meta::Log<T>::classname;
 			errorMessage += " got ";
 			errorMessage += RSTRING_PTR(rb_class_name(CLASS_OF(self)));
 			errorMessage += ".";

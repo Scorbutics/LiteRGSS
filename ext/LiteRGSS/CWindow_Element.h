@@ -78,10 +78,4 @@ class CWindow_Element : public CView_Element {
 
 void Dispose_AllSprite(VALUE table);
 
-namespace meta {
-	template<>
-	struct Log<CWindow_Element> {
-		static constexpr auto classname = "Window";
-	};
-}
 #endif

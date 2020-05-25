@@ -19,10 +19,4 @@ public:
 	VALUE rRenderStates = Qnil;
 };
 
-namespace meta {
-	template<>
-	struct Log<CShaderSprite_Element> {
-		static constexpr auto classname = "ShaderedSprite";
-	};
-}
 #endif
