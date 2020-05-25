@@ -1,7 +1,8 @@
 #include "LiteRGSS.h"
-#include "CBitmap_Element.h"
 #include "CRect_Element.h"
 #include "CGraphics.h"
+
+#include "CgssWrapper.h"
 
 VALUE rb_cSprite = Qnil;
 
@@ -145,11 +146,12 @@ VALUE rb_Sprite_setBitmap(VALUE self, VALUE bitmap)
 		rb_raise(rb_eRGSSError, "Disposed Bitmap."); 
 		return self;
 	}
-	/* Retreiving Bitmap Objecy */
-	CBitmap_Element* bmp;
-	Data_Get_Struct(bitmap, CBitmap_Element, bmp);
+	
+	/* Retreiving Bitmap Object */
+	CgssInstance<cgss::Texture>* bmp;
+	Data_Get_Struct(bitmap, CgssInstance<cgss::Texture>, bmp);
 	sf::Sprite& sp = sprite.getSprite();
-	sp.setTexture(bmp->getTexture(), true);
+	sp.setTexture((*bmp)->getTexture(), true);
 	sprite.setDrawable(true);
 	sprite.rBitmap = bitmap;
 	if (!NIL_P(sprite.rRect))
