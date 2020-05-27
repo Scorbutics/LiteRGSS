@@ -4,15 +4,15 @@
 #include <memory>
 #include "ruby_common.h"
 
-template <class T>
-class CgssInstance {
+template <class T, template <class> class ContainerPtr>
+class CgssWrapper {
 public:
-    CgssInstance() = default;
-    ~CgssInstance() = default;
+    CgssWrapper() = default;
+    ~CgssWrapper() = default;
 
     template <class ... Args>
     void init(Args&& ... args) {
-        data = std::make_unique<T>(std::forward<Args>(args)...);
+        data = ContainerPtr<T>(new T(std::forward<Args>(args)...));
     }
 
     T* instance() {
@@ -35,7 +35,14 @@ private:
 		}
 	}
 
-    std::unique_ptr<T> data;
+    ContainerPtr<T> data;
 };
+
+
+template <class T>
+using CgssInstance = CgssWrapper<T, std::unique_ptr>;
+
+template <class T>
+using CgssMultiInstance = CgssWrapper<T, std::shared_ptr>;
 
 #endif
