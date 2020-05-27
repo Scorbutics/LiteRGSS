@@ -12,4 +12,4 @@ services:
             - "127.0.0.1:5902:5900"
         volumes:
             - ..:/psdk/litergss
-            - ..\..\litecgss:/psdk/litecgss
+            - ../../litecgss:/psdk/litecgss
