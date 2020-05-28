@@ -11,7 +11,7 @@ extern VALUE rb_eRGSSError;
 namespace rb {
 	using ErrorCallback = std::function<void(const std::string&)>;
 
-	template <class T, bool raise>
+	template <class T, bool raise = true>
 	std::string CheckDisposed(VALUE self) {
 		if(RDATA(self)->data == nullptr) { 
 			auto errorMessage = std::string { "Disposed "}; 
@@ -87,7 +87,7 @@ namespace rb {
 	}
 
 	template <class T>
-	auto* GetSafeOrNull(VALUE self, VALUE expectedType) {
+	T* GetSafeOrNull(VALUE self, VALUE expectedType) {
 		if (!CheckType<T>(self, expectedType).empty() ||
 			!CheckDisposed<T>(self).empty()) {
 			return nullptr;

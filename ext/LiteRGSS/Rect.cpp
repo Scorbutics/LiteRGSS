@@ -1,17 +1,14 @@
 #include "LiteRGSS.h"
-#include "CRect_Element.h"
-#include "CViewport_Element.h"
-#include "CShape_Element.h"
+#include "RectangleElement.h"
+
+#include "Common/Rectangle.h"
 
 VALUE rb_cRect = Qnil;
 
-void __Rect_Check_LinkedObject(CRect_Element& rect);
-
-void Init_Rect()
-{
+void Init_Rect() {
 	rb_cRect = rb_define_class_under(rb_mLiteRGSS, "Rect", rb_cObject);
 
-	rb_define_alloc_func(rb_cRect, rb::Alloc<CRect_Element>);
+	rb_define_alloc_func(rb_cRect, rb::Alloc<RectangleElement>);
 
 	rb_define_method(rb_cRect, "initialize", _rbf rb_Rect_initialize, -1);
 	rb_define_method(rb_cRect, "initialize_copy", _rbf rb_Rect_initialize_copy, 1);
@@ -40,46 +37,46 @@ void Init_Rect()
  * Rect.new(x, width, height)
  * Rect.new(x, y, width, height)
  */
-VALUE rb_Rect_initialize(int argc, VALUE* argv, VALUE self)
-{
+VALUE rb_Rect_initialize(int argc, VALUE* argv, VALUE self) {
 	VALUE x, y, width, height;
 	rb_scan_args(argc, argv, "22", &x, &y, &width, &height);
-	auto& rect = rb::Get<CRect_Element>(self);
+	auto& rect = rb::Get<RectangleElement>(self);
+	rect.init();
+
 	/* Parameter normalization */
-	if(NIL_P(width))
-	{
+	if (NIL_P(width)) {
 		width = x;
 		height = y;
 		x = LONG2FIX(0);
 		y = LONG2FIX(0);
-	}
-	else if(NIL_P(height))
-	{
+	} else if (NIL_P(height)) {
 		height = width;
 		width = y;
 		y = LONG2FIX(0);
 	}
+
 	/* Rect definition */
-	sf::IntRect& srect = rect.getRect();
+	sf::IntRect srect = rect->getRect();
 	srect.left = rb_num2long(x);
 	srect.top = rb_num2long(y);
 	srect.width = rb_num2long(width);
 	srect.height = rb_num2long(height);
+	rect->setRect(std::move(srect));
 	/* Pointed element nullification */
-	rect.bindElement(nullptr);
+	rect->bindElement(nullptr);
 	return self;
 }
 
-VALUE rb_Rect_initialize_copy(VALUE self, VALUE other)
-{
-	auto& rect = rb::Get<CRect_Element>(self);
-	CRect_Element* rect2;
-	Data_Get_Struct(other, CRect_Element, rect2);
-	if(RDATA(other)->data == nullptr) { return Qnil; }
-	rect_copy(&rect.getRect(), &rect2->getRect());
-	rect.bindElement(nullptr);
+VALUE rb_Rect_initialize_copy(VALUE self, VALUE other) {
+	auto& rect = rb::Get<RectangleElement>(self);
+	const auto* rect2 = rb::GetSafeOrNull<RectangleElement>(other, rb_cRect);
+	if (rect2 == nullptr || *rect2 == nullptr) { return Qnil; }
+
+	rect->setRect((*rect2)->getRect());
+	rect->bindElement(nullptr);
 	return self;
 }
+
 /*
  * rect.set(x)
  * rect.set(x,y)
@@ -87,86 +84,80 @@ VALUE rb_Rect_initialize_copy(VALUE self, VALUE other)
  * rect.set(x,y,width,height)
  * rect.set(x, nil, width) etc...
  */
-VALUE rb_Rect_set(int argc, VALUE* argv, VALUE self)
-{
+VALUE rb_Rect_set(int argc, VALUE* argv, VALUE self) {
 	VALUE x, y, width, height;
 	rb_scan_args(argc, argv, "13", &x, &y, &width, &height);
-	auto& rect = rb::Get<CRect_Element>(self);
-	sf::IntRect& srect = rect.getRect();
-	if(!NIL_P(x))
+	auto& rect = rb::Get<RectangleElement>(self);
+	auto srect = rect->getRect();
+
+	if (!NIL_P(x)) {
 		srect.left = rb_num2long(x);
-	if(!NIL_P(y))
+	}
+
+	if (!NIL_P(y)) {
 		srect.top = rb_num2long(y);
-	if(!NIL_P(width))
+	}
+
+	if (!NIL_P(width)) {
 		srect.width = rb_num2long(width);
-	if(!NIL_P(height))
+	}
+
+	if (!NIL_P(height)) {
 		srect.height = rb_num2long(height);
-	__Rect_Check_LinkedObject(rect);
+	}
+
+	rect->setRect(std::move(srect));
 	return self;
 }
 
-VALUE rb_Rect_getX(VALUE self)
-{
-	auto& rect = rb::Get<CRect_Element>(self);
-	return rb_int2inum(rect.getRect().left);
+VALUE rb_Rect_getX(VALUE self) {
+	auto& rect = rb::Get<RectangleElement>(self);
+	return rb_int2inum(rect->getRect().left);
 }
 
-VALUE rb_Rect_setX(VALUE self, VALUE val)
-{
-	auto& rect = rb::Get<CRect_Element>(self);
-	rect.getRect().left = rb_num2long(val);
-	__Rect_Check_LinkedObject(rect);
+VALUE rb_Rect_setX(VALUE self, VALUE val) {
+	auto& rect = rb::Get<RectangleElement>(self);
+	rect->setX(rb_num2long(val));
 	return val;
 }
 
-VALUE rb_Rect_getY(VALUE self)
-{
-	auto& rect = rb::Get<CRect_Element>(self);
-	return rb_int2inum(rect.getRect().top);
+VALUE rb_Rect_getY(VALUE self) {
+	auto& rect = rb::Get<RectangleElement>(self);
+	return rb_int2inum(rect->getRect().top);
 }
 
-VALUE rb_Rect_setY(VALUE self, VALUE val)
-{
-	auto& rect = rb::Get<CRect_Element>(self);
-	rect.getRect().top = rb_num2long(val);
-	__Rect_Check_LinkedObject(rect);
+VALUE rb_Rect_setY(VALUE self, VALUE val) {
+	auto& rect = rb::Get<RectangleElement>(self);
+	rect->setY(rb_num2long(val));
 	return val;
 }
 
-VALUE rb_Rect_getWidth(VALUE self)
-{
-	auto& rect = rb::Get<CRect_Element>(self);
-	return rb_int2inum(rect.getRect().width);
+VALUE rb_Rect_getWidth(VALUE self) {
+	auto& rect = rb::Get<RectangleElement>(self);
+	return rb_int2inum(rect->getRect().width);
 }
 
-VALUE rb_Rect_setWidth(VALUE self, VALUE val)
-{
-	auto& rect = rb::Get<CRect_Element>(self);
-	rect.getRect().width = rb_num2long(val);
-	__Rect_Check_LinkedObject(rect);
+VALUE rb_Rect_setWidth(VALUE self, VALUE val) {
+	auto& rect = rb::Get<RectangleElement>(self);
+	rect->setWidth(rb_num2long(val));
 	return val;
 }
 
-VALUE rb_Rect_getHeight(VALUE self)
-{
-	auto& rect = rb::Get<CRect_Element>(self);
-	return rb_int2inum(rect.getRect().height);
+VALUE rb_Rect_getHeight(VALUE self) {
+	auto& rect = rb::Get<RectangleElement>(self);
+	return rb_int2inum(rect->getRect().height);
 }
 
-VALUE rb_Rect_setHeight(VALUE self, VALUE val)
-{
-	auto& rect = rb::Get<CRect_Element>(self);
-	rect.getRect().height = rb_num2long(val);
-	__Rect_Check_LinkedObject(rect);
+VALUE rb_Rect_setHeight(VALUE self, VALUE val) {
+	auto& rect = rb::Get<RectangleElement>(self);
+	rect->setHeight(rb_num2long(val));
 	return val;
 }
 
-VALUE rb_Rect_load(VALUE self, VALUE str)
-{
+VALUE rb_Rect_load(VALUE self, VALUE str) {
 	rb_check_type(str, T_STRING);
 	VALUE arr[4];
-	if(RSTRING_LEN(str) < (sizeof(int) * 4))
-	{
+	if (RSTRING_LEN(str) < (sizeof(int) * 4)) {
 		arr[1] = arr[0] = LONG2FIX(1);
 		return rb_class_new_instance(2, arr, self);
 	}
@@ -178,10 +169,9 @@ VALUE rb_Rect_load(VALUE self, VALUE str)
 	return rb_class_new_instance(4, arr, self);
 }
 
-VALUE rb_Rect_save(VALUE self, VALUE limit)
-{
-	auto& rect = rb::Get<CRect_Element>(self);
-	sf::IntRect& srect = rect.getRect();
+VALUE rb_Rect_save(VALUE self, VALUE limit) {
+	auto& rect = rb::Get<RectangleElement>(self);
+	const sf::IntRect& srect = rect->getRect();
 	int rc[4];
 	rc[0] = srect.left;
 	rc[1] = srect.top;
@@ -190,105 +180,56 @@ VALUE rb_Rect_save(VALUE self, VALUE limit)
 	return rb_str_new(reinterpret_cast<const char*>(rc), sizeof(int) * 4);
 }
 
-VALUE rb_Rect_eql_rect(CRect_Element& rect, VALUE self)
-{
-	auto& rect2 = rb::Get<CRect_Element>(self);
-	sf::IntRect& or1 = rect.getRect();
-	sf::IntRect& or2 = rect2.getRect();
-	if(or1.left != or2.left)
-		return Qfalse;
-	if(or1.top != or2.top)
-		return Qfalse;
-	if(or1.width != or2.width)
-		return Qfalse;
-	if(or1.height != or2.height)
-		return Qfalse;
-	return Qtrue;
+static VALUE rb_Rect_eql_rect(RectangleElement& rect, VALUE self) {
+	auto& rect2 = rb::Get<RectangleElement>(self);
+	return rect == rect2 ? Qtrue : Qfalse;
 }
 
-VALUE rb_Rect_eql_array(CRect_Element& rect, VALUE oth)
-{
-	sf::IntRect& or1 = rect.getRect();
-	if(RARRAY_LEN(oth) != 4)
+static VALUE rb_Rect_eql_array(RectangleElement& rect, VALUE oth) {
+	const sf::IntRect& or1 = rect->getRect();
+	if (RARRAY_LEN(oth) != 4) {
 		return Qfalse;
-	VALUE* arr = RARRAY_PTR(oth);
-	if(rb_num2long(arr[0]) != or1.left)
-		return Qfalse;
-	if(rb_num2long(arr[1]) != or1.top)
-		return Qfalse;
-	if(rb_num2long(arr[2]) != or1.width)
-		return Qfalse;
-	if(rb_num2long(arr[3]) != or1.height)
-		return Qfalse;
-	return Qtrue;
-}
-
-VALUE rb_Rect_eql(VALUE self, VALUE other)
-{
-	auto& rect = rb::Get<CRect_Element>(self);
-	if(rb_obj_is_kind_of(other, rb_cRect) == Qtrue)
-	{
-		return rb_Rect_eql_rect(rect, other);
 	}
-	else if(rb_obj_is_kind_of(other, rb_cArray) == Qtrue)
-	{
+
+	VALUE* arr = RARRAY_PTR(oth);
+
+	if (rb_num2long(arr[0]) != or1.left) {
+		return Qfalse;
+	}
+
+	if (rb_num2long(arr[1]) != or1.top) {
+		return Qfalse;
+	}
+
+	if (rb_num2long(arr[2]) != or1.width) {
+		return Qfalse;
+	}
+
+	if (rb_num2long(arr[3]) != or1.height) {
+		return Qfalse;
+	}
+	return Qtrue;
+}
+
+VALUE rb_Rect_eql(VALUE self, VALUE other) {
+	auto& rect = rb::Get<RectangleElement>(self);
+	if (rb_obj_is_kind_of(other, rb_cRect) == Qtrue) {
+		return rb_Rect_eql_rect(rect, other);
+	} else if(rb_obj_is_kind_of(other, rb_cArray) == Qtrue) {
 		return rb_Rect_eql_array(rect, other);
 	}
 	return Qfalse;
 }
 
-VALUE rb_Rect_empty(VALUE self)
-{
-	auto& rect = rb::Get<CRect_Element>(self);
-	sf::IntRect& srect = rect.getRect();
-	srect.left = srect.top = srect.width = srect.height = 0;
+VALUE rb_Rect_empty(VALUE self) {
+	auto& rect = rb::Get<RectangleElement>(self);
+	rect->setRect({0, 0, 0, 0});
 	return self;
 }
 
-VALUE rb_Rect_to_s(VALUE self)
-{
-	auto& rect = rb::Get<CRect_Element>(self);
-	sf::IntRect& srect = rect.getRect();
+VALUE rb_Rect_to_s(VALUE self) {
+	auto& rect = rb::Get<RectangleElement>(self);
+	const sf::IntRect& srect = rect->getRect();
 	return rb_sprintf("(%d, %d, %d, %d)", srect.left, srect.top, srect.width, srect.height);
 }
 
-void __Rect_Check_LinkedObject(CRect_Element& rect)
-{
-	if(rect.getElement() == nullptr)
-		return;
-
-	CDrawable_Element& el = *rect.getElement();
-
-	/* Viewport processing */
-	if(el.isViewport())
-	{
-		sf::IntRect& srect = rect.getRect();
-		Viewport_SetView(reinterpret_cast<CViewport_Element&>(el), 
-			srect.left, srect.top, srect.width, srect.height);
-	}
-	/* Sprite Processing */
-	else if(el.isPureSprite())
-	{
-		sf::IntRect tmp_rect = rect.getRect();
-		CSprite_Element& sprite = reinterpret_cast<CSprite_Element&>(el);
-		if (RTEST(sprite.rMirror))
-		{
-			tmp_rect.left += tmp_rect.width;
-			tmp_rect.width = -tmp_rect.width;
-		}
-		sprite.getSprite().setTextureRect(tmp_rect);
-	}
-	/* Shape processing */
-	else if (el.isShape())
-	{
-		CShape_Element& shape = reinterpret_cast<CShape_Element&>(el);
-		shape.getShape()->setTextureRect(rect.getRect());
-	}
-	/* Window Processing */
-	else
-	{
-		CWindow_Element* window = dynamic_cast<CWindow_Element*>(&el);
-		if (window != nullptr)
-			window->resetCursorPosition(&rect.getRect());
-	}
-}

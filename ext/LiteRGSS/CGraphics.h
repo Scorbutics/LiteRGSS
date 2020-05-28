@@ -47,7 +47,7 @@ public:
 	void add(CDrawable_Element& element);
 
 	template <class T, class ... Args>
-	T&& add(Args&& ... args) {
+	T add(Args&& ... args) {
 		return T::create(m_gameWindow, std::forward<Args>(args)...);
 	}
 

@@ -391,11 +391,17 @@ void Viewport_SetView(CViewport_Element& viewport, long x, long y, long width, l
 		width++;
 	if(height & 1)
 		height++;
+	
+	//Set position & size depending on new dimensions
 	view.setCenter(static_cast<float>(viewport.getOx() + width / 2), 
 					static_cast<float>(viewport.getOy() + height / 2));
 	view.setSize(static_cast<float>(width), static_cast<float>(height));
+
+	// Hum... why update that ?
 	view.setRotation(-NUM2DBL(viewport.rAngle));
 	view.zoom(NUM2DBL(viewport.rZoom));
+	
+	//Update viewport
 	float sw = static_cast<float>(CGraphics::Get().screenWidth());
 	float sh = static_cast<float>(CGraphics::Get().screenHeight());
 	sf::FloatRect frect(x / sw, y / sh, width / sw, height / sh);

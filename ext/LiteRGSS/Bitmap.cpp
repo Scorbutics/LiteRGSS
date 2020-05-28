@@ -5,7 +5,9 @@
 
 #include "Bitmap.h"
 #include "CGraphics.h"
-#include "CRect_Element.h"
+
+#include "RectangleElement.h"
+#include "TextureElement.h"
 
 #include "Common/Rectangle.h"
 #include "Graphics/Texture.h"
@@ -71,7 +73,7 @@ VALUE rb_Bitmap_Initialize_Copy(VALUE self, VALUE other) {
 	rb_check_frozen(self);
 
 	auto& source = rb::Get<TextureElement>(self);
-	auto& destination = rb::GetSafeOr<TextureElement>(other, rb_cBitmap, [&]() {
+	auto& destination = rb::GetSafeOr<TextureElement>(other, rb_cBitmap, [&](const std::string& message) {
 		rb_raise(rb_eTypeError, "Cannot clone %s into Bitmap.", RSTRING_PTR(rb_class_name(CLASS_OF(other))));
 	});
 
@@ -86,8 +88,7 @@ VALUE rb_Bitmap_Initialize_Copy(VALUE self, VALUE other) {
 
 VALUE rb_Bitmap_Dispose(VALUE self) {
 	// LOLNOPE
-	//auto& bitmap = rb::Get<TextureElement>(self);
-	//bitmap->dispose();
+	rb_raise(rb_eTypeError, "Cannot dispose a Bitmap.");
 	return Qnil;
 }
 
@@ -118,14 +119,14 @@ VALUE rb_Bitmap_Update(VALUE self) {
 
 VALUE rb_Bitmap_blt(VALUE self, VALUE x, VALUE y, VALUE src_bitmap, VALUE rect) {
 	auto& bitmap = rb::Get<TextureElement>(self);
-	auto& s_rect = rb::GetSafe<CRect_Element>(rect, rb_cRect);
+	auto& s_rect = rb::GetSafe<RectangleElement>(rect, rb_cRect);
 
 	auto& s_bitmap = rb::Get<TextureElement>(src_bitmap);
 	if(s_bitmap.instance() == nullptr)  {
 		rb_raise(rb_eRGSSError, "Invalid Bitmap"); 
-		return self; 
+		return self;
 	}
-	
+
 	auto rectangle = cgss::Rectangle{};
 	rectangle.setRect(s_rect->getRect());
 	bitmap->blit(
@@ -142,7 +143,7 @@ VALUE rb_Bitmap_clear_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE heig
 	rb_check_type(y, T_FIXNUM);
 	rb_check_type(width, T_FIXNUM);
 	rb_check_type(height, T_FIXNUM);
-	
+
 	auto& bitmap = rb::Get<TextureElement>(self);
 
 	long xValue = NUM2LONG(x);
@@ -169,7 +170,7 @@ VALUE rb_Bitmap_fill_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE heigh
 
 	long yValue = NUM2LONG(y);
 	yValue = yValue < 0 ? 0 : yValue;
-	
+
 	bitmap->fillRect(xValue, yValue, static_cast<unsigned int>(NUM2LONG(width)), static_cast<unsigned int>(NUM2LONG(height)), rcolor);
 	return self;
 }

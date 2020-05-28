@@ -8,6 +8,7 @@ struct SpriteElement :
     public CgssInstance<cgss::Sprite> {
 
 	VALUE rBitmap = Qnil;
+	VALUE rViewport = Qnil;
 	VALUE rX = LONG2FIX(0);
 	VALUE rY = LONG2FIX(0);
 	VALUE rZ = LONG2FIX(0);

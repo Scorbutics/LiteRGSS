@@ -2,11 +2,6 @@
 #define L_BITMAP_HEADER
 #include "ruby.h"
 #include <SFML/Graphics.hpp>
-#include "CgssWrapper.h"
-
-namespace cgss {
-    class Texture;
-}
 
 VALUE rb_Bitmap_Initialize(int argc, VALUE *argv, VALUE self);
 VALUE rb_Bitmap_Initialize_Copy(VALUE self, VALUE other);
@@ -22,6 +17,6 @@ VALUE rb_Bitmap_toPNG(VALUE self);
 VALUE rb_Bitmap_toPNG_file(VALUE self, VALUE filename);
 sf::Texture& rb_Bitmap_getTexture(VALUE self);
 
-using TextureElement = CgssInstance<cgss::Texture>;
+
 
 #endif

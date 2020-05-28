@@ -15,13 +15,35 @@ public:
         data = ContainerPtr<T>(new T(std::forward<Args>(args)...));
     }
 
-    T* instance() {
-        return data.get();
-    }
+    T* instance() { return data.get(); }
+    const T* instance() const { return data.get(); }
 
     T* operator->() {
         protect();
         return instance();
+    }
+
+    const T* operator->() const {
+        protect();
+        return instance();
+    }
+
+    bool operator==(std::nullptr_t nptr) const {
+        return data.get() == nullptr;
+    }
+
+    bool operator!=(std::nullptr_t nptr) const {
+        return data.get() != nullptr;
+    }
+
+    template <template <class> class ContPtr>
+    bool operator==(const CgssWrapper<T, ContPtr>& wrapper) const {
+        return *data == *wrapper.data;
+    }
+
+    template <template <class> class ContPtr>
+    bool operator!=(const CgssWrapper<T, ContPtr>& wrapper) const {
+        return *data != *wrapper.data;
     }
 
 private:
