@@ -1,6 +1,7 @@
 #include <iostream>
 #include "ruby_common.h"
 #include "common.h"
+#include "log.h"
 #include "rbAdapter.h"
 
 #include "Bitmap.h"
@@ -43,6 +44,7 @@ VALUE rb_Bitmap_Initialize(int argc, VALUE *argv, VALUE self) {
 	/* Load From filename */
 	if(NIL_P(fromMemory)) {
 		rb_check_type(string, T_STRING);
+		LOG("[Bitmap] Init from filename");
 		const char* filename = RSTRING_PTR(string);
 		auto loader = cgss::TextureFileLoader{filename};
 		if (!bitmap->load(loader)) {
@@ -51,6 +53,7 @@ VALUE rb_Bitmap_Initialize(int argc, VALUE *argv, VALUE self) {
 		}
 	} else if(fromMemory == Qtrue) {
 		rb_check_type(string, T_STRING);
+		LOG("[Bitmap] Init from memory");
 		const char* rawData = RSTRING_PTR(string);
 		auto loader = cgss::TextureMemoryLoader{rawData};
 		if (!bitmap->load(loader)) {
@@ -59,10 +62,11 @@ VALUE rb_Bitmap_Initialize(int argc, VALUE *argv, VALUE self) {
 	} else {
 		rb_check_type(string, T_FIXNUM);
 		rb_check_type(fromMemory, T_FIXNUM);
+		LOG("[Bitmap] Init empty with dimensions");
 		const unsigned int width = static_cast<unsigned int>(rb_num2long(string));
 		const unsigned int height = static_cast<unsigned int>(rb_num2long(fromMemory));
 		auto loader = cgss::TextureEmptyLoader{width, height};
-		if(!bitmap->load(loader)) {
+		if (!bitmap->load(loader)) {
 			rb_raise(rb_eRGSSError, "Invalid texture size (%u x %u) !", width, height);
 		}
 	}

@@ -1,4 +1,5 @@
 #include "LiteRGSS.h"
+#include "log.h"
 
 #include "CGraphics.h"
 
@@ -161,6 +162,8 @@ VALUE rb_Sprite_Dispose(VALUE self) {
 VALUE rb_Sprite_setBitmap(VALUE self, VALUE bitmap) {
 	auto& sprite = rb::Get<SpriteElement>(self);
 	
+	LOG("[Sprite] Setting bitmap");
+
 	if (bitmap == Qnil) {
 		sprite->setVisible(false);
 		sprite.rBitmap = bitmap;
