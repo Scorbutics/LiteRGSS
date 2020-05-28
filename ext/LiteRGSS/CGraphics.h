@@ -46,6 +46,11 @@ public:
 	void syncStackCppFromRuby();
 	void add(CDrawable_Element& element);
 
+	template <class T, class ... Args>
+	T&& add(Args&& ... args) {
+		return T::create(m_gameWindow, std::forward<Args>(args)...);
+	}
+
 	std::unique_ptr<sf::Shader> createUniqueShader() const;
 	sf::Shader* createNewShader() const;
 	bool areShadersEnabled() const;

@@ -2,15 +2,16 @@
 #include "CRect_Element.h"
 #include "CGraphics.h"
 
-#include "CgssWrapper.h"
+#include "SpriteElement.h"
 
-VALUE rb_cSprite = Qnil;
+static VALUE rb_cSprite = Qnil;
 
 template<>
-void rb::Mark<CSprite_Element>(CSprite_Element* sprite)
-{
-	if(sprite == nullptr)
+void rb::Mark<SpriteElement>(SpriteElement* spritePtr) {
+	if (spritePtr == nullptr) {
 		return;
+	}
+	auto& sprite = *spritePtr;
 	rb_gc_mark(sprite->rViewport);
 	rb_gc_mark(sprite->rBitmap);
 	rb_gc_mark(sprite->rX);
@@ -26,7 +27,7 @@ void rb::Mark<CSprite_Element>(CSprite_Element* sprite)
 
 void Init_Sprite() {
 	rb_cSprite = rb_define_class_under(rb_mLiteRGSS, "Sprite", rb_cDrawable);
-	rb_define_alloc_func(rb_cSprite, rb::AllocDrawable<CSprite_Element>);
+	rb_define_alloc_func(rb_cSprite, rb::Alloc<SpriteElement>);
 
 	rb_define_method(rb_cSprite, "initialize", _rbf rb_Sprite_Initialize, -1);
 	rb_define_method(rb_cSprite, "dispose", _rbf rb_Sprite_Dispose, 0);
@@ -68,10 +69,12 @@ void Init_Sprite() {
 	rb_define_method(rb_cSprite, "dup", _rbf rb_Sprite_Copy, 0);
 }
 
-VALUE rb_Sprite_Initialize(int argc, VALUE* argv, VALUE self)
-{
-	auto& sprite = rb::Get<CSprite_Element>(self);
-	/* If a viewport was specified */
+VALUE rb_Sprite_Initialize(int argc, VALUE* argv, VALUE self) {
+	auto& sprite = rb::Get<SpriteElement>(self);
+
+	//TODO
+	/*
+	// If a viewport was specified 
 	if(argc == 1 && rb_obj_is_kind_of(argv[0], rb_cViewport) == Qtrue)
 	{
 		CViewport_Element* viewport;
@@ -79,7 +82,7 @@ VALUE rb_Sprite_Initialize(int argc, VALUE* argv, VALUE self)
 		viewport->add(sprite);
 		sprite.rViewport = argv[0];
 	}
-	/* If a window is specified */
+	// If a window is specified 
 	else if (argc == 1 && rb_obj_is_kind_of(argv[0], rb_cWindow) == Qtrue)
 	{
 		auto& window = rb::GetSafe<CWindow_Element>(argv[0], rb_cWindow);
@@ -88,92 +91,60 @@ VALUE rb_Sprite_Initialize(int argc, VALUE* argv, VALUE self)
 		VALUE opacity = LONG2NUM(NUM2LONG(window.rOpacity) * NUM2LONG(window.rBackOpacity) / 255);
 		rb_Sprite_setOpacity(self, opacity);
 	}
-	/* Otherwise */
+	// Otherwise
 	else
 	{
-		CGraphics::Get().add(sprite);		
-		sprite.rViewport = Qnil;
+	*/
+		sprite.init(CGraphics::Get().add<cgss::Sprite>());
+		//sprite.rViewport = Qnil;
+	/*
 	}
-	
+	*/
+
 	/* Initializing Instance variables */
-	sprite.rX = LONG2FIX(0);
-	sprite.rY = LONG2FIX(0);
-	sprite.rZ = LONG2FIX(0);
-	sprite.rOX = LONG2FIX(0);
-	sprite.rOY = LONG2FIX(0);
-	sprite.rAngle = LONG2FIX(0);
-	sprite.rZoomX = LONG2FIX(1);
-	sprite.rZoomY = LONG2FIX(1);
-	sprite.rBitmap = Qnil;
-	sprite.rRect = Qnil;
-	sprite.rMirror = Qfalse;
 	return self;
 }
 
-VALUE rb_Sprite_Copy(VALUE self)
-{
+VALUE rb_Sprite_Copy(VALUE self) {
 	rb_raise(rb_eRGSSError, "Sprites cannot be cloned or duplicated.");
 	return self;
 }
 
-VALUE rb_Sprite_Dispose(VALUE self)
-{
-	return rb::Dispose<CSprite_Element>(self);
+VALUE rb_Sprite_Dispose(VALUE self) {
+	auto& sprite = rb::Get<SpriteElement>(self);
+	sprite->dispose();
+	return Qnil;
 }
 
-VALUE rb_Sprite_DisposeFromViewport(VALUE self)
-{
-	return rb::Dispose<CSprite_Element>(self);
-}
-
-VALUE rb_Sprite_setBitmap(VALUE self, VALUE bitmap)
-{
-	auto& sprite = rb::Get<CSprite_Element>(self);
-	if(rb_obj_is_kind_of(bitmap, rb_cBitmap) == Qfalse)
-	{
-		if(bitmap == Qnil)
-		{
-			sprite.setDrawable(false);
-			sprite.rBitmap = bitmap;
-		}
-		else
-			rb_raise(rb_eTypeError, "Expected a Bitmap.");
-		return self;
-	}
-	/* Bitmap Protection */
-	if(RDATA(bitmap)->data == nullptr)
-	{
-		rb_raise(rb_eRGSSError, "Disposed Bitmap."); 
-		return self;
-	}
+VALUE rb_Sprite_setBitmap(VALUE self, VALUE bitmap) {
+	auto& sprite = rb::Get<SpriteElement>(self);
 	
-	/* Retreiving Bitmap Object */
-	CgssInstance<cgss::Texture>* bmp;
-	Data_Get_Struct(bitmap, CgssInstance<cgss::Texture>, bmp);
-	sf::Sprite& sp = sprite.getSprite();
-	sp.setTexture((*bmp)->getTexture(), true);
-	sprite.setDrawable(true);
+	if (bitmap == Qnil) {
+		sprite->setVisible(false);
+		sprite.rBitmap = bitmap;
+		return self;
+	}
+	auto& bmp = rb::GetSafe<TextureElement>(bitmap, rb_cBitmap);
+
+	sprite->setTexture(bmp->getTexture(), true);
+	sprite->setVisible(true);
 	sprite.rBitmap = bitmap;
-	if (!NIL_P(sprite.rRect))
-	{
-		CRect_Element* rect;
-		Data_Get_Struct(sprite.rRect, CRect_Element, rect);
-		/* Setting rect parameter */
-		const sf::IntRect rectorigin = sp.getTextureRect();
-		rect_copy(&rect->getRect(), &rectorigin);
+
+	if (!NIL_P(sprite.rRect)) {
+		auto& rect = rb::Get<CRect_Element>(sprite.rRect);
+		rect.getRect() = sprite->getTextureRect();
 	}
 	return self;
 }
 
-VALUE rb_Sprite_getBitmap(VALUE self)
-{
-	auto& sprite = rb::Get<CSprite_Element>(self);
+VALUE rb_Sprite_getBitmap(VALUE self) {
+	auto& sprite = rb::Get<SpriteElement>(self);
 	return sprite.rBitmap;
 }
 
 VALUE rb_Sprite_setX(VALUE self, VALUE val)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	sf::Sprite& sp = sprite.getSprite();
 	const sf::Vector2f& vect = sp.getPosition();
 	sp.setPosition(static_cast<float>(rb_num2long(val)), vect.y);
@@ -183,13 +154,13 @@ VALUE rb_Sprite_setX(VALUE self, VALUE val)
 
 VALUE rb_Sprite_getX(VALUE self)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	return sprite.rX;
 }
 
 VALUE rb_Sprite_setY(VALUE self, VALUE val)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	sf::Sprite& sp = sprite.getSprite();
 	const sf::Vector2f vect = sp.getPosition();
 	sp.setPosition(vect.x, static_cast<float>(rb_num2long(val)));
@@ -199,13 +170,13 @@ VALUE rb_Sprite_setY(VALUE self, VALUE val)
 
 VALUE rb_Sprite_getY(VALUE self)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	return sprite.rY;
 }
 
 VALUE rb_Sprite_setZ(VALUE self, VALUE val)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	rb_num2long(val);
 	sprite.rZ = val;
 	return val;
@@ -213,13 +184,13 @@ VALUE rb_Sprite_setZ(VALUE self, VALUE val)
 
 VALUE rb_Sprite_getZ(VALUE self)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	return sprite.rZ;
 }
 
 VALUE rb_Sprite_setOX(VALUE self, VALUE val)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	sf::Sprite& sp = sprite.getSprite();
 	const sf::Vector2f vect = sp.getOrigin();
 	sp.setOrigin(static_cast<float>(rb_num2long(val)), vect.y);
@@ -229,13 +200,13 @@ VALUE rb_Sprite_setOX(VALUE self, VALUE val)
 
 VALUE rb_Sprite_getOX(VALUE self)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	return sprite.rOX;
 }
 
 VALUE rb_Sprite_setOY(VALUE self, VALUE val)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	sf::Sprite& sp = sprite.getSprite();
 	const sf::Vector2f vect = sp.getOrigin();
 	sp.setOrigin(vect.x, static_cast<float>(rb_num2long(val)));
@@ -245,26 +216,26 @@ VALUE rb_Sprite_setOY(VALUE self, VALUE val)
 
 VALUE rb_Sprite_getOY(VALUE self)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	return sprite.rOY;
 }
 
 VALUE rb_Sprite_setVisible(VALUE self, VALUE val)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	sprite.setVisible(RTEST(val));
 	return val;
 }
 
 VALUE rb_Sprite_getVisible(VALUE self)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	return sprite.getVisible() ? Qtrue : Qfalse;
 }
 
 VALUE rb_Sprite_setAngle(VALUE self, VALUE val)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	sprite.getSprite().setRotation(static_cast<float>(-NUM2DBL(val))); // RGSS rotation is trigo, SFML looks like anti-trigo
 	sprite.rAngle = val;
 	return val;
@@ -272,13 +243,13 @@ VALUE rb_Sprite_setAngle(VALUE self, VALUE val)
 
 VALUE rb_Sprite_getAngle(VALUE self)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	return sprite.rAngle;
 }
 
 VALUE rb_Sprite_setZoomX(VALUE self, VALUE val)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	sf::Sprite& sp = sprite.getSprite();
 	const sf::Vector2f vect = sp.getScale();
 	sp.setScale(static_cast<float>(rb_num2dbl(val)), vect.y);
@@ -288,13 +259,13 @@ VALUE rb_Sprite_setZoomX(VALUE self, VALUE val)
 
 VALUE rb_Sprite_getZoomX(VALUE self)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	return sprite.rZoomX;
 }
 
 VALUE rb_Sprite_setZoomY(VALUE self, VALUE val)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	sf::Sprite& sp = sprite.getSprite();
 	const sf::Vector2f vect = sp.getScale();
 	sp.setScale(vect.x, static_cast<float>(rb_num2dbl(val)));
@@ -304,14 +275,14 @@ VALUE rb_Sprite_setZoomY(VALUE self, VALUE val)
 
 VALUE rb_Sprite_getZoomY(VALUE self)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	return sprite.rZoomY;
 }
 
 
 VALUE rb_Sprite_setPosition(VALUE self, VALUE x, VALUE y)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	sprite.getSprite().setPosition(static_cast<float>(rb_num2long(x)), static_cast<float>(rb_num2long(y)));
 	sprite.rX = x;
 	sprite.rY = y;
@@ -320,7 +291,7 @@ VALUE rb_Sprite_setPosition(VALUE self, VALUE x, VALUE y)
 
 VALUE rb_Sprite_setOrigin(VALUE self, VALUE x, VALUE y)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	sprite.getSprite().setOrigin(static_cast<float>(rb_num2long(x)), static_cast<float>(rb_num2long(y)));
 	sprite.rOX = x;
 	sprite.rOY = y;
@@ -329,7 +300,7 @@ VALUE rb_Sprite_setOrigin(VALUE self, VALUE x, VALUE y)
 
 VALUE rb_Sprite_setZoom(VALUE self, VALUE zoom)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	float scale = static_cast<float>(rb_num2dbl(zoom));
 	sprite.getSprite().setScale(scale, scale);
 	sprite.rZoomX = zoom;
@@ -339,7 +310,7 @@ VALUE rb_Sprite_setZoom(VALUE self, VALUE zoom)
 
 VALUE rb_Sprite_setOpacity(VALUE self, VALUE val)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	sf::Sprite& sp = sprite.getSprite();
 	const sf::Color col = sp.getColor();
 	sp.setColor(sf::Color(col.r, col.g, col.b, normalize_long(rb_num2long(val), 0, 255)));
@@ -348,7 +319,7 @@ VALUE rb_Sprite_setOpacity(VALUE self, VALUE val)
 
 VALUE rb_Sprite_getOpacity(VALUE self)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	sf::Sprite& sp = sprite.getSprite();
 	const sf::Color col = sp.getColor();
 	return rb_int2inum(col.a);
@@ -356,7 +327,7 @@ VALUE rb_Sprite_getOpacity(VALUE self)
 
 VALUE rb_Sprite_getRect(VALUE self)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	VALUE rc = sprite.rRect;
 	if(!NIL_P(rc))
 		return rc;
@@ -386,8 +357,8 @@ VALUE rb_Sprite_setRect(VALUE self, VALUE val)
 		return Qnil;
 	}
 	if(RDATA(val)->data == nullptr) { return Qnil; }
-	CSprite_Element* sprite;
-	Data_Get_Struct(self, CSprite_Element, sprite);
+	SpriteElement* sprite;
+	Data_Get_Struct(self, SpriteElement, sprite);
 	/* Getting data to update the rect */
 	CRect_Element* rect1;
 	Data_Get_Struct(val, CRect_Element, rect1);
@@ -410,13 +381,13 @@ VALUE rb_Sprite_setRect(VALUE self, VALUE val)
 
 VALUE rb_Sprite_getMirror(VALUE self)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	return sprite.rMirror;
 }
 
 VALUE rb_Sprite_setMirror(VALUE self, VALUE val)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	sprite.rMirror = RTEST(val) ? Qtrue : Qfalse;
 	rb_Sprite_setRect(self, rb_Sprite_getRect(self));
 	return self;
@@ -424,13 +395,13 @@ VALUE rb_Sprite_setMirror(VALUE self, VALUE val)
 
 VALUE rb_Sprite_Viewport(VALUE self)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	return sprite.rViewport;
 }
 
 VALUE rb_Sprite_Index(VALUE self)
 {
-	auto& sprite = rb::Get<CSprite_Element>(self);
+	auto& sprite = rb::Get<SpriteElement>(self);
 	return rb_uint2inum(sprite.getDrawPriority());
 }
 

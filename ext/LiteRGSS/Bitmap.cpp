@@ -1,13 +1,11 @@
 #include <iostream>
 #include "ruby_common.h"
 #include "common.h"
-#include "lodepng.h"
-#include "Bitmap.h"
-#include "CViewport_Element.h"
-#include "CGraphics.h"
 #include "rbAdapter.h"
+
+#include "Bitmap.h"
+#include "CGraphics.h"
 #include "CRect_Element.h"
-#include "CgssWrapper.h"
 
 #include "Common/Rectangle.h"
 #include "Graphics/Texture.h"
@@ -17,7 +15,7 @@ VALUE rb_cBitmap = Qnil;
 
 void Init_Bitmap() {
 	rb_cBitmap = rb_define_class_under(rb_mLiteRGSS, "Bitmap", rb_cDisposable);
-	rb_define_alloc_func(rb_cBitmap, rb::Alloc<CgssInstance<cgss::Texture>>);
+	rb_define_alloc_func(rb_cBitmap, rb::Alloc<TextureElement>);
 	rb_define_method(rb_cBitmap, "initialize", _rbf rb_Bitmap_Initialize, -1);
 	rb_define_method(rb_cBitmap, "initialize_copy", _rbf rb_Bitmap_Initialize_Copy, 1);
 	rb_define_method(rb_cBitmap, "dispose", _rbf rb_Bitmap_Dispose, 0);
@@ -33,7 +31,7 @@ void Init_Bitmap() {
 }
 
 VALUE rb_Bitmap_Initialize(int argc, VALUE *argv, VALUE self) {
-	auto& bitmap = rb::Get<CgssInstance<cgss::Texture>>(self);
+	auto& bitmap = rb::Get<TextureElement>(self);
 	bitmap.init();
 	bitmap->setSmooth(CGraphics::Get().smoothScreen());
 
@@ -71,66 +69,58 @@ VALUE rb_Bitmap_Initialize(int argc, VALUE *argv, VALUE self) {
 
 VALUE rb_Bitmap_Initialize_Copy(VALUE self, VALUE other) {
 	rb_check_frozen(self);
-	if(rb_obj_is_kind_of(other, rb_cBitmap) != Qtrue) {
+
+	auto& source = rb::Get<TextureElement>(self);
+	auto& destination = rb::GetSafeOr<TextureElement>(other, rb_cBitmap, [&]() {
 		rb_raise(rb_eTypeError, "Cannot clone %s into Bitmap.", RSTRING_PTR(rb_class_name(CLASS_OF(other))));
+	});
+
+	if (destination.instance() == nullptr) {
+		rb_raise(rb_eTypeError, "Cannot clone into an empty Bitmap.");
 		return self;
 	}
 
-	CgssInstance<cgss::Texture>* source;
-	CgssInstance<cgss::Texture>* destination;
-	Data_Get_Struct(self, CgssInstance<cgss::Texture>, source);
-	Data_Get_Struct(other, CgssInstance<cgss::Texture>, destination);
-
-	if (source == nullptr || source->instance() == nullptr) {
-		rb_raise(rb_eRGSSError, "Disposed Bitmap.");
-	}
-	*(destination->instance()) = (*source)->clone();
+	*destination.instance() = source->clone();
 	return self;
 }
 
 VALUE rb_Bitmap_Dispose(VALUE self) {
-	auto& bitmap = rb::Get<CgssInstance<cgss::Texture>>(self);
+	// LOLNOPE
+	//auto& bitmap = rb::Get<TextureElement>(self);
 	//bitmap->dispose();
 	return Qnil;
 }
 
 VALUE rb_Bitmap_Width(VALUE self) {
-	auto& bitmap = rb::Get<CgssInstance<cgss::Texture>>(self);
+	auto& bitmap = rb::Get<TextureElement>(self);
 	const auto size = bitmap->getSize();
 	return rb_int2inum(size.x);
 }
 
 VALUE rb_Bitmap_Height(VALUE self) {
-	auto& bitmap = rb::Get<CgssInstance<cgss::Texture>>(self);
+	auto& bitmap = rb::Get<TextureElement>(self);
 	const auto size = bitmap->getSize();
 	return rb_int2inum(size.y);
 }
 
 VALUE rb_Bitmap_Rect(VALUE self) {
-	auto& bitmap = rb::Get<CgssInstance<cgss::Texture>>(self);
+	auto& bitmap = rb::Get<TextureElement>(self);
 	const auto size = bitmap->getSize();
 	VALUE argv[4] = {LONG2FIX(0), LONG2FIX(0), rb_int2inum(size.x), rb_int2inum(size.y)};
 	return rb_class_new_instance(4, argv, rb_cRect);
 }
 
 VALUE rb_Bitmap_Update(VALUE self) {
-	auto& bitmap = rb::Get<CgssInstance<cgss::Texture>>(self);
+	auto& bitmap = rb::Get<TextureElement>(self);
 	bitmap->update();
 	return self;
 }
 
 VALUE rb_Bitmap_blt(VALUE self, VALUE x, VALUE y, VALUE src_bitmap, VALUE rect) {
-	auto& bitmap = rb::Get<CgssInstance<cgss::Texture>>(self);
-	
-	if(rb_obj_is_kind_of(rect, rb_cRect) != Qtrue) {
-		rb_raise(rb_eTypeError, "Expected Rect got %s.", RSTRING_PTR(rb_class_name(CLASS_OF(rect))));
-		return Qnil;
-	}
+	auto& bitmap = rb::Get<TextureElement>(self);
+	auto& s_rect = rb::GetSafe<CRect_Element>(rect, rb_cRect);
 
-	CRect_Element* s_rect;
-	Data_Get_Struct(rect, CRect_Element, s_rect);
-	
-	auto& s_bitmap = rb::Get<CgssInstance<cgss::Texture>>(src_bitmap);
+	auto& s_bitmap = rb::Get<TextureElement>(src_bitmap);
 	if(s_bitmap.instance() == nullptr)  {
 		rb_raise(rb_eRGSSError, "Invalid Bitmap"); 
 		return self; 
@@ -153,7 +143,7 @@ VALUE rb_Bitmap_clear_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE heig
 	rb_check_type(width, T_FIXNUM);
 	rb_check_type(height, T_FIXNUM);
 	
-	auto& bitmap = rb::Get<CgssInstance<cgss::Texture>>(self);
+	auto& bitmap = rb::Get<TextureElement>(self);
 
 	long xValue = NUM2LONG(x);
 	xValue = xValue < 0 ? 0 : xValue;
@@ -166,17 +156,13 @@ VALUE rb_Bitmap_clear_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE heig
 }
 
 VALUE rb_Bitmap_fill_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height, VALUE color) {
-	if (rb_obj_is_kind_of(color, rb_cColor) != Qtrue) {
-		return self;
-	}
 	rb_check_type(x, T_FIXNUM);
 	rb_check_type(y, T_FIXNUM);
 	rb_check_type(width, T_FIXNUM);
 	rb_check_type(height, T_FIXNUM);
-	auto& bitmap = rb::Get<CgssInstance<cgss::Texture>>(self);
 
-	sf::Color* rcolor;
-	Data_Get_Struct(color, sf::Color, rcolor);
+	auto& bitmap = rb::Get<TextureElement>(self);
+	auto& rcolor = rb::GetSafe<sf::Color>(color, rb_cColor);
 
 	long xValue = NUM2LONG(x);
 	xValue = xValue < 0 ? 0 : xValue;
@@ -184,12 +170,12 @@ VALUE rb_Bitmap_fill_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE heigh
 	long yValue = NUM2LONG(y);
 	yValue = yValue < 0 ? 0 : yValue;
 	
-	bitmap->fillRect(xValue, yValue, static_cast<unsigned int>(NUM2LONG(width)), static_cast<unsigned int>(NUM2LONG(height)), *rcolor);
+	bitmap->fillRect(xValue, yValue, static_cast<unsigned int>(NUM2LONG(width)), static_cast<unsigned int>(NUM2LONG(height)), rcolor);
 	return self;
 }
 
 VALUE rb_Bitmap_toPNG(VALUE self) {
-	auto& bitmap = rb::Get<CgssInstance<cgss::Texture>>(self);
+	auto& bitmap = rb::Get<TextureElement>(self);
 	auto saver = cgss::TextureMemoryLoader { {} };
 	bitmap->write(saver);
 	auto out = saver.stealMemory();
@@ -199,14 +185,14 @@ VALUE rb_Bitmap_toPNG(VALUE self) {
 VALUE rb_Bitmap_toPNG_file(VALUE self, VALUE filename) {
 	rb_check_type(filename, T_STRING);
 	std::string filenameValue = RSTRING_PTR(filename);
-	auto& bitmap = rb::Get<CgssInstance<cgss::Texture>>(self);
+	auto& bitmap = rb::Get<TextureElement>(self);
 	auto saver = cgss::TextureFileLoader { std::move(filenameValue) };
 	bitmap->write(saver);
 	return saver.writtenStatus() ? Qtrue : Qfalse;
 }
 
 sf::Texture& rb_Bitmap_getTexture(VALUE self) {
-	auto& bitmap = rb::Get<CgssInstance<cgss::Texture>>(self);
+	auto& bitmap = rb::Get<TextureElement>(self);
 	return bitmap->getTexture();
 }
 
