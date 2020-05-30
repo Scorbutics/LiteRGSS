@@ -51,6 +51,11 @@ public:
 		return T::create(m_gameWindow, std::forward<Args>(args)...);
 	}
 
+	template <class T, class ... Args>
+	T addView(Args&& ... args) {
+		return m_gameWindow.template addView<T>(m_gameWindow, std::forward<Args>(args)...);
+	}
+
 	std::unique_ptr<sf::Shader> createUniqueShader() const;
 	sf::Shader* createNewShader() const;
 	bool areShadersEnabled() const;

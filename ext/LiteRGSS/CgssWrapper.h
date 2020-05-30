@@ -8,7 +8,7 @@ template <class T, template <class> class ContainerPtr>
 class CgssWrapper {
 public:
     CgssWrapper() = default;
-    ~CgssWrapper() = default;
+    virtual ~CgssWrapper() = default;
 
     template <class ... Args>
     void init(Args&& ... args) {

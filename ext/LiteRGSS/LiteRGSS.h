@@ -12,8 +12,6 @@
 #include "Tone.h"
 #include "Rect.h"
 #include "Image.h"
-#include "Viewport.h"
-#include "Sprite.h"
 #include "Fonts.h"
 #include "Text.h"
 #include "Input.h"

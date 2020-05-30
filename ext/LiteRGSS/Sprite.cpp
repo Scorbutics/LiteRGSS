@@ -8,46 +8,9 @@
 #include "RectangleElement.h"
 #include "TextureElement.h"
 #include "SpriteElement.h"
+#include "ViewportElement.h"
 
 VALUE rb_cSprite = Qnil;
-
-VALUE rb_Sprite_Initialize(int argc, VALUE* argv, VALUE self);
-VALUE rb_Sprite_Copy(VALUE self);
-VALUE rb_Sprite_Dispose(VALUE self);
-VALUE rb_Sprite_setBitmap(VALUE self, VALUE bitmap);
-VALUE rb_Sprite_getBitmap(VALUE self);
-VALUE rb_Sprite_setX(VALUE self, VALUE val);
-VALUE rb_Sprite_getX(VALUE self);
-VALUE rb_Sprite_setY(VALUE self, VALUE val);
-VALUE rb_Sprite_getY(VALUE self);
-VALUE rb_Sprite_setZ(VALUE self, VALUE val);
-VALUE rb_Sprite_getZ(VALUE self);
-VALUE rb_Sprite_setOX(VALUE self, VALUE val);
-VALUE rb_Sprite_getOX(VALUE self);
-VALUE rb_Sprite_setOY(VALUE self, VALUE val);
-VALUE rb_Sprite_getOY(VALUE self);
-VALUE rb_Sprite_setVisible(VALUE self, VALUE val);
-VALUE rb_Sprite_getVisible(VALUE self);
-VALUE rb_Sprite_setAngle(VALUE self, VALUE val);
-VALUE rb_Sprite_getAngle(VALUE self);
-VALUE rb_Sprite_setZoomX(VALUE self, VALUE val);
-VALUE rb_Sprite_getZoomX(VALUE self);
-VALUE rb_Sprite_setZoomY(VALUE self, VALUE val);
-VALUE rb_Sprite_getZoomY(VALUE self);
-VALUE rb_Sprite_setPosition(VALUE self, VALUE x, VALUE y);
-VALUE rb_Sprite_setOrigin(VALUE self, VALUE x, VALUE y);
-VALUE rb_Sprite_setZoom(VALUE self, VALUE zoom);
-VALUE rb_Sprite_setOpacity(VALUE self, VALUE val);
-VALUE rb_Sprite_getOpacity(VALUE self);
-VALUE rb_Sprite_getRect(VALUE self);
-VALUE rb_Sprite_setRect(VALUE self, VALUE val);
-VALUE rb_Sprite_DisposeFromViewport(VALUE self);
-VALUE rb_Sprite_Viewport(VALUE self);
-VALUE rb_Sprite_Index(VALUE self);
-VALUE rb_Sprite_getMirror(VALUE self);
-VALUE rb_Sprite_setMirror(VALUE self, VALUE val);
-VALUE rb_Sprite_width(VALUE self);
-VALUE rb_Sprite_height(VALUE self);
 
 template<>
 void rb::Mark<SpriteElement>(SpriteElement* spritePtr) {
@@ -68,81 +31,35 @@ void rb::Mark<SpriteElement>(SpriteElement* spritePtr) {
 	rb_gc_mark(sprite.rRect);
 }
 
-void Init_Sprite() {
-	rb_cSprite = rb_define_class_under(rb_mLiteRGSS, "Sprite", rb_cDrawable);
-	rb_define_alloc_func(rb_cSprite, rb::Alloc<SpriteElement>);
-
-	rb_define_method(rb_cSprite, "initialize", _rbf rb_Sprite_Initialize, -1);
-	rb_define_method(rb_cSprite, "dispose", _rbf rb_Sprite_Dispose, 0);
-	rb_define_method(rb_cSprite, "bitmap", _rbf rb_Sprite_getBitmap, 0);
-	rb_define_method(rb_cSprite, "bitmap=", _rbf rb_Sprite_setBitmap, 1);
-	rb_define_method(rb_cSprite, "x", _rbf rb_Sprite_getX, 0);
-	rb_define_method(rb_cSprite, "x=", _rbf rb_Sprite_setX, 1);
-	rb_define_method(rb_cSprite, "y", _rbf rb_Sprite_getY, 0);
-	rb_define_method(rb_cSprite, "y=", _rbf rb_Sprite_setY, 1);
-	rb_define_method(rb_cSprite, "z", _rbf rb_Sprite_getZ, 0);
-	rb_define_method(rb_cSprite, "z=", _rbf rb_Sprite_setZ, 1);
-	rb_define_method(rb_cSprite, "ox", _rbf rb_Sprite_getOX, 0);
-	rb_define_method(rb_cSprite, "ox=", _rbf rb_Sprite_setOX, 1);
-	rb_define_method(rb_cSprite, "oy", _rbf rb_Sprite_getOY, 0);
-	rb_define_method(rb_cSprite, "oy=", _rbf rb_Sprite_setOY, 1);
-	rb_define_method(rb_cSprite, "visible", _rbf rb_Sprite_getVisible, 0);
-	rb_define_method(rb_cSprite, "visible=", _rbf rb_Sprite_setVisible, 1);
-	rb_define_method(rb_cSprite, "angle", _rbf rb_Sprite_getAngle, 0);
-	rb_define_method(rb_cSprite, "angle=", _rbf rb_Sprite_setAngle, 1);
-	rb_define_method(rb_cSprite, "zoom_x", _rbf rb_Sprite_getZoomX, 0);
-	rb_define_method(rb_cSprite, "zoom_x=", _rbf rb_Sprite_setZoomX, 1);
-	rb_define_method(rb_cSprite, "zoom_y", _rbf rb_Sprite_getZoomY, 0);
-	rb_define_method(rb_cSprite, "zoom_y=", _rbf rb_Sprite_setZoomY, 1);
-	rb_define_method(rb_cSprite, "set_position", _rbf rb_Sprite_setPosition, 2);
-	rb_define_method(rb_cSprite, "set_origin", _rbf rb_Sprite_setOrigin, 2);
-	rb_define_method(rb_cSprite, "zoom=", _rbf rb_Sprite_setZoom, 1);
-	rb_define_method(rb_cSprite, "opacity", _rbf rb_Sprite_getOpacity, 0);
-	rb_define_method(rb_cSprite, "opacity=", _rbf rb_Sprite_setOpacity, 1);
-	rb_define_method(rb_cSprite, "src_rect", _rbf rb_Sprite_getRect, 0);
-	rb_define_method(rb_cSprite, "src_rect=", _rbf rb_Sprite_setRect, 1);
-	rb_define_method(rb_cSprite, "viewport", _rbf rb_Sprite_Viewport, 0);
-	rb_define_method(rb_cSprite, "mirror", _rbf rb_Sprite_getMirror, 0);
-	rb_define_method(rb_cSprite, "mirror=", _rbf rb_Sprite_setMirror, 1);
-	rb_define_method(rb_cSprite, "width", _rbf rb_Sprite_width, 0);
-	rb_define_method(rb_cSprite, "height", _rbf rb_Sprite_height, 0);
-	rb_define_method(rb_cSprite, "__index__", _rbf rb_Sprite_Index, 0);
-
-	rb_define_method(rb_cSprite, "clone", _rbf rb_Sprite_Copy, 0);
-	rb_define_method(rb_cSprite, "dup", _rbf rb_Sprite_Copy, 0);
-}
-
 VALUE rb_Sprite_Initialize(int argc, VALUE* argv, VALUE self) {
 	auto& sprite = rb::Get<SpriteElement>(self);
 
-	//TODO
-	/*
 	// If a viewport was specified 
-	if(argc == 1 && rb_obj_is_kind_of(argv[0], rb_cViewport) == Qtrue)
-	{
-		CViewport_Element* viewport;
-		Data_Get_Struct(argv[0], CViewport_Element, viewport);
-		viewport->add(sprite);
+	if(argc == 1 && rb_obj_is_kind_of(argv[0], rb_cViewport) == Qtrue) {
+		auto& viewport = rb::Get<ViewportElement>(argv[0]);		
+		if (viewport.instance() == nullptr) {
+			rb_raise(rb_eRGSSError, "Invalid viewport provided to instanciate a Sprite.");
+			return Qnil;
+		}
+		sprite.init(cgss::Sprite::create(*viewport.instance()));
 		sprite.rViewport = argv[0];
 	}
+	/*
 	// If a window is specified 
 	else if (argc == 1 && rb_obj_is_kind_of(argv[0], rb_cWindow) == Qtrue)
 	{
+		//TODO
 		auto& window = rb::GetSafe<CWindow_Element>(argv[0], rb_cWindow);
 		window.add(sprite);
 		sprite.rViewport = argv[0];
 		VALUE opacity = LONG2NUM(NUM2LONG(window.rOpacity) * NUM2LONG(window.rBackOpacity) / 255);
 		rb_Sprite_setOpacity(self, opacity);
 	}
+	*/
 	// Otherwise
-	else
-	{
-	*/
+	else {
 		sprite.init(CGraphics::Get().add<cgss::Sprite>());
-		//sprite.rViewport = Qnil;
-	/*
-	}
-	*/
+	}	
 
 	/* Initializing Instance variables */
 	return self;
@@ -156,14 +73,16 @@ VALUE rb_Sprite_Copy(VALUE self) {
 VALUE rb_Sprite_Dispose(VALUE self) {
 	auto& sprite = rb::Get<SpriteElement>(self);
 	sprite->dispose();
+	sprite.rViewport = Qnil;
+	sprite.rRect = Qnil;
+	sprite.rBitmap = Qnil;
+	LOG("[Sprite] Disposed");
 	return Qnil;
 }
 
 VALUE rb_Sprite_setBitmap(VALUE self, VALUE bitmap) {
 	auto& sprite = rb::Get<SpriteElement>(self);
 	
-	LOG("[Sprite] Setting bitmap");
-
 	if (bitmap == Qnil) {
 		sprite->setVisible(false);
 		sprite.rBitmap = bitmap;
@@ -413,4 +332,48 @@ VALUE rb_Sprite_width(VALUE self) {
 VALUE rb_Sprite_height(VALUE self) {
 	VALUE rc = rb_Sprite_getRect(self);
 	return rb_Rect_getHeight(rc);
+}
+
+void Init_Sprite() {
+	rb_cSprite = rb_define_class_under(rb_mLiteRGSS, "Sprite", rb_cDrawable);
+	rb_define_alloc_func(rb_cSprite, rb::Alloc<SpriteElement>);
+
+	rb_define_method(rb_cSprite, "initialize", _rbf rb_Sprite_Initialize, -1);
+	rb_define_method(rb_cSprite, "dispose", _rbf rb_Sprite_Dispose, 0);
+	rb_define_method(rb_cSprite, "bitmap", _rbf rb_Sprite_getBitmap, 0);
+	rb_define_method(rb_cSprite, "bitmap=", _rbf rb_Sprite_setBitmap, 1);
+	rb_define_method(rb_cSprite, "x", _rbf rb_Sprite_getX, 0);
+	rb_define_method(rb_cSprite, "x=", _rbf rb_Sprite_setX, 1);
+	rb_define_method(rb_cSprite, "y", _rbf rb_Sprite_getY, 0);
+	rb_define_method(rb_cSprite, "y=", _rbf rb_Sprite_setY, 1);
+	rb_define_method(rb_cSprite, "z", _rbf rb_Sprite_getZ, 0);
+	rb_define_method(rb_cSprite, "z=", _rbf rb_Sprite_setZ, 1);
+	rb_define_method(rb_cSprite, "ox", _rbf rb_Sprite_getOX, 0);
+	rb_define_method(rb_cSprite, "ox=", _rbf rb_Sprite_setOX, 1);
+	rb_define_method(rb_cSprite, "oy", _rbf rb_Sprite_getOY, 0);
+	rb_define_method(rb_cSprite, "oy=", _rbf rb_Sprite_setOY, 1);
+	rb_define_method(rb_cSprite, "visible", _rbf rb_Sprite_getVisible, 0);
+	rb_define_method(rb_cSprite, "visible=", _rbf rb_Sprite_setVisible, 1);
+	rb_define_method(rb_cSprite, "angle", _rbf rb_Sprite_getAngle, 0);
+	rb_define_method(rb_cSprite, "angle=", _rbf rb_Sprite_setAngle, 1);
+	rb_define_method(rb_cSprite, "zoom_x", _rbf rb_Sprite_getZoomX, 0);
+	rb_define_method(rb_cSprite, "zoom_x=", _rbf rb_Sprite_setZoomX, 1);
+	rb_define_method(rb_cSprite, "zoom_y", _rbf rb_Sprite_getZoomY, 0);
+	rb_define_method(rb_cSprite, "zoom_y=", _rbf rb_Sprite_setZoomY, 1);
+	rb_define_method(rb_cSprite, "set_position", _rbf rb_Sprite_setPosition, 2);
+	rb_define_method(rb_cSprite, "set_origin", _rbf rb_Sprite_setOrigin, 2);
+	rb_define_method(rb_cSprite, "zoom=", _rbf rb_Sprite_setZoom, 1);
+	rb_define_method(rb_cSprite, "opacity", _rbf rb_Sprite_getOpacity, 0);
+	rb_define_method(rb_cSprite, "opacity=", _rbf rb_Sprite_setOpacity, 1);
+	rb_define_method(rb_cSprite, "src_rect", _rbf rb_Sprite_getRect, 0);
+	rb_define_method(rb_cSprite, "src_rect=", _rbf rb_Sprite_setRect, 1);
+	rb_define_method(rb_cSprite, "viewport", _rbf rb_Sprite_Viewport, 0);
+	rb_define_method(rb_cSprite, "mirror", _rbf rb_Sprite_getMirror, 0);
+	rb_define_method(rb_cSprite, "mirror=", _rbf rb_Sprite_setMirror, 1);
+	rb_define_method(rb_cSprite, "width", _rbf rb_Sprite_width, 0);
+	rb_define_method(rb_cSprite, "height", _rbf rb_Sprite_height, 0);
+	rb_define_method(rb_cSprite, "__index__", _rbf rb_Sprite_Index, 0);
+
+	rb_define_method(rb_cSprite, "clone", _rbf rb_Sprite_Copy, 0);
+	rb_define_method(rb_cSprite, "dup", _rbf rb_Sprite_Copy, 0);
 }
