@@ -451,7 +451,7 @@ VALUE rb_Window_Copy(VALUE self) {
 }
 
 void Init_Window() {
-	rb_cWindow = rb_define_class_under(rb_mLiteRGSS, "framedView", rb_cDrawable);
+	rb_cWindow = rb_define_class_under(rb_mLiteRGSS, "window", rb_cDrawable);
 	rb_define_alloc_func(rb_cWindow, rb::Alloc<FramedViewElement>);
 
 	rb_define_method(rb_cWindow, "initialize", _rbf rb_Window_Initialize, -1);
