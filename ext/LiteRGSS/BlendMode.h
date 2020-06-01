@@ -1,21 +1,9 @@
 #ifndef BlendMode_H
 #define BlendMode_H
-#include "rbAdapter.h"
 
-VALUE rb_BlendMode_setColorSrcFactor(VALUE self, VALUE val);
-VALUE rb_BlendMode_getColorSrcFactor(VALUE self);
-VALUE rb_BlendMode_setColorDestFactor(VALUE self, VALUE val);
-VALUE rb_BlendMode_getColorDestFactor(VALUE self);
-VALUE rb_BlendMode_setAlphaSrcFactor(VALUE self, VALUE val);
-VALUE rb_BlendMode_getAlphaSrcFactor(VALUE self);
-VALUE rb_BlendMode_setAlphaDestFactor(VALUE self, VALUE val);
-VALUE rb_BlendMode_getAlphaDestFactor(VALUE self);
-VALUE rb_BlendMode_setColorEquation(VALUE self, VALUE val);
-VALUE rb_BlendMode_getColorEquation(VALUE self);
-VALUE rb_BlendMode_setAlphaEquation(VALUE self, VALUE val);
-VALUE rb_BlendMode_getAlphaEquation(VALUE self);
-VALUE rb_BlendMode_setBlendType(VALUE self, VALUE val);
-VALUE rb_BlendMode_getBlendType(VALUE self);
-VALUE rb_BlendMode_Copy(VALUE self);
+#include "RubyValue.h"
+
+void Init_BlendMode();
+extern VALUE rb_cBlendMode;
 
 #endif

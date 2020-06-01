@@ -1,4 +1,8 @@
-#ifndef L_WINDOW_HEADER
-#define L_WINDOW_HEADER
+#ifndef Window_H
+#define Window_H
 
-#endif // !L_WINDOW_HEADER
+#include "RubyValue.h"
+extern VALUE rb_cWindow;
+void Init_Window();
+
+#endif

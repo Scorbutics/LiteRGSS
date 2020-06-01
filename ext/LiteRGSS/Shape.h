@@ -1,8 +1,9 @@
-#ifndef L_SHAPE_HEADER
-#define L_SHAPE_HEADER
+#ifndef Shape_H
+#define Shape_H
 
-VALUE rb_Shape_Copy(VALUE self);
+#include "RubyValue.h"
 
-VALUE rb_Shape_DisposeFromViewport(VALUE self);
+extern VALUE rb_cShape;
+void Init_Shape();
 
 #endif

@@ -1,6 +1,8 @@
-#include "LiteRGSS.h"
 #include <SFML/Graphics/Font.hpp>
+#include "LiteRGSS.h"
 #include "common.h"
+#include "Fonts.h"
+#include "Color.h"
 
 VALUE rb_mFonts = Qnil;
 

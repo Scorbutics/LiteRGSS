@@ -1,9 +1,12 @@
+#include "LiteRGSS.h"
 #include "Text.h"
 #include "common.h"
 #include "rbAdapter.h"
 #include "Fonts.h"
 #include "CText_Element.h"
 #include "GraphicsSingleton.h"
+#include "Drawable_Disposable.h"
+#include "Color.h"
 
 void rb_Text_Load_Font(CText_Element &text, VALUE self, VALUE fontid, VALUE colorid, VALUE sizeid);
 

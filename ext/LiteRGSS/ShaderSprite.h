@@ -1,4 +1,9 @@
-#ifndef L_SHADER_SPRITE_HEADER
-#define L_SHADER_SPRITE_HEADER
+#ifndef ShaderSprite_H
+#define ShaderSprite_H
+
+#include "RubyValue.h"
+
+extern VALUE rb_cShaderSprite;
+void Init_ShaderSprite();
 
 #endif

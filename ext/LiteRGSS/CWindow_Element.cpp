@@ -4,8 +4,8 @@
 #include "CViewport_Element.h"
 #include "CWindow_Element.h"
 #include "GraphicsSingleton.h"
+#include "Rect.h"
 #include "CRect_Element.h"
-#include <iostream>
 
 CWindow_Element::CWindow_Element()
 {

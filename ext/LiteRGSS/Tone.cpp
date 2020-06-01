@@ -1,6 +1,6 @@
+#include "LiteRGSS.h"
 #include "Tone.h"
 #include "rbAdapter.h"
-#include "ruby_common.h"
 #include "common.h"
 #include "CTone_Element.h"
 

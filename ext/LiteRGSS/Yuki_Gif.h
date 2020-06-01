@@ -1,7 +1,8 @@
-#ifndef YUKI_GIF_H
-#define YUKI_GIF_H
+#ifndef Yuki_Gif_H
+#define Yuki_Gif_H
 
+#include "RubyValue.h"
+extern VALUE rb_cYukiGifReader;
+void Init_YukiGifReader();
 
-
-
-#endif // !YUKI_GIF_H
+#endif

@@ -1,10 +1,11 @@
-#include "ruby_common.h"
+#include <LiteCGSS/Graphics/Loaders/TextureLoader.h>
+#include "LiteRGSS.h"
 #include "common.h"
 #include "log.h"
 #include "rbAdapter.h"
 
-#include "Graphics/Loaders/TextureLoader.h"
-
+#include "Color.h"
+#include "Drawable_Disposable.h"
 #include "Texture_Bitmap.h"
 #include "GraphicsSingleton.h"
 #include "Rect.h"

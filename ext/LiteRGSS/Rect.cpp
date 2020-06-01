@@ -1,3 +1,4 @@
+#include "LiteRGSS.h"
 #include "rbAdapter.h"
 #include "Rect.h"
 

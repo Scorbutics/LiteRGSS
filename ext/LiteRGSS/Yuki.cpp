@@ -1,8 +1,7 @@
-#include "Yuki.h"
+#include <string>
 #include <SFML/System/String.hpp>
 #include <SFML/Window/Clipboard.hpp>
-#include <string>
-#include "ruby_common.h"
+#include "Yuki.h"
 
 VALUE rb_mYuki = Qnil;
 

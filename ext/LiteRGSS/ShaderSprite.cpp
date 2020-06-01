@@ -1,7 +1,10 @@
+#include <SFML/Graphics/RenderStates.hpp>
 #include "LiteRGSS.h"
 #include "rbAdapter.h"
 #include "CShaderSprite_Element.h"
-#include <SFML/Graphics/RenderStates.hpp>
+#include "Sprite.h"
+#include "BlendMode.h"
+#include "Shader.h"
 
 VALUE rb_cShaderSprite = Qnil;
 

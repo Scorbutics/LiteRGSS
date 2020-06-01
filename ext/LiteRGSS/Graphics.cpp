@@ -1,45 +1,14 @@
-#include "ruby_common.h"
+#include "LiteRGSS.h"
 #include "common.h"
 #include "Graphics.h"
 #include "GraphicsSingleton.h"
 #include "CDrawableStack.h"
+#include "BlendMode.h"
 
 VALUE rb_mGraphics = Qnil;
 VALUE rb_eStoppedGraphics = Qnil;
 VALUE rb_eClosedWindow = Qnil;
-ID rb_iGraphicsShader = Qnil;
-
-void Init_Graphics()
-{
-	rb_mGraphics = rb_define_module_under(rb_mLiteRGSS, "Graphics");
-	/* Defining the Stopped Graphics Error */
-	rb_eStoppedGraphics = rb_define_class_under(rb_mGraphics, "StoppedError", rb_eStandardError);
-	rb_eClosedWindow = rb_define_class_under(rb_mGraphics, "ClosedWindowError", rb_eStandardError);
-	/* Defining the Graphics functions */
-	rb_define_module_function(rb_mGraphics, "start", _rbf rb_Graphics_start, 0);
-	rb_define_module_function(rb_mGraphics, "stop", _rbf rb_Graphics_stop, 0);
-	rb_define_module_function(rb_mGraphics, "update", _rbf rb_Graphics_update, 0);
-	rb_define_module_function(rb_mGraphics, "snap_to_bitmap", _rbf rb_Graphics_snap_to_bitmap, 0);
-	rb_define_module_function(rb_mGraphics, "freeze", _rbf rb_Graphics_freeze, 0);
-	rb_define_module_function(rb_mGraphics, "transition", _rbf rb_Graphics_transition, -1);
-	rb_define_module_function(rb_mGraphics, "list_resolutions", _rbf rb_Graphics_list_res, 0);
-	rb_define_module_function(rb_mGraphics, "frame_count", _rbf rb_Graphics_get_frame_count, 0);
-	rb_define_module_function(rb_mGraphics, "frame_count=", _rbf rb_Graphics_set_frame_count, 1);
-	rb_define_module_function(rb_mGraphics, "width", _rbf rb_Graphics_width, 0);
-	rb_define_module_function(rb_mGraphics, "height", _rbf rb_Graphics_height, 0);
-	rb_define_module_function(rb_mGraphics, "reload_stack", _rbf rb_Graphics_ReloadStack, 0);
-	rb_define_module_function(rb_mGraphics, "update_no_input", _rbf rb_Graphics_update_no_input_count, 0);
-	rb_define_module_function(rb_mGraphics, "update_only_input", _rbf rb_Graphics_update_only_input, 0);
-	rb_define_module_function(rb_mGraphics, "brightness", _rbf rb_Graphics_getBrightness, 0);
-	rb_define_module_function(rb_mGraphics, "brightness=", _rbf rb_Graphics_setBrightness, 1);
-	rb_define_module_function(rb_mGraphics, "shader", _rbf rb_Graphics_getShader, 0);
-	rb_define_module_function(rb_mGraphics, "shader=", _rbf rb_Graphics_setShader, 1);
-	rb_define_module_function(rb_mGraphics, "resize_screen", _rbf rb_Graphics_resize_screen, 2);
-	
-	rb_iGraphicsShader = rb_intern("@__GraphicsShader");
-	/* Store the max texture size */
-	rb_define_const(rb_mGraphics, "MAX_TEXTURE_SIZE", LONG2FIX(sf::Texture::getMaximumSize()));
-}
+static ID rb_iGraphicsShader = Qnil;
 
 VALUE rb_Graphics_start(VALUE self) {
 	GraphicsSingleton::Get().init();
@@ -64,7 +33,6 @@ VALUE rb_Graphics_transition(int argc, VALUE* argv, VALUE self) {
 	GraphicsSingleton::Get().transition(self, argc, argv);
 	return self;
 }
-
 
 VALUE rb_Graphics_list_res(VALUE self)
 {
@@ -174,3 +142,35 @@ VALUE rb_Graphics_resize_screen(VALUE self, VALUE width, VALUE height)
 	GraphicsSingleton::Get().resizeScreen(iwidth, iheight);
 	return self;
 }
+
+void Init_Graphics() {
+	rb_mGraphics = rb_define_module_under(rb_mLiteRGSS, "Graphics");
+	/* Defining the Stopped Graphics Error */
+	rb_eStoppedGraphics = rb_define_class_under(rb_mGraphics, "StoppedError", rb_eStandardError);
+	rb_eClosedWindow = rb_define_class_under(rb_mGraphics, "ClosedWindowError", rb_eStandardError);
+	/* Defining the Graphics functions */
+	rb_define_module_function(rb_mGraphics, "start", _rbf rb_Graphics_start, 0);
+	rb_define_module_function(rb_mGraphics, "stop", _rbf rb_Graphics_stop, 0);
+	rb_define_module_function(rb_mGraphics, "update", _rbf rb_Graphics_update, 0);
+	rb_define_module_function(rb_mGraphics, "snap_to_bitmap", _rbf rb_Graphics_snap_to_bitmap, 0);
+	rb_define_module_function(rb_mGraphics, "freeze", _rbf rb_Graphics_freeze, 0);
+	rb_define_module_function(rb_mGraphics, "transition", _rbf rb_Graphics_transition, -1);
+	rb_define_module_function(rb_mGraphics, "list_resolutions", _rbf rb_Graphics_list_res, 0);
+	rb_define_module_function(rb_mGraphics, "frame_count", _rbf rb_Graphics_get_frame_count, 0);
+	rb_define_module_function(rb_mGraphics, "frame_count=", _rbf rb_Graphics_set_frame_count, 1);
+	rb_define_module_function(rb_mGraphics, "width", _rbf rb_Graphics_width, 0);
+	rb_define_module_function(rb_mGraphics, "height", _rbf rb_Graphics_height, 0);
+	rb_define_module_function(rb_mGraphics, "reload_stack", _rbf rb_Graphics_ReloadStack, 0);
+	rb_define_module_function(rb_mGraphics, "update_no_input", _rbf rb_Graphics_update_no_input_count, 0);
+	rb_define_module_function(rb_mGraphics, "update_only_input", _rbf rb_Graphics_update_only_input, 0);
+	rb_define_module_function(rb_mGraphics, "brightness", _rbf rb_Graphics_getBrightness, 0);
+	rb_define_module_function(rb_mGraphics, "brightness=", _rbf rb_Graphics_setBrightness, 1);
+	rb_define_module_function(rb_mGraphics, "shader", _rbf rb_Graphics_getShader, 0);
+	rb_define_module_function(rb_mGraphics, "shader=", _rbf rb_Graphics_setShader, 1);
+	rb_define_module_function(rb_mGraphics, "resize_screen", _rbf rb_Graphics_resize_screen, 2);
+	
+	rb_iGraphicsShader = rb_intern("@__GraphicsShader");
+	/* Store the max texture size */
+	rb_define_const(rb_mGraphics, "MAX_TEXTURE_SIZE", LONG2FIX(sf::Texture::getMaximumSize()));
+}
+

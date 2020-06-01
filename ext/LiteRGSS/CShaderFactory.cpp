@@ -1,4 +1,4 @@
-#include "ruby_common.h"
+#include "RubyValue.h"
 #include "CShaderFactory.h"
 
 CShaderFactory::CShaderFactory() :

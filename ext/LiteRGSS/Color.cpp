@@ -1,5 +1,6 @@
-#include "LiteRGSS.h"
 #include <SFML/Graphics/Color.hpp>
+#include "LiteRGSS.h"
+#include "rbAdapter.h"
 #include "common.h"
 #include "Color.h"
 
@@ -7,31 +8,6 @@ VALUE rb_cColor = Qnil;
 
 template<>
 void rb::Mark<sf::Color>(sf::Color* color) {
-}
-
-void Init_Color()
-{
-	rb_cColor = rb_define_class_under(rb_mLiteRGSS, "Color", rb_cObject);
-	rb_define_alloc_func(rb_cColor, rb::Alloc<sf::Color>);
-
-	rb_define_method(rb_cColor, "initialize", _rbf rb_Color_Initialize, -1);
-	rb_define_method(rb_cColor, "set", _rbf rb_Color_Initialize, -1);
-	rb_define_method(rb_cColor, "initialize_copy", _rbf rb_Color_InitializeCopy, 1);
-	rb_define_method(rb_cColor, "red", _rbf rb_Color_getRed, 0);
-	rb_define_method(rb_cColor, "red=", _rbf rb_Color_setRed, 1);
-	rb_define_method(rb_cColor, "green", _rbf rb_Color_getGreen, 0);
-	rb_define_method(rb_cColor, "green=", _rbf rb_Color_setGreen, 1);
-	rb_define_method(rb_cColor, "blue", _rbf rb_Color_getBlue, 0);
-	rb_define_method(rb_cColor, "blue=", _rbf rb_Color_setBlue, 1);
-	rb_define_method(rb_cColor, "alpha", _rbf rb_Color_getAlpha, 0);
-	rb_define_method(rb_cColor, "alpha=", _rbf rb_Color_setAlpha, 1);
-	rb_define_method(rb_cColor, "==", _rbf rb_Color_eql, 1);
-	rb_define_method(rb_cColor, "===", _rbf rb_Color_eql, 1);
-	rb_define_method(rb_cColor, "eql?", _rbf rb_Color_eql, 1);
-	rb_define_method(rb_cColor, "to_s", _rbf rb_Color_to_s, 0);
-	rb_define_method(rb_cColor, "inspect", _rbf rb_Color_to_s, 0);
-	rb_define_method(rb_cColor, "_dump", _rbf rb_Color_Save, 1);
-	rb_define_singleton_method(rb_cColor, "_load", _rbf rb_Color_Load, 1);
 }
 
 VALUE rb_Color_Initialize(int argc, VALUE* argv, VALUE self)
@@ -163,4 +139,29 @@ VALUE rb_Color_to_s(VALUE self)
 {
 	auto& color = rb::Get<sf::Color>(self);
 	return rb_sprintf("(%d, %d, %d, %d)", color.r, color.g, color.b, color.a);
+}
+
+void Init_Color()
+{
+	rb_cColor = rb_define_class_under(rb_mLiteRGSS, "Color", rb_cObject);
+	rb_define_alloc_func(rb_cColor, rb::Alloc<sf::Color>);
+
+	rb_define_method(rb_cColor, "initialize", _rbf rb_Color_Initialize, -1);
+	rb_define_method(rb_cColor, "set", _rbf rb_Color_Initialize, -1);
+	rb_define_method(rb_cColor, "initialize_copy", _rbf rb_Color_InitializeCopy, 1);
+	rb_define_method(rb_cColor, "red", _rbf rb_Color_getRed, 0);
+	rb_define_method(rb_cColor, "red=", _rbf rb_Color_setRed, 1);
+	rb_define_method(rb_cColor, "green", _rbf rb_Color_getGreen, 0);
+	rb_define_method(rb_cColor, "green=", _rbf rb_Color_setGreen, 1);
+	rb_define_method(rb_cColor, "blue", _rbf rb_Color_getBlue, 0);
+	rb_define_method(rb_cColor, "blue=", _rbf rb_Color_setBlue, 1);
+	rb_define_method(rb_cColor, "alpha", _rbf rb_Color_getAlpha, 0);
+	rb_define_method(rb_cColor, "alpha=", _rbf rb_Color_setAlpha, 1);
+	rb_define_method(rb_cColor, "==", _rbf rb_Color_eql, 1);
+	rb_define_method(rb_cColor, "===", _rbf rb_Color_eql, 1);
+	rb_define_method(rb_cColor, "eql?", _rbf rb_Color_eql, 1);
+	rb_define_method(rb_cColor, "to_s", _rbf rb_Color_to_s, 0);
+	rb_define_method(rb_cColor, "inspect", _rbf rb_Color_to_s, 0);
+	rb_define_method(rb_cColor, "_dump", _rbf rb_Color_Save, 1);
+	rb_define_singleton_method(rb_cColor, "_load", _rbf rb_Color_Load, 1);
 }

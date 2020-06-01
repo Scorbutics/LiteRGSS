@@ -1,5 +1,5 @@
-#include "ruby_common.h"
-#include <cstdio>
+#include "RubyValue.h"
+#include "Drawable_Disposable.h"
 #include "CGraphicsRubyStack.h"
 
 extern ID rb_iElementTable;

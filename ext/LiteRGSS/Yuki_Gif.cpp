@@ -1,5 +1,7 @@
-#include "Yuki_Gif.h"
 #include <cstddef>
+#include "Yuki_Gif.h"
+#include "Yuki.h"
+
 #include "libnsgif.hpp"
 #include "Texture_Bitmap.h"
 

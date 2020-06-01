@@ -1,8 +1,13 @@
-#include "rbAdapter.h"
 #include "LiteRGSS.h"
+#include "rbAdapter.h"
 #include "lodepng.h"
 #include "Texture_Bitmap.h"
 #include "CRect_Element.h"
+#include "Drawable_Disposable.h"
+#include "Color.h"
+#include "Rect.h"
+
+#include "lodepng.h"
 
 VALUE rb_cImage = Qnil;
 

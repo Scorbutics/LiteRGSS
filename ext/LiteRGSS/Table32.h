@@ -3,6 +3,10 @@
 
 #include <cstdint>
 
+#include "RubyValue.h"
+extern VALUE rb_cTable32;
+void Init_Table32();
+
 struct rb_Table32_Struct_Header {
 	unsigned int dim = 0u;
 	unsigned int xsize = 0u;

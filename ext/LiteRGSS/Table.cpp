@@ -1,6 +1,5 @@
 #include "rbAdapter.h"
 #include "common.h"
-#include "ruby_common.h"
 #include "Table.h"
 
 VALUE rb_cTable = Qnil;

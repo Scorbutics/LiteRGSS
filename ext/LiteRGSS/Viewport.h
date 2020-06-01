@@ -1,8 +1,12 @@
 #ifndef Viewport_H
 #define Viewport_H
 
+#include <LiteCGSS/Views/Viewport.h>
 #include "CgssWrapper.h"
-#include "Views/Viewport.h"
+#include "RubyValue.h"
+
+extern VALUE rb_cViewport;
+void Init_Viewport();
 
 struct ViewportElement : 
     public CgssInstance<cgss::Viewport> {

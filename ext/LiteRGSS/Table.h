@@ -1,5 +1,10 @@
-#ifndef L_TABLE_HEADER
-#define L_TABLE_HEADER
+#ifndef Table_H
+#define Table_H
+
+#include "RubyValue.h"
+
+extern VALUE rb_cTable;
+void Init_Table();
 
 struct rb_Table_Struct_Header {
 	unsigned int dim = 0u;

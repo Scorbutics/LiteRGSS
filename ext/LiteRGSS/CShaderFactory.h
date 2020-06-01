@@ -1,8 +1,8 @@
-#ifndef CSHADER_FACTORY_H
-#define CSHADER_FACTORY_H
+#ifndef CShaderFactory_H
+#define CShaderFactory_H
 
 #include <memory>
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Shader.hpp>
 
 class CShaderFactory {   
 public:

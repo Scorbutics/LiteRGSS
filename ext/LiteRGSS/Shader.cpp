@@ -2,6 +2,9 @@
 #include "CTone_Element.h"
 #include "GraphicsSingleton.h"
 #include "Texture_Bitmap.h"
+#include "BlendMode.h"
+#include "Tone.h"
+#include "Color.h"
 
 VALUE rb_cShader = Qnil;
 

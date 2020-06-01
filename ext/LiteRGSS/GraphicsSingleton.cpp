@@ -1,12 +1,12 @@
 #include <cassert>
-#include "ruby_common.h"
 #define LITERGSS_INCLUDE_RUBY_THREAD
-#include "ruby/thread.h"
+#include "RubyValue.h"
 #include "log.h"
 #include "common.h"
 
 #include "Input.h"
 
+#include "Graphics.h"
 #include "GraphicsSingleton.h"
 
 GraphicsSingleton::GraphicsSingleton() : 

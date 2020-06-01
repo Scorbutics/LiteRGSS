@@ -1,4 +1,8 @@
-#ifndef L_TEXT_HEADER
-#define L_TEXT_HEADER
+#ifndef Text_H
+#define Text_H
+
+#include "RubyValue.h"
+extern VALUE rb_cText;
+void Init_Text();
 
 #endif

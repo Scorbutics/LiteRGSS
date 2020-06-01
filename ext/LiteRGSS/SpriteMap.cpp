@@ -1,8 +1,13 @@
+#include "LiteRGSS.h"
 #include "SpriteMap.h"
 #include "rbAdapter.h"
 #include "CSpriteMap_Element.h"
 #include "Texture_Bitmap.h"
 #include "CRect_Element.h"
+#include "Sprite.h"
+#include "Drawable_Disposable.h"
+#include "Rect.h"
+#include "Viewport.h"
 
 VALUE rb_cSpriteMap = Qnil;
 

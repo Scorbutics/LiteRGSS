@@ -7,3 +7,5 @@
 #endif
 
 #pragma GCC diagnostic pop
+
+#define _rbf (VALUE (*)(...))

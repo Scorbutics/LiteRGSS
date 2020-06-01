@@ -1,10 +1,12 @@
+#include "LiteRGSS.h"
+#include "Drawable_Disposable.h"
 #include "Texture_Bitmap.h"
 #include "rbAdapter.h"
 #include "common.h"
-#include "ruby_common.h"
 #include "CWindow_Element.h"
 #include "CRect_Element.h"
 #include "GraphicsSingleton.h"
+#include "Rect.h"
 
 VALUE rb_cWindow = Qnil;
 

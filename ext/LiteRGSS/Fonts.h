@@ -10,4 +10,8 @@ VALUE rb_Fonts_get_fill_color(VALUE self, VALUE id);
 VALUE rb_Fonts_get_default_size(VALUE self, VALUE id);
 sf::Font& rb_Fonts_get_font(unsigned long id);
 
+extern VALUE rb_mFonts;
+
+void Init_Fonts();
+
 #endif

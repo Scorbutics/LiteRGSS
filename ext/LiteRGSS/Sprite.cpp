@@ -1,3 +1,4 @@
+#include "LiteRGSS.h"
 #include "log.h"
 #include "rbAdapter.h"
 #include "common.h"
@@ -7,6 +8,7 @@
 #include "Rect.h"
 #include "Texture_Bitmap.h"
 #include "Viewport.h"
+#include "Drawable_Disposable.h"
 
 VALUE rb_cSprite = Qnil;
 

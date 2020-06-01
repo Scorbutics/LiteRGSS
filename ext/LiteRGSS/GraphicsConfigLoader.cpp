@@ -1,4 +1,5 @@
-#include "ruby_common.h"
+#include "LiteRGSS.h"
+#include "RubyValue.h"
 #include "common.h"
 #include "GraphicsConfigLoader.h"
 

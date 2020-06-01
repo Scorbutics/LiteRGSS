@@ -1,8 +1,12 @@
 #ifndef Sprite_H
 #define Sprite_H
 
+#include <LiteCGSS/Graphics/Sprite.h>
 #include "CgssWrapper.h"
-#include "Graphics/Sprite.h"
+#include "RubyValue.h"
+
+extern VALUE rb_cSprite;
+void Init_Sprite();
 
 struct SpriteElement : 
     public CgssInstance<cgss::Sprite> {

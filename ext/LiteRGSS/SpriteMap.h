@@ -1,4 +1,8 @@
-#ifndef L_SPRITE_MAP_HEADER
-#define L_SPRITE_MAP_HEADER
+#ifndef SpriteMap_H
+#define SpriteMap_H
+
+#include "RubyValue.h"
+extern VALUE rb_cSpriteMap;
+void Init_SpriteMap();
 
 #endif

@@ -4,6 +4,12 @@
 #include "CRect_Element.h"
 #include "CShape_Element.h"
 #include "Texture_Bitmap.h"
+#include "Shader.h"
+#include "Drawable_Disposable.h"
+#include "BlendMode.h"
+#include "Color.h"
+#include "Rect.h"
+#include "Viewport.h"
 
 VALUE rb_cShape = Qnil;
 ID rb_iShapeCircle = Qnil;
