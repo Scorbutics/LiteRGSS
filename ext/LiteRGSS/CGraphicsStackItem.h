@@ -1,6 +1,6 @@
 #ifndef CGraphicsStackItem_H
 #define CGraphicsStackItem_H
-#include "ruby.h" //Fix Windows compilation
+#include "RubyValue.h"
 #include "CGraphicsCppStackItem.h"
 #include "CGraphicsRubyStackItem.h"
 

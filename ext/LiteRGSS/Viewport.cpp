@@ -1,10 +1,9 @@
-#include "CGraphics.h"
+#include "GraphicsSingleton.h"
 #include "common.h"
 #include "rbAdapter.h"
-#include "Common/Rectangle.h"
 
-#include "ViewportElement.h"
-#include "RectangleElement.h"
+#include "Viewport.h"
+#include "Rect.h"
 
 VALUE rb_cViewport = Qnil;
 
@@ -22,15 +21,15 @@ void rb::Mark<ViewportElement>(ViewportElement* viewport) {
 	rb_gc_mark(viewport->rRenderState);
 }
 
-VALUE rb_Viewport_Copy(VALUE self) {
+static VALUE rb_Viewport_Copy(VALUE self) {
 	rb_raise(rb_eRGSSError, "Viewports can not be cloned or duplicated.");
 	return self;
 }
 
-VALUE rb_Viewport_Initialize(int argc, VALUE* argv, VALUE self) {
+static VALUE rb_Viewport_Initialize(int argc, VALUE* argv, VALUE self) {
 	/* Viewport setting */
 	auto& viewport = rb::Get<ViewportElement>(self);
-	viewport.init(CGraphics::Get().addView<cgss::Viewport>());
+	viewport.init(GraphicsSingleton::Get().addView<cgss::Viewport>());
 
 	/* Creating rect */
 	VALUE rc = rb_class_new_instance(argc, argv, rb_cRect);
@@ -43,40 +42,40 @@ VALUE rb_Viewport_Initialize(int argc, VALUE* argv, VALUE self) {
 }
 
 
-VALUE rb_Viewport_Dispose(VALUE self) {
+static VALUE rb_Viewport_Dispose(VALUE self) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	viewport->dispose();
 	return Qnil;
 }
 
-VALUE rb_Viewport_getOX(VALUE self) {
+static VALUE rb_Viewport_getOX(VALUE self) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	return rb_int2inum(viewport->getOx());
 }
 
-VALUE rb_Viewport_setOX(VALUE self, VALUE val) {
+static VALUE rb_Viewport_setOX(VALUE self, VALUE val) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	viewport->moveOrigin(rb_num2long(val), viewport->getOy());
 	return val;
 }
 
-VALUE rb_Viewport_getOY(VALUE self) {
+static VALUE rb_Viewport_getOY(VALUE self) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	return rb_int2inum(viewport->getOy());
 }
 
-VALUE rb_Viewport_setOY(VALUE self, VALUE val) {
+static VALUE rb_Viewport_setOY(VALUE self, VALUE val) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	viewport->moveOrigin(viewport->getOx(), rb_num2long(val));
 	return val;
 }
 
-VALUE rb_Viewport_getRect(VALUE self) {
+static VALUE rb_Viewport_getRect(VALUE self) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	return viewport.rRect;
 }
 
-VALUE rb_Viewport_setRect(VALUE self, VALUE val) {
+static VALUE rb_Viewport_setRect(VALUE self, VALUE val) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 
 	if (!rb::CheckType<RectangleElement>(self, rb_cRect).empty()) {
@@ -97,7 +96,7 @@ VALUE rb_Viewport_setRect(VALUE self, VALUE val) {
 
 }
 
-VALUE rb_Viewport_getTone(VALUE self) {
+static VALUE rb_Viewport_getTone(VALUE self) {
 	/*auto& viewport = rb::Get<CViewport_Element>(self);
 	VALUE tn = viewport.rTone;
 	if (!NIL_P(tn))
@@ -117,7 +116,7 @@ VALUE rb_Viewport_getTone(VALUE self) {
 	return Qnil;
 }
 
-VALUE rb_Viewport_setTone(VALUE self, VALUE val) {
+static VALUE rb_Viewport_setTone(VALUE self, VALUE val) {
 	/*
 	VALUE tn = rb_Viewport_getTone(self);
 	if (RDATA(tn)->data == nullptr) { return Qnil; }
@@ -141,7 +140,7 @@ VALUE rb_Viewport_setTone(VALUE self, VALUE val) {
 	return val;
 }
 
-VALUE rb_Viewport_getColor(VALUE self) {
+static VALUE rb_Viewport_getColor(VALUE self) {
 	/*
 	VALUE tn = rb_Viewport_getTone(self);
 	auto& viewport = rb::Get<ViewportElement>(self);
@@ -150,7 +149,7 @@ VALUE rb_Viewport_getColor(VALUE self) {
 	return Qnil;
 }
 
-VALUE rb_Viewport_setColor(VALUE self, VALUE val) {
+static VALUE rb_Viewport_setColor(VALUE self, VALUE val) {
 	/*
 	VALUE tn = rb_Viewport_getTone(self);
 	auto& viewport = rb::Get<ViewportElement>(self);
@@ -163,29 +162,29 @@ VALUE rb_Viewport_setColor(VALUE self, VALUE val) {
 	return self;
 }
 
-VALUE rb_Viewport_getVisible(VALUE self) {
+static VALUE rb_Viewport_getVisible(VALUE self) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	return viewport->isVisible() ? Qtrue : Qfalse;
 }
 
-VALUE rb_Viewport_setVisible(VALUE self, VALUE val) {
+static VALUE rb_Viewport_setVisible(VALUE self, VALUE val) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	viewport->setVisible(RTEST(val));
 	return self;
 }
 
-VALUE rb_Viewport_Update(VALUE self) {
+static VALUE rb_Viewport_Update(VALUE self) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	// ????
 	return self;
 }
 
-VALUE rb_Viewport_getZ(VALUE self) {
+static VALUE rb_Viewport_getZ(VALUE self) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	return viewport.rZ;
 }
 
-VALUE rb_Viewport_setZ(VALUE self, VALUE val) {
+static VALUE rb_Viewport_setZ(VALUE self, VALUE val) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	const auto z = rb_num2long(val);
 	viewport->setZ(z);
@@ -193,12 +192,12 @@ VALUE rb_Viewport_setZ(VALUE self, VALUE val) {
 	return self;
 }
 
-VALUE rb_Viewport_getAngle(VALUE self) {
+static VALUE rb_Viewport_getAngle(VALUE self) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	return viewport.rAngle;
 }
 
-VALUE rb_Viewport_setAngle(VALUE self, VALUE val) {
+static VALUE rb_Viewport_setAngle(VALUE self, VALUE val) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	const auto angle = NUM2LONG(val) % 360;
 	viewport.rAngle = LONG2NUM(angle);
@@ -206,12 +205,12 @@ VALUE rb_Viewport_setAngle(VALUE self, VALUE val) {
 	return self;
 }
 
-VALUE rb_Viewport_getZoom(VALUE self) {
+static VALUE rb_Viewport_getZoom(VALUE self) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	return viewport.rZoom;
 }
 
-VALUE rb_Viewport_setZoom(VALUE self, VALUE val) {
+static VALUE rb_Viewport_setZoom(VALUE self, VALUE val) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	const auto zoom = 1.0 / normalize_double(NUM2DBL(val), 0.001, 1000.0);
 	viewport.rZoom = DBL2NUM(zoom);
@@ -219,12 +218,12 @@ VALUE rb_Viewport_setZoom(VALUE self, VALUE val) {
 	return self;
 }
 
-VALUE rb_Viewport_getRenderState(VALUE self) {
+static VALUE rb_Viewport_getRenderState(VALUE self) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	return viewport.rRenderState;
 }
 
-VALUE rb_Viewport_setRenderState(VALUE self, VALUE val) {
+static VALUE rb_Viewport_setRenderState(VALUE self, VALUE val) {
 	//TODO
 	/*
 	sf::RenderStates* render_state;
@@ -246,14 +245,14 @@ VALUE rb_Viewport_setRenderState(VALUE self, VALUE val) {
 	return self;
 }
 
-VALUE rb_Viewport_ReloadStack(VALUE self) {
+static VALUE rb_Viewport_ReloadStack(VALUE self) {
 	// Deprecated
 	//auto& viewport = rb::Get<ViewportElement>(self);
 	//viewport.syncStackCppFromRuby();
 	return self;
 }
 
-VALUE rb_Viewport_Index(VALUE self) {
+static VALUE rb_Viewport_Index(VALUE self) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	return rb_uint2inum(viewport->getZ().index);
 }

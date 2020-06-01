@@ -1,6 +1,7 @@
-#include "LiteRGSS.h"
-#include "Bitmap.h"
-#include "CBitmap_Element.h"
+#include "SpriteMap.h"
+#include "rbAdapter.h"
+#include "CSpriteMap_Element.h"
+#include "Texture_Bitmap.h"
 #include "CRect_Element.h"
 
 VALUE rb_cSpriteMap = Qnil;
@@ -19,37 +20,6 @@ void rb::Mark<CSpriteMap_Element>(CSpriteMap_Element* sprite)
 	rb_gc_mark(sprite->rScale);
 }
 
-void Init_SpriteMap()
-{
-	rb_cSpriteMap = rb_define_class_under(rb_mLiteRGSS, "SpriteMap", rb_cDrawable);
-	rb_define_alloc_func(rb_cSpriteMap, rb::AllocDrawable<CSpriteMap_Element>);
-
-	rb_define_method(rb_cSpriteMap, "initialize", _rbf rb_SpriteMap_Initialize, -1);
-	rb_define_method(rb_cSpriteMap, "dispose", _rbf rb_SpriteMap_Dispose, 0);
-	rb_define_method(rb_cSpriteMap, "viewport", _rbf rb_SpriteMap_Viewport, 0);
-	rb_define_method(rb_cSpriteMap, "x", _rbf rb_SpriteMap_X, 0);
-	rb_define_method(rb_cSpriteMap, "x=", _rbf rb_SpriteMap_SetX, 1);
-	rb_define_method(rb_cSpriteMap, "y", _rbf rb_SpriteMap_Y, 0);
-	rb_define_method(rb_cSpriteMap, "y=", _rbf rb_SpriteMap_SetY, 1);
-	rb_define_method(rb_cSpriteMap, "set_position", _rbf rb_SpriteMap_SetPosition, 2);
-	rb_define_method(rb_cSpriteMap, "z", _rbf rb_SpriteMap_Z, 0);
-	rb_define_method(rb_cSpriteMap, "z=", _rbf rb_SpriteMap_SetZ, 1);
-	rb_define_method(rb_cSpriteMap, "ox", _rbf rb_SpriteMap_OX, 0);
-	rb_define_method(rb_cSpriteMap, "ox=", _rbf rb_SpriteMap_SetOX, 1);
-	rb_define_method(rb_cSpriteMap, "oy", _rbf rb_SpriteMap_OY, 0);
-	rb_define_method(rb_cSpriteMap, "oy=", _rbf rb_SpriteMap_SetOY, 1);
-	rb_define_method(rb_cSpriteMap, "tile_scale", _rbf rb_SpriteMap_TileScale, 0);
-	rb_define_method(rb_cSpriteMap, "tile_scale=", _rbf rb_SpriteMap_TileScaleSet, 1);
-	rb_define_method(rb_cSpriteMap, "set_origin", _rbf rb_SpriteMap_SetOrigin, 2);
-	rb_define_method(rb_cSpriteMap, "reset", _rbf rb_SpriteMap_Reset, 0);
-	rb_define_method(rb_cSpriteMap, "set", _rbf rb_SpriteMap_Set, -1);
-	rb_define_method(rb_cSpriteMap, "set_rect", _rbf rb_SpriteMap_SetRect, -1);
-	rb_define_method(rb_cSpriteMap, "__index__", _rbf rb_SpriteMap_index, 0);
-
-	rb_define_method(rb_cSprite, "clone", _rbf rb_SpriteMap_Copy, 0);
-	rb_define_method(rb_cSprite, "dup", _rbf rb_SpriteMap_Copy, 0);
-}
-
 VALUE rb_SpriteMap_Initialize(int argc, VALUE* argv, VALUE self)
 {
 	auto& sprite = rb::Get<CSpriteMap_Element>(self);
@@ -60,9 +30,13 @@ VALUE rb_SpriteMap_Initialize(int argc, VALUE* argv, VALUE self)
 	if (rb_obj_is_kind_of(viewport, rb_cViewport) != Qtrue)
 		rb_raise(rb_eRGSSError, "SpriteMap require viewport to be initialized.");
 	
+	//TODO
+	/*
 	auto &viewport_el = rb::Get<CViewport_Element>(viewport);
 	viewport_el.add(sprite);
 	sprite.rViewport = viewport;
+	*/
+	sprite.rViewport = Qnil;
 
 	// Sprite definition
 	sprite.define_map(NUM2ULONG(tile_width), NUM2ULONG(tile_count));
@@ -181,7 +155,8 @@ VALUE rb_SpriteMap_Set(int argc, VALUE* argv, VALUE self)
 	VALUE index, bitmap, rect;
 	rb_scan_args(argc, argv, "30", &index, &bitmap, &rect);
 	// Retreiving Bitmap
-	auto& texture = rb_Bitmap_getTexture(bitmap);
+	auto& bmp = rb::GetSafe<TextureElement>(bitmap, rb_cBitmap);
+	auto& texture = bmp->getTexture();
 	// Retreiving Rect
 	if(rb_obj_is_kind_of(rect, rb_cRect) != Qtrue)
 		rb_raise(rb_eRGSSError, "Expected Rect got %s", RSTRING_PTR(rb_class_name(CLASS_OF(rect))));
@@ -238,4 +213,35 @@ VALUE rb_SpriteMap_Copy(VALUE self)
 {
 	rb_raise(rb_eRGSSError, "SpriteMaps cannot be cloned or duplicated.");
 	return self;
+}
+
+void Init_SpriteMap()
+{
+	rb_cSpriteMap = rb_define_class_under(rb_mLiteRGSS, "SpriteMap", rb_cDrawable);
+	rb_define_alloc_func(rb_cSpriteMap, rb::AllocDrawable<CSpriteMap_Element>);
+
+	rb_define_method(rb_cSpriteMap, "initialize", _rbf rb_SpriteMap_Initialize, -1);
+	rb_define_method(rb_cSpriteMap, "dispose", _rbf rb_SpriteMap_Dispose, 0);
+	rb_define_method(rb_cSpriteMap, "viewport", _rbf rb_SpriteMap_Viewport, 0);
+	rb_define_method(rb_cSpriteMap, "x", _rbf rb_SpriteMap_X, 0);
+	rb_define_method(rb_cSpriteMap, "x=", _rbf rb_SpriteMap_SetX, 1);
+	rb_define_method(rb_cSpriteMap, "y", _rbf rb_SpriteMap_Y, 0);
+	rb_define_method(rb_cSpriteMap, "y=", _rbf rb_SpriteMap_SetY, 1);
+	rb_define_method(rb_cSpriteMap, "set_position", _rbf rb_SpriteMap_SetPosition, 2);
+	rb_define_method(rb_cSpriteMap, "z", _rbf rb_SpriteMap_Z, 0);
+	rb_define_method(rb_cSpriteMap, "z=", _rbf rb_SpriteMap_SetZ, 1);
+	rb_define_method(rb_cSpriteMap, "ox", _rbf rb_SpriteMap_OX, 0);
+	rb_define_method(rb_cSpriteMap, "ox=", _rbf rb_SpriteMap_SetOX, 1);
+	rb_define_method(rb_cSpriteMap, "oy", _rbf rb_SpriteMap_OY, 0);
+	rb_define_method(rb_cSpriteMap, "oy=", _rbf rb_SpriteMap_SetOY, 1);
+	rb_define_method(rb_cSpriteMap, "tile_scale", _rbf rb_SpriteMap_TileScale, 0);
+	rb_define_method(rb_cSpriteMap, "tile_scale=", _rbf rb_SpriteMap_TileScaleSet, 1);
+	rb_define_method(rb_cSpriteMap, "set_origin", _rbf rb_SpriteMap_SetOrigin, 2);
+	rb_define_method(rb_cSpriteMap, "reset", _rbf rb_SpriteMap_Reset, 0);
+	rb_define_method(rb_cSpriteMap, "set", _rbf rb_SpriteMap_Set, -1);
+	rb_define_method(rb_cSpriteMap, "set_rect", _rbf rb_SpriteMap_SetRect, -1);
+	rb_define_method(rb_cSpriteMap, "__index__", _rbf rb_SpriteMap_index, 0);
+
+	rb_define_method(rb_cSprite, "clone", _rbf rb_SpriteMap_Copy, 0);
+	rb_define_method(rb_cSprite, "dup", _rbf rb_SpriteMap_Copy, 0);
 }

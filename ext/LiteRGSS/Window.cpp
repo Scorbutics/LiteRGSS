@@ -1,8 +1,10 @@
-#include "LiteRGSS.h"
-#include "Bitmap.h"
-#include "CBitmap_Element.h"
+#include "Texture_Bitmap.h"
+#include "rbAdapter.h"
+#include "common.h"
+#include "ruby_common.h"
+#include "CWindow_Element.h"
 #include "CRect_Element.h"
-#include "CGraphics.h"
+#include "GraphicsSingleton.h"
 
 VALUE rb_cWindow = Qnil;
 
@@ -33,70 +35,6 @@ void rb::Mark<CWindow_Element>(CWindow_Element* window)
 	rb_gc_mark(window->rPauseY);
 	rb_gc_mark(window->rActive);
 	rb_gc_mark(window->rStretch);
-}
-
-void Init_Window()
-{
-	rb_cWindow = rb_define_class_under(rb_mLiteRGSS, "Window", rb_cDrawable);
-	rb_define_alloc_func(rb_cWindow, rb::AllocDrawable<CWindow_Element>);
-
-	rb_define_method(rb_cWindow, "initialize", _rbf rb_Window_Initialize, -1);
-	rb_define_method(rb_cWindow, "dispose", _rbf rb_Window_Dispose, 0);
-	rb_define_method(rb_cWindow, "update", _rbf rb_Window_update, 0);
-	rb_define_method(rb_cWindow, "windowskin=", _rbf rb_Window_setWindowSkin, 1);
-	rb_define_method(rb_cWindow, "windowskin", _rbf rb_Window_getWindowSkin, 0);
-	rb_define_method(rb_cWindow, "width=", _rbf rb_Window_setWidth, 1);
-	rb_define_method(rb_cWindow, "width", _rbf rb_Window_getWidth, 0);
-	rb_define_method(rb_cWindow, "height=", _rbf rb_Window_setHeight, 1);
-	rb_define_method(rb_cWindow, "height", _rbf rb_Window_getHeight, 0);
-	rb_define_method(rb_cWindow, "set_size", _rbf rb_Window_setSize, 2);
-	rb_define_method(rb_cWindow, "window_builder=", _rbf rb_Window_setWindowBuilder, 1);
-	rb_define_method(rb_cWindow, "window_builder", _rbf rb_Window_getWindowBuilder, 0);
-	rb_define_method(rb_cWindow, "x=", _rbf rb_Window_setX, 1);
-	rb_define_method(rb_cWindow, "x", _rbf rb_Window_getX, 0);
-	rb_define_method(rb_cWindow, "y=", _rbf rb_Window_setY, 1);
-	rb_define_method(rb_cWindow, "y", _rbf rb_Window_getY, 0);
-	rb_define_method(rb_cWindow, "set_position", _rbf rb_Window_setPosition, 2);
-	rb_define_method(rb_cWindow, "z=", _rbf rb_Window_setZ, 1);
-	rb_define_method(rb_cWindow, "z", _rbf rb_Window_getZ, 0);
-	rb_define_method(rb_cWindow, "ox=", _rbf rb_Window_setOX, 1);
-	rb_define_method(rb_cWindow, "ox", _rbf rb_Window_getOX, 0);
-	rb_define_method(rb_cWindow, "oy=", _rbf rb_Window_setOY, 1);
-	rb_define_method(rb_cWindow, "oy", _rbf rb_Window_getOY, 0);
-	rb_define_method(rb_cWindow, "set_origin", _rbf rb_Window_setOrigin, 2);
-	rb_define_method(rb_cWindow, "cursor_rect", _rbf rb_Window_getCursorRect, 0);
-	rb_define_method(rb_cWindow, "cursor_rect=", _rbf rb_Window_setCursorRect, 1);
-	rb_define_method(rb_cWindow, "cursorskin", _rbf rb_Window_getCursorSkin, 0);
-	rb_define_method(rb_cWindow, "cursorskin=", _rbf rb_Window_setCursorSkin, 1);
-	rb_define_method(rb_cWindow, "pauseskin", _rbf rb_Window_getPauseSkin, 0);
-	rb_define_method(rb_cWindow, "pauseskin=", _rbf rb_Window_setPauseSkin, 1);
-	rb_define_method(rb_cWindow, "pause", _rbf rb_Window_getPause, 0);
-	rb_define_method(rb_cWindow, "pause=", _rbf rb_Window_setPause, 1);
-	rb_define_method(rb_cWindow, "pause_x", _rbf rb_Window_getPauseX, 0);
-	rb_define_method(rb_cWindow, "pause_x=", _rbf rb_Window_setPauseX, 1);
-	rb_define_method(rb_cWindow, "pause_y", _rbf rb_Window_getPauseY, 0);
-	rb_define_method(rb_cWindow, "pause_y=", _rbf rb_Window_setPauseY, 1);
-	rb_define_method(rb_cWindow, "active", _rbf rb_Window_getActive, 0);
-	rb_define_method(rb_cWindow, "active=", _rbf rb_Window_setActive, 1);
-	rb_define_method(rb_cWindow, "stretch", _rbf rb_Window_getStretch, 0);
-	rb_define_method(rb_cWindow, "stretch=", _rbf rb_Window_setStretch, 1);
-	rb_define_method(rb_cWindow, "opacity", _rbf rb_Window_getOpacity, 0);
-	rb_define_method(rb_cWindow, "opacity=", _rbf rb_Window_setOpacity, 1);
-	rb_define_method(rb_cWindow, "back_opacity", _rbf rb_Window_getBackOpacity, 0);
-	rb_define_method(rb_cWindow, "back_opacity=", _rbf rb_Window_setBackOpacity, 1);
-	rb_define_method(rb_cWindow, "contents_opacity", _rbf rb_Window_getContentsOpacity, 0);
-	rb_define_method(rb_cWindow, "contents_opacity=", _rbf rb_Window_setContentsOpacity, 1);
-	rb_define_method(rb_cWindow, "rect", _rbf rb_Window_getRect, 0);
-	rb_define_method(rb_cWindow, "viewport", _rbf rb_Window_getViewport, 0);
-	rb_define_method(rb_cWindow, "visible", _rbf rb_Window_getVisible, 0);
-	rb_define_method(rb_cWindow, "visible=", _rbf rb_Window_setVisible, 1);
-	rb_define_method(rb_cWindow, "__index__", _rbf rb_Window_getIndex, 0);
-	rb_define_method(rb_cWindow, "lock", _rbf rb_Window_lock, 0);
-	rb_define_method(rb_cWindow, "unlock", _rbf rb_Window_unlock, 0);
-	rb_define_method(rb_cWindow, "locked?", _rbf rb_Window_locked, 0);
-
-	rb_define_method(rb_cWindow, "clone", _rbf rb_Window_Copy, 0);
-	rb_define_method(rb_cWindow, "dup", _rbf rb_Window_Copy, 0);
 }
 
 VALUE rb_Window_Initialize(int argc, VALUE* argv, VALUE self)
@@ -158,7 +96,8 @@ VALUE rb_Window_setWindowSkin(VALUE self, VALUE val)
 	auto& window = rb::Get<CWindow_Element>(self);
 	if (val != Qnil)
 	{
-		window.setTexture(&rb_Bitmap_getTexture(val));
+		auto& bmp = rb::GetSafe<TextureElement>(val, rb_cBitmap);
+		window.setTexture(&bmp->getTexture());
 		window.rBitmap = val;
 		window.updateVertices();
 	}
@@ -414,7 +353,8 @@ VALUE rb_Window_setCursorSkin(VALUE self, VALUE val)
 	}
 	else
 	{
-		window.getCursorSprite().setTexture(rb_Bitmap_getTexture(val));
+		auto& bmp = rb::GetSafe<TextureElement>(val, rb_cBitmap);
+		window.getCursorSprite().setTexture(bmp->getTexture());
 		window.rCursorSkin = val;
 		window.updateCursorSprite();
 	}
@@ -436,7 +376,8 @@ VALUE rb_Window_setPauseSkin(VALUE self, VALUE val)
 	}
 	else
 	{
-		window.getPauseSprite().setTexture(rb_Bitmap_getTexture(val));
+		auto& bmp = rb::GetSafe<TextureElement>(val, rb_cBitmap);
+		window.getPauseSprite().setTexture(bmp->getTexture());
 		window.rPauseSkin = val;
 		window.resetPausePosition();
 		window.updatePauseSprite();
@@ -618,3 +559,66 @@ VALUE rb_Window_Copy(VALUE self)
 	return self;
 }
 
+void Init_Window()
+{
+	rb_cWindow = rb_define_class_under(rb_mLiteRGSS, "Window", rb_cDrawable);
+	rb_define_alloc_func(rb_cWindow, rb::AllocDrawable<CWindow_Element>);
+
+	rb_define_method(rb_cWindow, "initialize", _rbf rb_Window_Initialize, -1);
+	rb_define_method(rb_cWindow, "dispose", _rbf rb_Window_Dispose, 0);
+	rb_define_method(rb_cWindow, "update", _rbf rb_Window_update, 0);
+	rb_define_method(rb_cWindow, "windowskin=", _rbf rb_Window_setWindowSkin, 1);
+	rb_define_method(rb_cWindow, "windowskin", _rbf rb_Window_getWindowSkin, 0);
+	rb_define_method(rb_cWindow, "width=", _rbf rb_Window_setWidth, 1);
+	rb_define_method(rb_cWindow, "width", _rbf rb_Window_getWidth, 0);
+	rb_define_method(rb_cWindow, "height=", _rbf rb_Window_setHeight, 1);
+	rb_define_method(rb_cWindow, "height", _rbf rb_Window_getHeight, 0);
+	rb_define_method(rb_cWindow, "set_size", _rbf rb_Window_setSize, 2);
+	rb_define_method(rb_cWindow, "window_builder=", _rbf rb_Window_setWindowBuilder, 1);
+	rb_define_method(rb_cWindow, "window_builder", _rbf rb_Window_getWindowBuilder, 0);
+	rb_define_method(rb_cWindow, "x=", _rbf rb_Window_setX, 1);
+	rb_define_method(rb_cWindow, "x", _rbf rb_Window_getX, 0);
+	rb_define_method(rb_cWindow, "y=", _rbf rb_Window_setY, 1);
+	rb_define_method(rb_cWindow, "y", _rbf rb_Window_getY, 0);
+	rb_define_method(rb_cWindow, "set_position", _rbf rb_Window_setPosition, 2);
+	rb_define_method(rb_cWindow, "z=", _rbf rb_Window_setZ, 1);
+	rb_define_method(rb_cWindow, "z", _rbf rb_Window_getZ, 0);
+	rb_define_method(rb_cWindow, "ox=", _rbf rb_Window_setOX, 1);
+	rb_define_method(rb_cWindow, "ox", _rbf rb_Window_getOX, 0);
+	rb_define_method(rb_cWindow, "oy=", _rbf rb_Window_setOY, 1);
+	rb_define_method(rb_cWindow, "oy", _rbf rb_Window_getOY, 0);
+	rb_define_method(rb_cWindow, "set_origin", _rbf rb_Window_setOrigin, 2);
+	rb_define_method(rb_cWindow, "cursor_rect", _rbf rb_Window_getCursorRect, 0);
+	rb_define_method(rb_cWindow, "cursor_rect=", _rbf rb_Window_setCursorRect, 1);
+	rb_define_method(rb_cWindow, "cursorskin", _rbf rb_Window_getCursorSkin, 0);
+	rb_define_method(rb_cWindow, "cursorskin=", _rbf rb_Window_setCursorSkin, 1);
+	rb_define_method(rb_cWindow, "pauseskin", _rbf rb_Window_getPauseSkin, 0);
+	rb_define_method(rb_cWindow, "pauseskin=", _rbf rb_Window_setPauseSkin, 1);
+	rb_define_method(rb_cWindow, "pause", _rbf rb_Window_getPause, 0);
+	rb_define_method(rb_cWindow, "pause=", _rbf rb_Window_setPause, 1);
+	rb_define_method(rb_cWindow, "pause_x", _rbf rb_Window_getPauseX, 0);
+	rb_define_method(rb_cWindow, "pause_x=", _rbf rb_Window_setPauseX, 1);
+	rb_define_method(rb_cWindow, "pause_y", _rbf rb_Window_getPauseY, 0);
+	rb_define_method(rb_cWindow, "pause_y=", _rbf rb_Window_setPauseY, 1);
+	rb_define_method(rb_cWindow, "active", _rbf rb_Window_getActive, 0);
+	rb_define_method(rb_cWindow, "active=", _rbf rb_Window_setActive, 1);
+	rb_define_method(rb_cWindow, "stretch", _rbf rb_Window_getStretch, 0);
+	rb_define_method(rb_cWindow, "stretch=", _rbf rb_Window_setStretch, 1);
+	rb_define_method(rb_cWindow, "opacity", _rbf rb_Window_getOpacity, 0);
+	rb_define_method(rb_cWindow, "opacity=", _rbf rb_Window_setOpacity, 1);
+	rb_define_method(rb_cWindow, "back_opacity", _rbf rb_Window_getBackOpacity, 0);
+	rb_define_method(rb_cWindow, "back_opacity=", _rbf rb_Window_setBackOpacity, 1);
+	rb_define_method(rb_cWindow, "contents_opacity", _rbf rb_Window_getContentsOpacity, 0);
+	rb_define_method(rb_cWindow, "contents_opacity=", _rbf rb_Window_setContentsOpacity, 1);
+	rb_define_method(rb_cWindow, "rect", _rbf rb_Window_getRect, 0);
+	rb_define_method(rb_cWindow, "viewport", _rbf rb_Window_getViewport, 0);
+	rb_define_method(rb_cWindow, "visible", _rbf rb_Window_getVisible, 0);
+	rb_define_method(rb_cWindow, "visible=", _rbf rb_Window_setVisible, 1);
+	rb_define_method(rb_cWindow, "__index__", _rbf rb_Window_getIndex, 0);
+	rb_define_method(rb_cWindow, "lock", _rbf rb_Window_lock, 0);
+	rb_define_method(rb_cWindow, "unlock", _rbf rb_Window_unlock, 0);
+	rb_define_method(rb_cWindow, "locked?", _rbf rb_Window_locked, 0);
+
+	rb_define_method(rb_cWindow, "clone", _rbf rb_Window_Copy, 0);
+	rb_define_method(rb_cWindow, "dup", _rbf rb_Window_Copy, 0);
+}

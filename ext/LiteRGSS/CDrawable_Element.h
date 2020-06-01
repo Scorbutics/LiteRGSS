@@ -1,6 +1,6 @@
 #ifndef CDrawable_Element_H
 #define CDrawable_Element_H
-#include "ruby.h" // Fix Windows compilation
+#include "RubyValue.h"
 #include <algorithm>
 #include "CGraphicsStackItem.h"
 

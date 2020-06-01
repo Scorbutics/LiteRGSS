@@ -1,6 +1,6 @@
 #ifndef CSprite_Element_H
 #define CSprite_Element_H
-#include "ruby.h"
+#include "RubyValue.h"
 #include "CDrawable_Element.h"
 #include "rbAdapter.h"
 

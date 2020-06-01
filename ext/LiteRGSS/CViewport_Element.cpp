@@ -1,7 +1,7 @@
 #include <cassert>
 #include "LiteRGSS.h"
 #include "CViewport_Element.h"
-#include "CGraphics.h"
+#include "GraphicsSingleton.h"
 #include "CRect_Element.h"
 #include "CTone_Element.h"
 #include "CWindow_Element.h"
@@ -12,7 +12,7 @@ std::unique_ptr<sf::Sprite> CViewport_Element::render_sprite = nullptr;
 
 CViewport_Element::~CViewport_Element() 
 {
-	if(!CGraphics::Get().isGameWindowOpen()) {
+	if(!GraphicsSingleton::Get().isGameWindowOpen()) {
 		std::cerr << "Game window release thus viewport " << this << " not freed." << std::endl;
 	}
 
@@ -63,8 +63,8 @@ void CViewport_Element::draw(sf::RenderTarget& target) const
 
 void CViewport_Element::setupView(sf::RenderTarget& target) const 
 {
-	long height = CGraphics::Get().screenHeight();
-	long width = CGraphics::Get().screenWidth();
+	long height = GraphicsSingleton::Get().screenHeight();
+	long width = GraphicsSingleton::Get().screenWidth();
 	sf::View defview = target.getDefaultView();
 	defview.setSize(width, height);
 	defview.setCenter(round(width / 2.0f), round(height / 2.0f));
@@ -199,7 +199,7 @@ void CViewport_Element::create_render()
 	// If the global viewport render doesn't exist, we create it
 	if (!render)
 	{
-		const auto& graphics = CGraphics::Get();
+		const auto& graphics = GraphicsSingleton::Get();
 		render = std::make_unique<sf::RenderTexture>();
 		render->create(graphics.screenWidth(), graphics.screenHeight());
 		render->setSmooth(graphics.smoothScreen());
@@ -209,7 +209,7 @@ void CViewport_Element::create_render()
 	if(default_render_states.get() != nullptr)
 		return;
 	// Creation of the render states
-	default_render_states_shader = CGraphics::Get().createUniqueShader();
+	default_render_states_shader = GraphicsSingleton::Get().createUniqueShader();
 	if(default_render_states_shader != nullptr) {
 		// Shader initialialization
 		sf::Shader& shader = *default_render_states_shader;

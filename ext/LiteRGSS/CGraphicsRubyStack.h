@@ -2,7 +2,7 @@
 #define CGraphicsRubyStack_H
 
 #include <unordered_set>
-#include "ruby.h"
+#include "RubyValue.h"
 
 class CGraphicsRubyStackItem;
 class CGraphicsRubyStack {

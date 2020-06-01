@@ -1,5 +1,5 @@
-#ifndef L_BLENDMODE_HEADER
-#define L_BLENDMODE_HEADER
+#ifndef BlendMode_H
+#define BlendMode_H
 #include "rbAdapter.h"
 
 VALUE rb_BlendMode_setColorSrcFactor(VALUE self, VALUE val);

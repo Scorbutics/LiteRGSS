@@ -1,11 +1,6 @@
-#ifndef GR_HEADER
-#define GR_HEADER
-#include "CViewport_Element.h"
-#include "CSprite_Element.h"
-#include "CShaderSprite_Element.h"
-#include "CShape_Element.h"
-#include "CWindow_Element.h"
-#include <SFML/Graphics.hpp>
+#ifndef Graphics_H
+#define Graphics_H
+#include "ruby_common.h"
 
 VALUE rb_Graphics_start(VALUE self);
 VALUE rb_Graphics_stop(VALUE self);

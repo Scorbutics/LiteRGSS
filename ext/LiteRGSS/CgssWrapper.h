@@ -2,6 +2,7 @@
 #define CgssWrapper_H
 #include <string>
 #include <memory>
+#include "rbAdapter.h"
 #include "ruby_common.h"
 
 namespace cgss {

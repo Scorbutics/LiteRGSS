@@ -1,4 +1,5 @@
 #include "LiteRGSS.h"
+#include "Drawable_Disposable.h"
 
 VALUE rb_cDisposable = Qnil;
 VALUE rb_cDrawable = Qnil;

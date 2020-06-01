@@ -1,4 +1,6 @@
 #include "LiteRGSS.h"
+#include <SFML/Graphics/Color.hpp>
+#include "common.h"
 #include "Color.h"
 
 VALUE rb_cColor = Qnil;

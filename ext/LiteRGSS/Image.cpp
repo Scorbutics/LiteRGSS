@@ -1,6 +1,7 @@
+#include "rbAdapter.h"
 #include "LiteRGSS.h"
-#include "Bitmap.h"
-#include "CBitmap_Element.h"
+#include "lodepng.h"
+#include "Texture_Bitmap.h"
 #include "CRect_Element.h"
 
 VALUE rb_cImage = Qnil;
@@ -9,29 +10,32 @@ template<>
 void rb::Mark<sf::Image>(sf::Image* image) {
 }
 
-void Init_Image()
+bool rb_Image_LoadLodePNG(sf::Image& img, char* str, long from_memory_size)
 {
-	rb_cImage = rb_define_class_under(rb_mLiteRGSS, "Image", rb_cDisposable);
-	rb_define_alloc_func(rb_cImage, rb::Alloc<sf::Image>);
-	rb_define_method(rb_cImage, "initialize", _rbf rb_Image_Initialize, -1);
-	rb_define_method(rb_cImage, "initialize_copy", _rbf rb_Image_Initialize_Copy, 1);
-	rb_define_method(rb_cImage, "dispose", _rbf rb_Image_Dispose, 0);
-	rb_define_method(rb_cImage, "width", _rbf rb_Image_Width, 0);
-	rb_define_method(rb_cImage, "height", _rbf rb_Image_Height, 0);
-	rb_define_method(rb_cImage, "rect", _rbf rb_Image_Rect, 0);
-	rb_define_method(rb_cImage, "copy_to_bitmap", _rbf rb_Image_Copy_to_Bitmap, 1);
-	rb_define_method(rb_cImage, "blt", _rbf rb_Image_blt, 4);
-	rb_define_method(rb_cImage, "blt!", _rbf rb_Image_blt_fast, 4);
-	rb_define_method(rb_cImage, "stretch_blt", _rbf rb_Image_stretch_blt, 3);
-	rb_define_method(rb_cImage, "stretch_blt!", _rbf rb_Image_stretch_blt_fast, 3);
-	rb_define_method(rb_cImage, "get_pixel", _rbf rb_Image_get_pixel, 2);
-	rb_define_method(rb_cImage, "get_pixel_alpha", _rbf rb_Image_get_pixel_alpha, 2);
-	rb_define_method(rb_cImage, "set_pixel", _rbf rb_Image_set_pixel, 3);
-	rb_define_method(rb_cImage, "clear_rect", _rbf rb_Image_clear_rect, 4);
-	rb_define_method(rb_cImage, "fill_rect", _rbf rb_Image_fill_rect, 5);
-	rb_define_method(rb_cImage, "create_mask", _rbf rb_Image_create_mask, 2);
-	rb_define_method(rb_cImage, "to_png", _rbf rb_Image_toPNG, 0);
-	rb_define_method(rb_cImage, "to_png_file", _rbf rb_Image_toPNG_file, 1);
+	unsigned char* out = nullptr;
+	unsigned w;
+	unsigned h;
+	if (from_memory_size > 0)
+	{
+		if (lodepng_decode32(&out, &w, &h, reinterpret_cast<unsigned char*>(str), from_memory_size) != 0)
+		{
+			if (out)
+				free(out);
+			return false;
+		}
+	}
+	else
+	{
+		if (lodepng_decode32_file(&out, &w, &h, str) != 0)
+		{
+			if (out)
+				free(out);
+			return false;
+		}
+	}
+	img.create(w, h, reinterpret_cast<sf::Uint8*>(out));
+	free(out);
+	return true;
 }
 
 VALUE rb_Image_Initialize(int argc, VALUE *argv, VALUE self)
@@ -118,7 +122,8 @@ VALUE rb_Image_Rect(VALUE self)
 VALUE rb_Image_Copy_to_Bitmap(VALUE self, VALUE bitmap)
 {
 	auto& img = rb::Get<sf::Image>(self);
-	rb_Bitmap_getTexture(bitmap).update(img);
+	auto& bmp = rb::GetSafe<TextureElement>(bitmap, rb_cBitmap);
+	bmp->getTexture().update(img);
 	return self;
 }
 
@@ -386,30 +391,28 @@ VALUE rb_Image_create_mask(VALUE self, VALUE color, VALUE alpha)
 	return self;
 }
 
-bool rb_Image_LoadLodePNG(sf::Image& img, char* str, long from_memory_size)
+
+void Init_Image()
 {
-	unsigned char* out = nullptr;
-	unsigned w;
-	unsigned h;
-	if (from_memory_size > 0)
-	{
-		if (lodepng_decode32(&out, &w, &h, reinterpret_cast<unsigned char*>(str), from_memory_size) != 0)
-		{
-			if (out)
-				free(out);
-			return false;
-		}
-	}
-	else
-	{
-		if (lodepng_decode32_file(&out, &w, &h, str) != 0)
-		{
-			if (out)
-				free(out);
-			return false;
-		}
-	}
-	img.create(w, h, reinterpret_cast<sf::Uint8*>(out));
-	free(out);
-	return true;
+	rb_cImage = rb_define_class_under(rb_mLiteRGSS, "Image", rb_cDisposable);
+	rb_define_alloc_func(rb_cImage, rb::Alloc<sf::Image>);
+	rb_define_method(rb_cImage, "initialize", _rbf rb_Image_Initialize, -1);
+	rb_define_method(rb_cImage, "initialize_copy", _rbf rb_Image_Initialize_Copy, 1);
+	rb_define_method(rb_cImage, "dispose", _rbf rb_Image_Dispose, 0);
+	rb_define_method(rb_cImage, "width", _rbf rb_Image_Width, 0);
+	rb_define_method(rb_cImage, "height", _rbf rb_Image_Height, 0);
+	rb_define_method(rb_cImage, "rect", _rbf rb_Image_Rect, 0);
+	rb_define_method(rb_cImage, "copy_to_bitmap", _rbf rb_Image_Copy_to_Bitmap, 1);
+	rb_define_method(rb_cImage, "blt", _rbf rb_Image_blt, 4);
+	rb_define_method(rb_cImage, "blt!", _rbf rb_Image_blt_fast, 4);
+	rb_define_method(rb_cImage, "stretch_blt", _rbf rb_Image_stretch_blt, 3);
+	rb_define_method(rb_cImage, "stretch_blt!", _rbf rb_Image_stretch_blt_fast, 3);
+	rb_define_method(rb_cImage, "get_pixel", _rbf rb_Image_get_pixel, 2);
+	rb_define_method(rb_cImage, "get_pixel_alpha", _rbf rb_Image_get_pixel_alpha, 2);
+	rb_define_method(rb_cImage, "set_pixel", _rbf rb_Image_set_pixel, 3);
+	rb_define_method(rb_cImage, "clear_rect", _rbf rb_Image_clear_rect, 4);
+	rb_define_method(rb_cImage, "fill_rect", _rbf rb_Image_fill_rect, 5);
+	rb_define_method(rb_cImage, "create_mask", _rbf rb_Image_create_mask, 2);
+	rb_define_method(rb_cImage, "to_png", _rbf rb_Image_toPNG, 0);
+	rb_define_method(rb_cImage, "to_png_file", _rbf rb_Image_toPNG_file, 1);
 }

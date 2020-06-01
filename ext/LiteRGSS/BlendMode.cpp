@@ -1,4 +1,9 @@
-#include "LiteRGSS.h"
+#include <SFML/Graphics/BlendMode.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics/Shader.hpp>
+
+#include "ruby_common.h"
+#include "BlendMode.h"
 
 VALUE rb_cBlendMode = Qnil;
 

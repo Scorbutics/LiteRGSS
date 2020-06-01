@@ -1,13 +1,10 @@
-#include "LiteRGSS.h"
+#include "Yuki.h"
+#include <SFML/System/String.hpp>
+#include <SFML/Window/Clipboard.hpp>
+#include <string>
+#include "ruby_common.h"
 
 VALUE rb_mYuki = Qnil;
-
-void Init_Yuki()
-{
-	rb_mYuki = rb_define_module("Yuki");
-	rb_define_module_function(rb_mYuki, "get_clipboard", _rbf rb_Yuki_getClipboard, 0);
-	rb_define_module_function(rb_mYuki, "set_clipboard", _rbf rb_Yuki_setClipboard, 1);
-}
 
 /* Clipboard */
 VALUE rb_Yuki_getClipboard(VALUE self)
@@ -26,4 +23,11 @@ VALUE rb_Yuki_setClipboard(VALUE self, VALUE val)
 	std::string stru8(RSTRING_PTR(val));
 	sf::Clipboard::setString(sf::String::fromUtf8(stru8.begin(), stru8.end()));
 	return self;
+}
+
+void Init_Yuki()
+{
+	rb_mYuki = rb_define_module("Yuki");
+	rb_define_module_function(rb_mYuki, "get_clipboard", _rbf rb_Yuki_getClipboard, 0);
+	rb_define_module_function(rb_mYuki, "set_clipboard", _rbf rb_Yuki_setClipboard, 1);
 }

@@ -1,12 +1,12 @@
 #ifndef CText_Element_H
 #define CText_Element_H
-#include "ruby.h"
+#include "RubyValue.h"
 #include "CDrawable_Element.h"
-#include "sf_Text2.hpp"
+#include <SFML/Graphics/Text.hpp>
 
 class CText_Element : public CDrawable_Element {
 	private:
-		sf::Text2 text;
+		sf::Text text;
 		bool visible = true;
 	public:
 		CText_Element() : 
@@ -19,7 +19,7 @@ class CText_Element : public CDrawable_Element {
 		bool isViewport() const override { return false; };
 		bool isPureSprite() const override { return false; };
 		bool isShape() const override { return false; };
-		sf::Text2& getText() { return text;};
+		sf::Text& getText() { return text;};
 		void setVisible(bool value) { visible = value;};
 		bool getVisible() { return visible; };
 		

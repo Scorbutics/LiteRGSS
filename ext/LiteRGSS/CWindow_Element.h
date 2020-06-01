@@ -1,6 +1,6 @@
 #ifndef CWindow_Element_H
 #define CWindow_Element_H
-#include "ruby.h"
+#include "RubyValue.h"
 #include "CView_Element.h"
 
 class CWindow_Element : public CView_Element {

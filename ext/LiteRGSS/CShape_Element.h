@@ -1,7 +1,7 @@
 #ifndef CShape_Element_H
 #define CShape_Element_H
 #include <memory>
-#include "ruby.h"
+#include "RubyValue.h"
 #include "CDrawable_Element.h"
 
 class CShape_Element : public CDrawable_Element {

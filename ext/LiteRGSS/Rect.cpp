@@ -1,38 +1,10 @@
-#include "LiteRGSS.h"
-#include "RectangleElement.h"
-
-#include "Common/Rectangle.h"
+#include "rbAdapter.h"
+#include "Rect.h"
 
 VALUE rb_cRect = Qnil;
 
 template<>
 void rb::Mark<RectangleElement>(RectangleElement* rectangle) {
-}
-
-void Init_Rect() {
-	rb_cRect = rb_define_class_under(rb_mLiteRGSS, "Rect", rb_cObject);
-
-	rb_define_alloc_func(rb_cRect, rb::Alloc<RectangleElement>);
-
-	rb_define_method(rb_cRect, "initialize", _rbf rb_Rect_initialize, -1);
-	rb_define_method(rb_cRect, "initialize_copy", _rbf rb_Rect_initialize_copy, 1);
-	rb_define_method(rb_cRect, "set", _rbf rb_Rect_set, -1);
-	rb_define_method(rb_cRect, "x", _rbf rb_Rect_getX, 0);
-	rb_define_method(rb_cRect, "x=", _rbf rb_Rect_setX, 1);
-	rb_define_method(rb_cRect, "y", _rbf rb_Rect_getY, 0);
-	rb_define_method(rb_cRect, "y=", _rbf rb_Rect_setY, 1);
-	rb_define_method(rb_cRect, "width", _rbf rb_Rect_getWidth, 0);
-	rb_define_method(rb_cRect, "width=", _rbf rb_Rect_setWidth, 1);
-	rb_define_method(rb_cRect, "height", _rbf rb_Rect_getHeight, 0);
-	rb_define_method(rb_cRect, "height=", _rbf rb_Rect_setHeight, 1);
-	rb_define_method(rb_cRect, "==", _rbf rb_Rect_eql, 1);
-	rb_define_method(rb_cRect, "===", _rbf rb_Rect_eql, 1);
-	rb_define_method(rb_cRect, "eql?", _rbf rb_Rect_eql, 1);
-	rb_define_method(rb_cRect, "to_s", _rbf rb_Rect_to_s, 0);
-	rb_define_method(rb_cRect, "inspect", _rbf rb_Rect_to_s, 0);
-	rb_define_method(rb_cRect, "empty", _rbf rb_Rect_empty, 0);
-	rb_define_method(rb_cRect, "_dump", _rbf rb_Rect_save, 1);
-	rb_define_singleton_method(rb_cRect, "_load", _rbf rb_Rect_load, 1);
 }
 
 /*
@@ -237,3 +209,28 @@ VALUE rb_Rect_to_s(VALUE self) {
 	return rb_sprintf("(%d, %d, %d, %d)", srect.left, srect.top, srect.width, srect.height);
 }
 
+void Init_Rect() {
+	rb_cRect = rb_define_class_under(rb_mLiteRGSS, "Rect", rb_cObject);
+
+	rb_define_alloc_func(rb_cRect, rb::Alloc<RectangleElement>);
+
+	rb_define_method(rb_cRect, "initialize", _rbf rb_Rect_initialize, -1);
+	rb_define_method(rb_cRect, "initialize_copy", _rbf rb_Rect_initialize_copy, 1);
+	rb_define_method(rb_cRect, "set", _rbf rb_Rect_set, -1);
+	rb_define_method(rb_cRect, "x", _rbf rb_Rect_getX, 0);
+	rb_define_method(rb_cRect, "x=", _rbf rb_Rect_setX, 1);
+	rb_define_method(rb_cRect, "y", _rbf rb_Rect_getY, 0);
+	rb_define_method(rb_cRect, "y=", _rbf rb_Rect_setY, 1);
+	rb_define_method(rb_cRect, "width", _rbf rb_Rect_getWidth, 0);
+	rb_define_method(rb_cRect, "width=", _rbf rb_Rect_setWidth, 1);
+	rb_define_method(rb_cRect, "height", _rbf rb_Rect_getHeight, 0);
+	rb_define_method(rb_cRect, "height=", _rbf rb_Rect_setHeight, 1);
+	rb_define_method(rb_cRect, "==", _rbf rb_Rect_eql, 1);
+	rb_define_method(rb_cRect, "===", _rbf rb_Rect_eql, 1);
+	rb_define_method(rb_cRect, "eql?", _rbf rb_Rect_eql, 1);
+	rb_define_method(rb_cRect, "to_s", _rbf rb_Rect_to_s, 0);
+	rb_define_method(rb_cRect, "inspect", _rbf rb_Rect_to_s, 0);
+	rb_define_method(rb_cRect, "empty", _rbf rb_Rect_empty, 0);
+	rb_define_method(rb_cRect, "_dump", _rbf rb_Rect_save, 1);
+	rb_define_singleton_method(rb_cRect, "_load", _rbf rb_Rect_load, 1);
+}

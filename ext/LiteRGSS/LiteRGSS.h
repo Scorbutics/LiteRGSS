@@ -1,31 +1,5 @@
 #ifndef LITERGSS_HEADER_FILE
 #define LITERGSS_HEADER_FILE
-#include <iostream>
-#include <vector>
-#include <string>
-#include <cmath>
-#include "ruby.h" // Windows Patch
-#include "Texture.hpp"
-#include <SFML/Graphics.hpp>
-#include "Drawable_Disposable.h"
-#include "Color.h"
-#include "Tone.h"
-#include "Rect.h"
-#include "Image.h"
-#include "Fonts.h"
-#include "Text.h"
-#include "Input.h"
-#include "Table.h"
-#include "Table32.h"
-#include "Yuki.h"
-#include "BlendMode.h"
-#include "Shader.h"
-#include "ShaderSprite.h"
-#include "Shape.h"
-#include "Yuki_Gif.h"
-#include "Window.h"
-#include "SpriteMap.h"
-#include "common.h"
 #include "ruby_common.h"
 
 void Init_DrawableDisposable();
@@ -51,6 +25,5 @@ void Init_BlendMode();
 void Init_Shape();
 void Init_Window();
 void Init_SpriteMap();
-
 
 #endif

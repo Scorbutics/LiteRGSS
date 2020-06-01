@@ -1,6 +1,7 @@
 #ifndef L_IMAGE_HEADER
 #define L_IMAGE_HEADER
-#include "ruby.h"
+
+#include "RubyValue.h"
 #include <SFML/Graphics.hpp>
 #include "lodepng.h"
 

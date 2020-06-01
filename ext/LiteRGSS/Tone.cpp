@@ -1,4 +1,7 @@
-#include "LiteRGSS.h"
+#include "Tone.h"
+#include "rbAdapter.h"
+#include "ruby_common.h"
+#include "common.h"
 #include "CTone_Element.h"
 
 VALUE rb_cTone = Qnil;
@@ -7,31 +10,6 @@ void __Tone_Check_LinkedObject(CTone_Element& tone);
 
 template<>
 void rb::Mark<CTone_Element>(CTone_Element* tone) {
-}
-
-void Init_Tone()
-{
-	rb_cTone = rb_define_class_under(rb_mLiteRGSS, "Tone", rb_cObject);
-	rb_define_alloc_func(rb_cTone, rb::Alloc<CTone_Element>);
-
-	rb_define_method(rb_cTone, "initialize", _rbf rb_Tone_Initialize, -1);
-	rb_define_method(rb_cTone, "set", _rbf rb_Tone_Initialize, -1);
-	rb_define_method(rb_cTone, "initialize_copy", _rbf rb_Tone_InitializeCopy, 1);
-	rb_define_method(rb_cTone, "red", _rbf rb_Tone_getRed, 0);
-	rb_define_method(rb_cTone, "red=", _rbf rb_Tone_setRed, 1);
-	rb_define_method(rb_cTone, "green", _rbf rb_Tone_getGreen, 0);
-	rb_define_method(rb_cTone, "green=", _rbf rb_Tone_setGreen, 1);
-	rb_define_method(rb_cTone, "blue", _rbf rb_Tone_getBlue, 0);
-	rb_define_method(rb_cTone, "blue=", _rbf rb_Tone_setBlue, 1);
-	rb_define_method(rb_cTone, "gray", _rbf rb_Tone_getGray, 0);
-	rb_define_method(rb_cTone, "gray=", _rbf rb_Tone_setGray, 1);
-	rb_define_method(rb_cTone, "==", _rbf rb_Tone_eql, 1);
-	rb_define_method(rb_cTone, "===", _rbf rb_Tone_eql, 1);
-	rb_define_method(rb_cTone, "eql?", _rbf rb_Tone_eql, 1);
-	rb_define_method(rb_cTone, "to_s", _rbf rb_Tone_to_s, 0);
-	rb_define_method(rb_cTone, "inspect", _rbf rb_Tone_to_s, 0);
-	rb_define_method(rb_cTone, "_dump", _rbf rb_Tone_Save, 1);
-	rb_define_singleton_method(rb_cTone, "_load", _rbf rb_Tone_Load, 1);
 }
 
 VALUE rb_Tone_Initialize(int argc, VALUE* argv, VALUE self)
@@ -182,9 +160,36 @@ VALUE rb_Tone_Save(VALUE self, VALUE limit)
 
 void __Tone_Check_LinkedObject(CTone_Element& tone)
 {
+	/*
 	CViewport_Element* view = tone.getViewport();
 	if(view == nullptr)
 		return;
 	tone_copy(view->getTone(), tone.getTone());
 	view->updatetone();
+	*/
+}
+
+void Init_Tone()
+{
+	rb_cTone = rb_define_class_under(rb_mLiteRGSS, "Tone", rb_cObject);
+	rb_define_alloc_func(rb_cTone, rb::Alloc<CTone_Element>);
+
+	rb_define_method(rb_cTone, "initialize", _rbf rb_Tone_Initialize, -1);
+	rb_define_method(rb_cTone, "set", _rbf rb_Tone_Initialize, -1);
+	rb_define_method(rb_cTone, "initialize_copy", _rbf rb_Tone_InitializeCopy, 1);
+	rb_define_method(rb_cTone, "red", _rbf rb_Tone_getRed, 0);
+	rb_define_method(rb_cTone, "red=", _rbf rb_Tone_setRed, 1);
+	rb_define_method(rb_cTone, "green", _rbf rb_Tone_getGreen, 0);
+	rb_define_method(rb_cTone, "green=", _rbf rb_Tone_setGreen, 1);
+	rb_define_method(rb_cTone, "blue", _rbf rb_Tone_getBlue, 0);
+	rb_define_method(rb_cTone, "blue=", _rbf rb_Tone_setBlue, 1);
+	rb_define_method(rb_cTone, "gray", _rbf rb_Tone_getGray, 0);
+	rb_define_method(rb_cTone, "gray=", _rbf rb_Tone_setGray, 1);
+	rb_define_method(rb_cTone, "==", _rbf rb_Tone_eql, 1);
+	rb_define_method(rb_cTone, "===", _rbf rb_Tone_eql, 1);
+	rb_define_method(rb_cTone, "eql?", _rbf rb_Tone_eql, 1);
+	rb_define_method(rb_cTone, "to_s", _rbf rb_Tone_to_s, 0);
+	rb_define_method(rb_cTone, "inspect", _rbf rb_Tone_to_s, 0);
+	rb_define_method(rb_cTone, "_dump", _rbf rb_Tone_Save, 1);
+	rb_define_singleton_method(rb_cTone, "_load", _rbf rb_Tone_Load, 1);
 }

@@ -1,34 +1,24 @@
-#ifndef L_VIEWPORT_H
-#define L_VIEWPORT_H
-#include "rbAdapter.h"
+#ifndef Viewport_H
+#define Viewport_H
 
-#include "ViewportElement.h"
+#include "CgssWrapper.h"
+#include "Views/Viewport.h"
 
-VALUE rb_Viewport_Initialize(int argc, VALUE* argv, VALUE self);
-VALUE rb_Viewport_Copy(VALUE self);
-VALUE rb_Viewport_getOX(VALUE self);
-VALUE rb_Viewport_setOX(VALUE self, VALUE val);
-VALUE rb_Viewport_getOY(VALUE self);
-VALUE rb_Viewport_setOY(VALUE self, VALUE val);
-VALUE rb_Viewport_getRect(VALUE self);
-VALUE rb_Viewport_setRect(VALUE self, VALUE val);
-VALUE rb_Viewport_Dispose(VALUE self);
-VALUE rb_Viewport_getTone(VALUE self);
-VALUE rb_Viewport_setTone(VALUE self, VALUE val);
-VALUE rb_Viewport_getColor(VALUE self);
-VALUE rb_Viewport_setColor(VALUE self, VALUE val);
-VALUE rb_Viewport_getVisible(VALUE self);
-VALUE rb_Viewport_setVisible(VALUE self, VALUE val);
-VALUE rb_Viewport_getAngle(VALUE self);
-VALUE rb_Viewport_setAngle(VALUE self, VALUE val);
-VALUE rb_Viewport_getZoom(VALUE self);
-VALUE rb_Viewport_setZoom(VALUE self, VALUE val);
-VALUE rb_Viewport_Update(VALUE self);
-VALUE rb_Viewport_getZ(VALUE self);
-VALUE rb_Viewport_setZ(VALUE self, VALUE val);
-VALUE rb_Viewport_getRenderState(VALUE self);
-VALUE rb_Viewport_setRenderState(VALUE self, VALUE val);
-VALUE rb_Viewport_ReloadStack(VALUE self);
-VALUE rb_Viewport_Index(VALUE self);
+struct ViewportElement : 
+    public CgssInstance<cgss::Viewport> {
+        
+    VALUE rRect = Qnil;
+    VALUE rTone = Qnil;
+    VALUE rColor = Qnil;
+	VALUE rZ = LONG2FIX(0);
+	VALUE rAngle = LONG2FIX(0);
+    VALUE rZoom = LONG2FIX(1);
+    VALUE rRenderState = Qnil;
+
+    template <class Drawable, class ... Args>
+    void initAndAdd(Drawable& drawable, Args&& ... args) {
+        drawable.init(Drawable::create(*instance()), std::forward<Args>(args)...);
+    }
+};
 
 #endif

@@ -1,9 +1,7 @@
 #include "ruby_common.h"
 #include "common.h"
 #include "Graphics.h"
-#include "CGraphics.h"
-#include "CBitmap_Element.h"
-#include "CViewport_Element.h"
+#include "GraphicsSingleton.h"
 #include "CDrawableStack.h"
 
 VALUE rb_mGraphics = Qnil;
@@ -44,26 +42,26 @@ void Init_Graphics()
 }
 
 VALUE rb_Graphics_start(VALUE self) {
-	CGraphics::Get().init();
+	GraphicsSingleton::Get().init();
 	return self;
 }
 
 VALUE rb_Graphics_stop(VALUE self) {
-	CGraphics::Get().stop();
+	GraphicsSingleton::Get().stop();
 	return self;
 }
 
 VALUE rb_Graphics_snap_to_bitmap(VALUE self) {
-	return CGraphics::Get().takeSnapshot();
+	return GraphicsSingleton::Get().takeSnapshot();
 }
 
 VALUE rb_Graphics_freeze(VALUE self) {
-	CGraphics::Get().freeze(self);
+	GraphicsSingleton::Get().freeze(self);
 	return self;
 }
 
 VALUE rb_Graphics_transition(int argc, VALUE* argv, VALUE self) {
-	CGraphics::Get().transition(self, argc, argv);
+	GraphicsSingleton::Get().transition(self, argc, argv);
 	return self;
 }
 
@@ -81,42 +79,42 @@ VALUE rb_Graphics_list_res(VALUE self)
 
 VALUE rb_Graphics_update(VALUE self)
 {
-	CGraphics::Get().update(self);
+	GraphicsSingleton::Get().update(self);
 	return self;
 }
 
 VALUE rb_Graphics_update_no_input_count(VALUE self)
 {
-	CGraphics::Get().update(self, false);
+	GraphicsSingleton::Get().update(self, false);
 	return self;
 }
 
 VALUE rb_Graphics_update_only_input(VALUE self)
 {
-	CGraphics::Get().updateOnlyInput(self);
+	GraphicsSingleton::Get().updateOnlyInput(self);
 	return self;
 }
 
 VALUE rb_Graphics_get_frame_count(VALUE self)
 {
-	return RB_UINT2NUM(CGraphics::Get().frameCount());
+	return RB_UINT2NUM(GraphicsSingleton::Get().frameCount());
 }
 
 VALUE rb_Graphics_set_frame_count(VALUE self, VALUE val)
 {
 	auto frame_count = rb_num2ulong(val);
-	CGraphics::Get().setFrameCount(frame_count);
+	GraphicsSingleton::Get().setFrameCount(frame_count);
 	return val;
 }
 
 VALUE rb_Graphics_width(VALUE self)
 {
-	return rb_int2inum(CGraphics::Get().screenWidth());
+	return rb_int2inum(GraphicsSingleton::Get().screenWidth());
 }
 
 VALUE rb_Graphics_height(VALUE self)
 {
-	return rb_int2inum(CGraphics::Get().screenHeight());
+	return rb_int2inum(GraphicsSingleton::Get().screenHeight());
 }
 
 VALUE rb_Graphics_ReloadStack(VALUE self) {
@@ -126,12 +124,12 @@ VALUE rb_Graphics_ReloadStack(VALUE self) {
 
 VALUE rb_Graphics_getBrightness(VALUE self)
 {
-	return LONG2FIX(CGraphics::Get().brightness());
+	return LONG2FIX(GraphicsSingleton::Get().brightness());
 }
 
 VALUE rb_Graphics_setBrightness(VALUE self, VALUE brightness)
 {
-	CGraphics::Get().setBrightness(normalize_long(rb_num2long(brightness), 0, 255));
+	GraphicsSingleton::Get().setBrightness(normalize_long(rb_num2long(brightness), 0, 255));
 	return self;
 }
 
@@ -147,11 +145,11 @@ VALUE rb_Graphics_setShader(VALUE self, VALUE shader)
 	{
 		rb_ivar_set(self, rb_iGraphicsShader, shader);
 		Data_Get_Struct(shader, sf::RenderStates, render_state);
-		CGraphics::Get().setShader(render_state);
+		GraphicsSingleton::Get().setShader(render_state);
 	}
 	else if (shader == Qnil)
 	{
-		CGraphics::Get().setShader(nullptr);
+		GraphicsSingleton::Get().setShader(nullptr);
 	}
 	return self;
 }
@@ -173,6 +171,6 @@ VALUE rb_Graphics_resize_screen(VALUE self, VALUE width, VALUE height)
 
 	rb_const_set(rb_mConfig, swidth, INT2NUM(iwidth));
 	rb_const_set(rb_mConfig, sheight, INT2NUM(iheight));
-	CGraphics::Get().resizeScreen(iwidth, iheight);
+	GraphicsSingleton::Get().resizeScreen(iwidth, iheight);
 	return self;
 }

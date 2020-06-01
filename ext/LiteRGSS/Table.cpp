@@ -1,4 +1,7 @@
-#include "LiteRGSS.h"
+#include "rbAdapter.h"
+#include "common.h"
+#include "ruby_common.h"
+#include "Table.h"
 
 VALUE rb_cTable = Qnil;
 
@@ -14,31 +17,57 @@ void rb_Table_Free(void* data)
 	}
 }
 
+void rb_Table_internal_copyLine(short* &xheap1, short* &xheap2, long ini_x, long max_x)
+{
+	short* max_xheap2 = xheap2 + (max_x - ini_x);
+	for (; xheap2 < max_xheap2; xheap2++)//(int x = ini_x; x < max_x; x++)
+	{
+		*xheap1 = *xheap2;
+		xheap1++;
+		//xheap2++;
+	}
+}
+
+void rb_Table_internal_copyModuloYpart(short* xheap1, short* yheap2, long ox2, long target_x, long offsetx, long src_xsize, long m)
+{
+	long i;
+	// X Init Loop (line copied from ox2 to what it can copy in width)
+	short* xheap2 = yheap2 + ox2;
+	long target_x2 = target_x - offsetx;
+	if (target_x2 > (src_xsize - ox2))
+		target_x2 = (src_xsize - ox2);
+
+	//printf("target_x2 = %d; %d %d %d\n", target_x2, src_xsize, target_x - offsetx, m);
+
+	rb_Table_internal_copyLine(xheap1, xheap2, 0, target_x2);
+
+	// X Middle loops
+	for (i = 0; i < m; i++)
+	{
+		// here xheap1 should have been altered by rb_Table_internal_copyLine
+		xheap2 = yheap2;
+		rb_Table_internal_copyLine(xheap1, xheap2, 0, src_xsize);
+	}
+
+	// X End loop
+	xheap2 = yheap2;
+	target_x2 = target_x - offsetx + ox2 - (m + 1) * src_xsize;
+	if (target_x2 > src_xsize) // If this condition validates, our computation is incorrect
+	{
+		//printf("Failure ! %d %d\n", target_x2, src_xsize);
+		target_x2 = src_xsize;
+	}
+
+	//printf("target_x2 = %d; %d %d %d\n", target_x2, src_xsize, target_x - offsetx, m);
+
+	rb_Table_internal_copyLine(xheap1, xheap2, 0, target_x2);
+}
+
+
 VALUE rb_Table_Alloc(VALUE klass)
 {
 	return Data_Wrap_Struct(klass, NULL, rb_Table_Free, new rb_Table_Struct());
 }
-
-void Init_Table()
-{
-	rb_cTable = rb_define_class("Table", rb_cObject);
-	rb_define_alloc_func(rb_cTable, rb_Table_Alloc);
-	rb_define_method(rb_cTable, "initialize", _rbf rb_Table_initialize, -1);
-	rb_define_method(rb_cTable, "[]", _rbf rb_Table_get, -1);
-	rb_define_method(rb_cTable, "[]=", _rbf rb_Table_set, -1);
-	rb_define_method(rb_cTable, "xsize", _rbf rb_Table_xSize, 0);
-	rb_define_method(rb_cTable, "ysize", _rbf rb_Table_ySize, 0);
-	rb_define_method(rb_cTable, "zsize", _rbf rb_Table_zSize, 0);
-	rb_define_method(rb_cTable, "dim", _rbf rb_Table_dim, 0);
-	rb_define_method(rb_cTable, "resize", _rbf rb_Table_resize, -1);
-	rb_define_method(rb_cTable, "fill", _rbf rb_Table_Fill, 1);
-	rb_define_method(rb_cTable, "copy", _rbf rb_Table_Copy, 3);
-	rb_define_method(rb_cTable, "copy_modulo", _rbf rb_Table_CopyModulo, 7);
-
-	rb_define_method(rb_cTable, "_dump", _rbf rb_Table_Save, 1);
-	rb_define_singleton_method(rb_cTable, "_load", _rbf rb_Table_Load, 1);
-}
-
 
 VALUE rb_Table_initialize(int argc, VALUE* argv, VALUE self)
 {
@@ -389,48 +418,22 @@ VALUE rb_Table_CopyModulo(VALUE self, VALUE source, VALUE source_origin_x, VALUE
 	return Qtrue;
 }
 
-void rb_Table_internal_copyLine(short* &xheap1, short* &xheap2, long ini_x, long max_x)
+void Init_Table()
 {
-	short* max_xheap2 = xheap2 + (max_x - ini_x);
-	for (; xheap2 < max_xheap2; xheap2++)//(int x = ini_x; x < max_x; x++)
-	{
-		*xheap1 = *xheap2;
-		xheap1++;
-		//xheap2++;
-	}
-}
+	rb_cTable = rb_define_class("Table", rb_cObject);
+	rb_define_alloc_func(rb_cTable, rb_Table_Alloc);
+	rb_define_method(rb_cTable, "initialize", _rbf rb_Table_initialize, -1);
+	rb_define_method(rb_cTable, "[]", _rbf rb_Table_get, -1);
+	rb_define_method(rb_cTable, "[]=", _rbf rb_Table_set, -1);
+	rb_define_method(rb_cTable, "xsize", _rbf rb_Table_xSize, 0);
+	rb_define_method(rb_cTable, "ysize", _rbf rb_Table_ySize, 0);
+	rb_define_method(rb_cTable, "zsize", _rbf rb_Table_zSize, 0);
+	rb_define_method(rb_cTable, "dim", _rbf rb_Table_dim, 0);
+	rb_define_method(rb_cTable, "resize", _rbf rb_Table_resize, -1);
+	rb_define_method(rb_cTable, "fill", _rbf rb_Table_Fill, 1);
+	rb_define_method(rb_cTable, "copy", _rbf rb_Table_Copy, 3);
+	rb_define_method(rb_cTable, "copy_modulo", _rbf rb_Table_CopyModulo, 7);
 
-void rb_Table_internal_copyModuloYpart(short* xheap1, short* yheap2, long ox2, long target_x, long offsetx, long src_xsize, long m)
-{
-	long i;
-	// X Init Loop (line copied from ox2 to what it can copy in width)
-	short* xheap2 = yheap2 + ox2;
-	long target_x2 = target_x - offsetx;
-	if (target_x2 > (src_xsize - ox2))
-		target_x2 = (src_xsize - ox2);
-
-	//printf("target_x2 = %d; %d %d %d\n", target_x2, src_xsize, target_x - offsetx, m);
-
-	rb_Table_internal_copyLine(xheap1, xheap2, 0, target_x2);
-
-	// X Middle loops
-	for (i = 0; i < m; i++)
-	{
-		// here xheap1 should have been altered by rb_Table_internal_copyLine
-		xheap2 = yheap2;
-		rb_Table_internal_copyLine(xheap1, xheap2, 0, src_xsize);
-	}
-
-	// X End loop
-	xheap2 = yheap2;
-	target_x2 = target_x - offsetx + ox2 - (m + 1) * src_xsize;
-	if (target_x2 > src_xsize) // If this condition validates, our computation is incorrect
-	{
-		//printf("Failure ! %d %d\n", target_x2, src_xsize);
-		target_x2 = src_xsize;
-	}
-
-	//printf("target_x2 = %d; %d %d %d\n", target_x2, src_xsize, target_x - offsetx, m);
-
-	rb_Table_internal_copyLine(xheap1, xheap2, 0, target_x2);
+	rb_define_method(rb_cTable, "_dump", _rbf rb_Table_Save, 1);
+	rb_define_singleton_method(rb_cTable, "_load", _rbf rb_Table_Load, 1);
 }

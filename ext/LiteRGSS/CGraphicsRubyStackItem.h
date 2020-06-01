@@ -1,7 +1,7 @@
 #ifndef CGraphicsRubyStackItem_H
 #define CGraphicsRubyStackItem_H
 
-#include "ruby.h"
+#include "RubyValue.h"
 
 class CGraphicsRubyStack;
 class CGraphicsRubyStackItem {

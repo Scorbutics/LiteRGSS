@@ -1,7 +1,7 @@
 #include "LiteRGSS.h"
 #include "CTone_Element.h"
-#include "CGraphics.h"
-#include "Bitmap.h"
+#include "GraphicsSingleton.h"
+#include "Texture_Bitmap.h"
 
 VALUE rb_cShader = Qnil;
 
@@ -32,33 +32,9 @@ void rb_Shader_Free(void* data)
 
 VALUE rb_Shader_Alloc(VALUE klass)
 {
-	sf::Shader* shader = CGraphics::Get().createNewShader();
+	sf::Shader* shader = GraphicsSingleton::Get().createNewShader();
 	sf::RenderStates* render_state = new sf::RenderStates(shader);
 	return Data_Wrap_Struct(klass, NULL, rb_Shader_Free, render_state);
-}
-
-void Init_Shader()
-{
-	rb_cShader = rb_define_class_under(rb_mLiteRGSS, "Shader", rb_cBlendMode); //<--- Should inherit of rb_cBlendMode
-	rb_define_alloc_func(rb_cShader, rb_Shader_Alloc);
-	rb_define_method(rb_cShader, "initialize", _rbf rb_Shader_loadFromMemory, -1);
-	rb_define_method(rb_cShader, "load", _rbf rb_Shader_loadFromMemory, -1);
-	rb_define_method(rb_cShader, "set_float_uniform", _rbf rb_Shader_setFloatUniform, 2);
-	rb_define_method(rb_cShader, "set_int_uniform", _rbf rb_Shader_setIntUniform, 2);
-	rb_define_method(rb_cShader, "set_bool_uniform", _rbf rb_Shader_setBoolUniform, 2);
-	rb_define_method(rb_cShader, "set_texture_uniform", _rbf rb_Shader_setTextureUniform, 2);
-	rb_define_method(rb_cShader, "set_matrix_uniform", _rbf rb_Shader_setMatrixUniform, 2);
-	rb_define_method(rb_cShader, "set_float_array_uniform", _rbf rb_Shader_setFloatArrayUniform, 2);
-
-	rb_define_method(rb_cShader, "clone", _rbf rb_Shader_Copy, 0);
-	rb_define_method(rb_cShader, "dup", _rbf rb_Shader_Copy, 0);
-	
-	rb_define_singleton_method(rb_cShader, "is_geometry_available?", _rbf rb_Shader_isGeometryAvailable, 0);
-	rb_define_singleton_method(rb_cShader, "available?", _rbf rb_Shader_isAvailable, 0);
-
-	rb_define_const(rb_cShader, "Fragment", LONG2FIX(sf::Shader::Type::Fragment));
-	rb_define_const(rb_cShader, "Vertex", LONG2FIX(sf::Shader::Type::Vertex));
-	rb_define_const(rb_cShader, "Geometry", LONG2FIX(sf::Shader::Type::Geometry));
 }
 
 VALUE rb_Shader_loadFromMemory(int argc, VALUE *argv, VALUE self)
@@ -209,7 +185,8 @@ VALUE rb_Shader_setTextureUniform(VALUE self, VALUE name, VALUE uniform)
 	rb_check_type(name, T_STRING);
 	if (rb_obj_is_kind_of(uniform, rb_cBitmap) == Qtrue)
 	{
-		sf::Texture& texture = rb_Bitmap_getTexture(uniform);
+		auto& bmp = rb::Get<TextureElement>(uniform);
+		sf::Texture& texture = bmp->getTexture();
 		shader->setUniform(rb_string_value_cstr(&name), texture);
 	}
 	else
@@ -268,17 +245,40 @@ VALUE rb_Shader_setFloatArrayUniform(VALUE self, VALUE name, VALUE uniform)
 
 VALUE rb_Shader_isAvailable(VALUE self) 
 {
-	return CGraphics::Get().areShadersEnabled() ? Qtrue : Qfalse;
+	return GraphicsSingleton::Get().areShadersEnabled() ? Qtrue : Qfalse;
 }
 
 VALUE rb_Shader_isGeometryAvailable(VALUE self)
 {
-	return CGraphics::Get().areShadersEnabled() ? Qtrue : Qfalse;
+	return GraphicsSingleton::Get().areShadersEnabled() ? Qtrue : Qfalse;
 }
-
 
 VALUE rb_Shader_Copy(VALUE self)
 {
 	rb_raise(rb_eRGSSError, "Shaders cannot be cloned or duplicated.");
 	return self;
+}
+
+void Init_Shader()
+{
+	rb_cShader = rb_define_class_under(rb_mLiteRGSS, "Shader", rb_cBlendMode); //<--- Should inherit of rb_cBlendMode
+	rb_define_alloc_func(rb_cShader, rb_Shader_Alloc);
+	rb_define_method(rb_cShader, "initialize", _rbf rb_Shader_loadFromMemory, -1);
+	rb_define_method(rb_cShader, "load", _rbf rb_Shader_loadFromMemory, -1);
+	rb_define_method(rb_cShader, "set_float_uniform", _rbf rb_Shader_setFloatUniform, 2);
+	rb_define_method(rb_cShader, "set_int_uniform", _rbf rb_Shader_setIntUniform, 2);
+	rb_define_method(rb_cShader, "set_bool_uniform", _rbf rb_Shader_setBoolUniform, 2);
+	rb_define_method(rb_cShader, "set_texture_uniform", _rbf rb_Shader_setTextureUniform, 2);
+	rb_define_method(rb_cShader, "set_matrix_uniform", _rbf rb_Shader_setMatrixUniform, 2);
+	rb_define_method(rb_cShader, "set_float_array_uniform", _rbf rb_Shader_setFloatArrayUniform, 2);
+
+	rb_define_method(rb_cShader, "clone", _rbf rb_Shader_Copy, 0);
+	rb_define_method(rb_cShader, "dup", _rbf rb_Shader_Copy, 0);
+	
+	rb_define_singleton_method(rb_cShader, "is_geometry_available?", _rbf rb_Shader_isGeometryAvailable, 0);
+	rb_define_singleton_method(rb_cShader, "available?", _rbf rb_Shader_isAvailable, 0);
+
+	rb_define_const(rb_cShader, "Fragment", LONG2FIX(sf::Shader::Type::Fragment));
+	rb_define_const(rb_cShader, "Vertex", LONG2FIX(sf::Shader::Type::Vertex));
+	rb_define_const(rb_cShader, "Geometry", LONG2FIX(sf::Shader::Type::Geometry));
 }

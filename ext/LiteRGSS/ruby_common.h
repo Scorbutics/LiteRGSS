@@ -1,7 +1,8 @@
 #ifndef L_UTILS_RUBY_COMMON_HEADER
 #define L_UTILS_RUBY_COMMON_HEADER
 
-#include "ruby.h"
+#include "RubyValue.h"
+
 #define _rbf (VALUE (*)(...))
 
 extern VALUE rb_mLiteRGSS;

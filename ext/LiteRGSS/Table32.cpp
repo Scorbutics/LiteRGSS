@@ -1,4 +1,7 @@
-#include "LiteRGSS.h"
+#include "rbAdapter.h"
+#include "common.h"
+#include "ruby_common.h"
+#include "Table32.h"
 
 VALUE rb_cTable32 = Qnil;
 
@@ -18,25 +21,6 @@ VALUE rb_Table32_Alloc(VALUE klass)
 {
 	return Data_Wrap_Struct(klass, NULL, rb_Table32_Free, new rb_Table32_Struct());
 }
-
-void Init_Table32()
-{
-	rb_cTable32 = rb_define_class("Table32", rb_cObject);
-	rb_define_alloc_func(rb_cTable32, rb_Table32_Alloc);
-	rb_define_method(rb_cTable32, "initialize", _rbf rb_Table32_initialize, -1);
-	rb_define_method(rb_cTable32, "[]", _rbf rb_Table32_get, -1);
-	rb_define_method(rb_cTable32, "[]=", _rbf rb_Table32_set, -1);
-	rb_define_method(rb_cTable32, "xsize", _rbf rb_Table32_xSize, 0);
-	rb_define_method(rb_cTable32, "ysize", _rbf rb_Table32_ySize, 0);
-	rb_define_method(rb_cTable32, "zsize", _rbf rb_Table32_zSize, 0);
-	rb_define_method(rb_cTable32, "dim", _rbf rb_Table32_dim, 0);
-	rb_define_method(rb_cTable32, "resize", _rbf rb_Table32_resize, -1);
-	rb_define_method(rb_cTable32, "fill", _rbf rb_Table32_Fill, 1);
-
-	rb_define_method(rb_cTable32, "_dump", _rbf rb_Table32_Save, 1);
-	rb_define_singleton_method(rb_cTable32, "_load", _rbf rb_Table32_Load, 1);
-}
-
 
 VALUE rb_Table32_initialize(int argc, VALUE* argv, VALUE self)
 {
@@ -215,4 +199,22 @@ VALUE rb_Table32_Fill(VALUE self, VALUE val)
 		data[i] = v;
 	}
 	return self;
+}
+
+void Init_Table32()
+{
+	rb_cTable32 = rb_define_class("Table32", rb_cObject);
+	rb_define_alloc_func(rb_cTable32, rb_Table32_Alloc);
+	rb_define_method(rb_cTable32, "initialize", _rbf rb_Table32_initialize, -1);
+	rb_define_method(rb_cTable32, "[]", _rbf rb_Table32_get, -1);
+	rb_define_method(rb_cTable32, "[]=", _rbf rb_Table32_set, -1);
+	rb_define_method(rb_cTable32, "xsize", _rbf rb_Table32_xSize, 0);
+	rb_define_method(rb_cTable32, "ysize", _rbf rb_Table32_ySize, 0);
+	rb_define_method(rb_cTable32, "zsize", _rbf rb_Table32_zSize, 0);
+	rb_define_method(rb_cTable32, "dim", _rbf rb_Table32_dim, 0);
+	rb_define_method(rb_cTable32, "resize", _rbf rb_Table32_resize, -1);
+	rb_define_method(rb_cTable32, "fill", _rbf rb_Table32_Fill, 1);
+
+	rb_define_method(rb_cTable32, "_dump", _rbf rb_Table32_Save, 1);
+	rb_define_singleton_method(rb_cTable32, "_load", _rbf rb_Table32_Load, 1);
 }

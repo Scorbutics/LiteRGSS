@@ -1,5 +1,16 @@
-#include "LiteRGSS.h"
-#include "Bitmap.h"
+#include "Yuki_Gif.h"
+#include <cstddef>
+#include "libnsgif.hpp"
+#include "Texture_Bitmap.h"
+
+#define BYTES_PER_PIXEL 4
+#define MAX_IMAGE_BYTES (48 * 1024 * 1024)
+
+struct rb_yuki_gif_data {
+	gif_animation gif;
+	unsigned long frame = 0;
+	double counter = 0.0;
+};
 
 VALUE rb_cYukiGifReader = Qnil;
 VALUE rb_cYukiGifError = Qnil;
@@ -75,26 +86,6 @@ VALUE rb_Yuki_Gif_Alloc(VALUE klass)
 	return Data_Wrap_Struct(klass, NULL, rb_Yuki_Gif_Free, gif);
 }
 
-void Init_YukiGifReader()
-{
-	rb_cYukiGifReader = rb_define_class_under(rb_mYuki, "GifReader", rb_cObject);
-	rb_define_alloc_func(rb_cYukiGifReader, rb_Yuki_Gif_Alloc);
-	rb_cYukiGifError = rb_define_class_under(rb_cYukiGifReader, "Error", rb_eStandardError);
-	rb_define_method(rb_cYukiGifReader, "initialize", _rbf rb_Yuki_GifReader_Initialize, -1);
-	rb_define_method(rb_cYukiGifReader, "update", _rbf rb_Yuki_GifReader_Update, 1);
-	rb_define_method(rb_cYukiGifReader, "draw", _rbf rb_Yuki_GifReader_Draw, 1);
-	rb_define_method(rb_cYukiGifReader, "width", _rbf rb_Yuki_GifReader_Width, 0);
-	rb_define_method(rb_cYukiGifReader, "height", _rbf rb_Yuki_GifReader_Height, 0);
-	rb_define_method(rb_cYukiGifReader, "frame", _rbf rb_Yuki_GifReader_Frame, 0);
-	rb_define_method(rb_cYukiGifReader, "frame=", _rbf rb_Yuki_GifReader_Frame_set, 1);
-	rb_define_method(rb_cYukiGifReader, "frame_count", _rbf rb_Yuki_GifReader_FrameCount, 0);
-
-	rb_define_method(rb_cYukiGifReader, "clone", _rbf rb_Yuki_GifReader_Copy, 0);
-	rb_define_method(rb_cYukiGifReader, "dup", _rbf rb_Yuki_GifReader_Copy, 0);
-
-	rb_define_singleton_method(rb_cYukiGifReader, "delta_counter=", _rbf rb_Yuki_GifReader_SetDeltaCounter, 1);
-}
-
 VALUE rb_Yuki_GifReader_Initialize(int argc, VALUE *argv, VALUE self)
 {
 	auto& gif = rb::Get<rb_yuki_gif_data>(self);;
@@ -128,6 +119,17 @@ VALUE rb_Yuki_GifReader_Initialize(int argc, VALUE *argv, VALUE self)
 	return self;
 }
 
+VALUE rb_Yuki_GifReader_Draw(VALUE self, VALUE bitmap)
+{
+	auto& gif = rb::Get<rb_yuki_gif_data>(self);
+	if (rb_obj_is_kind_of(bitmap, rb_cBitmap) == Qtrue)
+	{
+		sf::Texture& text = rb::Get<TextureElement>(bitmap)->getTexture();
+		text.update(reinterpret_cast<sf::Uint8*>(gif.gif.frame_image), gif.gif.width, gif.gif.height, 0, 0);
+	}
+	return self;
+}
+
 VALUE rb_Yuki_GifReader_Update(VALUE self, VALUE bitmap)
 {
 	auto& gif = rb::Get<rb_yuki_gif_data>(self);
@@ -149,17 +151,6 @@ VALUE rb_Yuki_GifReader_Update(VALUE self, VALUE bitmap)
 			rb_raise(rb_cYukiGifError, "Failed to decode GIF frame");
 	}
 	gif.counter += rb_YukiGifReaderFrameDelta;
-	return self;
-}
-
-VALUE rb_Yuki_GifReader_Draw(VALUE self, VALUE bitmap)
-{
-	auto& gif = rb::Get<rb_yuki_gif_data>(self);
-	if (rb_obj_is_kind_of(bitmap, rb_cBitmap) == Qtrue)
-	{
-		sf::Texture& text = rb_Bitmap_getTexture(bitmap);
-		text.update(reinterpret_cast<sf::Uint8*>(gif.gif.frame_image), gif.gif.width, gif.gif.height, 0, 0);
-	}
 	return self;
 }
 
@@ -204,4 +195,24 @@ VALUE rb_Yuki_GifReader_Copy(VALUE self)
 {
 	rb_raise(rb_eRGSSError, "Gif cannot be cloned or duplicated.");
 	return self;
+}
+
+void Init_YukiGifReader()
+{
+	rb_cYukiGifReader = rb_define_class_under(rb_mYuki, "GifReader", rb_cObject);
+	rb_define_alloc_func(rb_cYukiGifReader, rb_Yuki_Gif_Alloc);
+	rb_cYukiGifError = rb_define_class_under(rb_cYukiGifReader, "Error", rb_eStandardError);
+	rb_define_method(rb_cYukiGifReader, "initialize", _rbf rb_Yuki_GifReader_Initialize, -1);
+	rb_define_method(rb_cYukiGifReader, "update", _rbf rb_Yuki_GifReader_Update, 1);
+	rb_define_method(rb_cYukiGifReader, "draw", _rbf rb_Yuki_GifReader_Draw, 1);
+	rb_define_method(rb_cYukiGifReader, "width", _rbf rb_Yuki_GifReader_Width, 0);
+	rb_define_method(rb_cYukiGifReader, "height", _rbf rb_Yuki_GifReader_Height, 0);
+	rb_define_method(rb_cYukiGifReader, "frame", _rbf rb_Yuki_GifReader_Frame, 0);
+	rb_define_method(rb_cYukiGifReader, "frame=", _rbf rb_Yuki_GifReader_Frame_set, 1);
+	rb_define_method(rb_cYukiGifReader, "frame_count", _rbf rb_Yuki_GifReader_FrameCount, 0);
+
+	rb_define_method(rb_cYukiGifReader, "clone", _rbf rb_Yuki_GifReader_Copy, 0);
+	rb_define_method(rb_cYukiGifReader, "dup", _rbf rb_Yuki_GifReader_Copy, 0);
+
+	rb_define_singleton_method(rb_cYukiGifReader, "delta_counter=", _rbf rb_Yuki_GifReader_SetDeltaCounter, 1);
 }

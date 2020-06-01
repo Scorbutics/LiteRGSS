@@ -1,8 +1,9 @@
 #include "LiteRGSS.h"
-#include "Bitmap.h"
+#include "rbAdapter.h"
+#include "Texture_Bitmap.h"
 #include "CViewport_Element.h"
 #include "CWindow_Element.h"
-#include "CGraphics.h"
+#include "GraphicsSingleton.h"
 #include "CRect_Element.h"
 #include <iostream>
 
@@ -107,8 +108,10 @@ void CWindow_Element::updateVertices()
 		return;
 	if (texture == nullptr)
 		return;
+	/*
 	if (rb_DrawableDisposable_disposed(rBitmap) == Qtrue)
 		return;
+	*/
 	if (NIL_P(rWindowBuilder))
 		return;
 	long wt = NUM2LONG(rWidth);
@@ -566,8 +569,8 @@ void CWindow_Element::updateView()
 	view.setCenter(static_cast<float>(NUM2LONG(rOX) + width / 2),
 		static_cast<float>(NUM2LONG(rOY) + height / 2));
 	view.setSize(static_cast<float>(width), static_cast<float>(height));
-	float sw = static_cast<float>(CGraphics::Get().screenWidth());
-	float sh = static_cast<float>(CGraphics::Get().screenHeight());
+	float sw = static_cast<float>(GraphicsSingleton::Get().screenWidth());
+	float sh = static_cast<float>(GraphicsSingleton::Get().screenHeight());
 	sf::FloatRect frect(x / sw, y / sh, width / sw, height / sh);
 	view.setViewport(frect);
 }
@@ -600,8 +603,10 @@ sf::Sprite& CWindow_Element::getCursorSprite()
 
 void CWindow_Element::resetPausePosition()
 {
+	/*
 	if (NIL_P(rPauseSkin))
 		return;
+	
 	long pause_x, pause_y;
 	if (NIL_P(rPauseX))
 		pause_x = (NUM2LONG(rWidth) - rb_Bitmap_getTexture(rPauseSkin).getSize().x) / 2;
@@ -614,6 +619,7 @@ void CWindow_Element::resetPausePosition()
 	pause_x += NUM2LONG(rX);
 	pause_y += NUM2LONG(rY);
 	pause_sprite.setPosition(sf::Vector2f(pause_x, pause_y));
+	*/
 }
 
 void CWindow_Element::resetCursorPosition(sf::IntRect * rect)
