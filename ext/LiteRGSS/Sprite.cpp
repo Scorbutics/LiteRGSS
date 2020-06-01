@@ -42,8 +42,8 @@ static VALUE rb_Sprite_Initialize(int argc, VALUE* argv, VALUE self) {
 			rb_raise(rb_eRGSSError, "Invalid viewport provided to instanciate a Sprite.");
 			return Qnil;
 		}
-		//viewport.initAndAdd(sprite);
-		sprite.init(cgss::Sprite::create(*viewport.instance()));
+		viewport.initAndAdd(sprite);
+		//sprite.init(cgss::Sprite::create(*viewport.instance()));
 		sprite.rViewport = argv[0];
 	}
 	/*
@@ -265,27 +265,7 @@ static VALUE rb_Sprite_getOpacity(VALUE self) {
 
 static VALUE rb_Sprite_getRect(VALUE self) {
 	auto& sprite = rb::Get<SpriteElement>(self);
-	VALUE rc = sprite.rRect;
-
-	// Either it's already initialized, so we just have to return the VALUE
-	if (!NIL_P(rc)) {
-		return rc;
-	}
-
-	// Or we need to perform a lazy initialization of rRect
-	/* Creating rect */
-	VALUE argv[2];
-	argv[0] = argv[1] = LONG2FIX(0);
-	rc = rb_class_new_instance(2, argv, rb_cRect);
-
-	auto& rect = rb::Get<RectangleElement>(rc);
-	/* Setting rect parameter */
-	rect->setRect(sprite->getTextureRect());
-
-	/* Linking Rect */
-	sprite->bindRectangle(rect.instance());
-	sprite.rRect = rc;
-	return rc;
+	return rb_Rect_LazyInitDrawable(sprite.rRect, *sprite.instance(), sprite->getTextureRect());
 }
 
 static VALUE rb_Sprite_setRect(VALUE self, VALUE val) {

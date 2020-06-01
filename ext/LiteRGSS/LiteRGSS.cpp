@@ -20,7 +20,7 @@
 #include "ShaderSprite.h"
 #include "Yuki_Gif.h"
 #include "Shape.h"
-#include "Window.h"
+#include "FramedView_Window.h"
 #include "SpriteMap.h"
 
 VALUE rb_mLiteRGSS = Qnil;
