@@ -3,9 +3,6 @@
 #include "Graphics.h"
 #include "rbAdapter.h"
 
-struct SpriteElement;
-namespace rb {
-	template<>
-	void Mark<SpriteElement>(SpriteElement* sprite);
-}
+#include "SpriteElement.h"
+
 #endif

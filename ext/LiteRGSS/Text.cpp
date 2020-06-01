@@ -80,16 +80,19 @@ VALUE rb_Text_Initialize(int argc, VALUE* argv, VALUE self)
 	VALUE fontid, viewport, x, y, width, height, str, align, outlinesize, colorid, sizeid;
 	VALUE opacity = LONG2NUM(255);
 	rb_scan_args(argc, argv,"74", &fontid, &viewport, &x, &y, &width, &height, &str, &align, &outlinesize, &colorid, &sizeid);
+	
+	//TODO
 	/* Viewport */
+	/*
 	if(rb_obj_is_kind_of(viewport, rb_cViewport) == Qtrue)
 	{
 		CViewport_Element* viewporte;
 		Data_Get_Struct(viewport, CViewport_Element, viewporte);
 		viewporte->add(text);
 		text.rViewport = viewport;
-	}
+	}*/
 	/* If a window is specified */
-	else if (rb_obj_is_kind_of(viewport, rb_cWindow) == Qtrue)
+	/*else if (rb_obj_is_kind_of(viewport, rb_cWindow) == Qtrue)
 	{
 		auto& window = rb::GetSafe<CWindow_Element>(viewport, rb_cWindow);
 		window.add(text);
@@ -100,8 +103,11 @@ VALUE rb_Text_Initialize(int argc, VALUE* argv, VALUE self)
 	{
 		CGraphics::Get().add(text);
 		text.rViewport = Qnil;
-	}
-	
+	}*/
+
+	//TODO
+	text.rViewport = Qnil;
+
 	/* Surface */
 	rb_check_type(x, T_FIXNUM);
 	text.rX = x;

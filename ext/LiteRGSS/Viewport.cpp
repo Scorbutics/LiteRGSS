@@ -1,12 +1,10 @@
-#include "LiteRGSS.h"
 #include "CGraphics.h"
-
+#include "common.h"
+#include "rbAdapter.h"
 #include "Common/Rectangle.h"
 
 #include "ViewportElement.h"
 #include "RectangleElement.h"
-
-#include "CTone_Element.h"
 
 VALUE rb_cViewport = Qnil;
 
@@ -30,19 +28,6 @@ VALUE rb_Viewport_Copy(VALUE self) {
 }
 
 VALUE rb_Viewport_Initialize(int argc, VALUE* argv, VALUE self) {
-	VALUE x, y, width, height;
-	rb_scan_args(argc, argv, "22", &x, &y, &width, &height);
-	/* Parameter normalization */
-	if (NIL_P(width)) {
-		width = x;
-		height = y;
-		x = LONG2FIX(0);
-		y = LONG2FIX(0);
-	} else if (NIL_P(height)) {
-		height = width;
-		width = y;
-		y = LONG2FIX(0);
-	}
 	/* Viewport setting */
 	auto& viewport = rb::Get<ViewportElement>(self);
 	viewport.init(CGraphics::Get().addView<cgss::Viewport>());

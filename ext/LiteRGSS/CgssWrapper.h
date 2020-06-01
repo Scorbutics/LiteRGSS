@@ -4,6 +4,10 @@
 #include <memory>
 #include "ruby_common.h"
 
+namespace cgss {
+    class Sprite;
+}
+
 template <class T, template <class> class ContainerPtr>
 class CgssWrapper {
 public:
@@ -13,6 +17,11 @@ public:
     template <class ... Args>
     void init(Args&& ... args) {
         data = ContainerPtr<T>(new T(std::forward<Args>(args)...));
+    }
+
+    template <class ... Args>
+    static T create(Args&& ... args) {
+        return T::create(std::forward<Args>(args)...);
     }
 
     T* instance() { return data.get(); }

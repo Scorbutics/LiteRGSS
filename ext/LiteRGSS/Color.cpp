@@ -3,6 +3,10 @@
 
 VALUE rb_cColor = Qnil;
 
+template<>
+void rb::Mark<sf::Color>(sf::Color* color) {
+}
+
 void Init_Color()
 {
 	rb_cColor = rb_define_class_under(rb_mLiteRGSS, "Color", rb_cObject);

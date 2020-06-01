@@ -5,6 +5,10 @@
 
 VALUE rb_cImage = Qnil;
 
+template<>
+void rb::Mark<sf::Image>(sf::Image* image) {
+}
+
 void Init_Image()
 {
 	rb_cImage = rb_define_class_under(rb_mLiteRGSS, "Image", rb_cDisposable);

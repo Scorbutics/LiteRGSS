@@ -4,10 +4,7 @@
 #include "ruby.h"
 #include "CShaderFactory.h"
 #include "CGraphicsConfig.h"
-#include "CGraphicsSnapshot.h"
-#include "CDrawableStack.h"
 #include "CGraphicsUpdateMessage.h"
-#include "CDrawable_Element.h"
 
 #include "Views/DisplayWindow.h"
 
@@ -43,8 +40,6 @@ public:
 	void transition(VALUE self, int argc, VALUE* argv);
 	void resizeScreen(int width, int height); 
 	void setShader(sf::RenderStates* shader);
-	void syncStackCppFromRuby();
-	void add(CDrawable_Element& element);
 
 	template <class T, class ... Args>
 	T add(Args&& ... args) {

@@ -16,6 +16,10 @@
 
 VALUE rb_cBitmap = Qnil;
 
+template<>
+void rb::Mark<TextureElement>(TextureElement* texture) {
+}
+
 void Init_Bitmap() {
 	rb_cBitmap = rb_define_class_under(rb_mLiteRGSS, "Bitmap", rb_cDisposable);
 	rb_define_alloc_func(rb_cBitmap, rb::Alloc<TextureElement>);

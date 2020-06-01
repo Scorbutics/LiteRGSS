@@ -2,26 +2,7 @@
 #define CGraphicsConfig_H
 
 #include <tuple>
-#include <SFML/Graphics.hpp>
 #include "LiteCGSS/Configuration/DisplayWindowSettings.h"
-
-/*
-struct CGraphicsVideoConfig {
-	sf::VideoMode vmode;
-	unsigned int width = 640;
-	unsigned int height = 480;
-	double scale = 1.0;
-};
-
-struct CGraphicsConfig {
-	CGraphicsVideoConfig video;
-	bool smoothScreen = false;
-	sf::String title;
-	unsigned int frameRate = 60;
-	bool vSync = false;
-	bool fullscreen = false;
-};
-*/
 
 class CGraphicsConfigLoader {
 public:

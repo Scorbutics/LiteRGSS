@@ -224,15 +224,6 @@ void CGraphics::freeze(VALUE self) {
 	//m_gameWindow.freeze(*game_window, self);
 }
 
-void CGraphics::syncStackCppFromRuby() {
-}
-
-void CGraphics::add(CDrawable_Element& element) {
-	//warnIfGraphicsUpdate();
-	// ??? TODO ???
-	//m_gameWindow.add(element);
-}
-
 void CGraphics::warnIfGraphicsUpdate() const {
 	if(InsideGraphicsUpdate) {
 		rb_warn("WARNING : Accessing Ruby data while updating the screen");

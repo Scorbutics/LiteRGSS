@@ -1,6 +1,8 @@
 #ifndef L_RECT_HEADER
 #define L_RECT_HEADER
 
+#include "RectangleElement.h"
+
 VALUE rb_Rect_initialize(int argc, VALUE* argv, VALUE self);
 VALUE rb_Rect_initialize_copy(VALUE self, VALUE other);
 VALUE rb_Rect_set(int argc, VALUE* argv, VALUE self);
@@ -17,5 +19,10 @@ VALUE rb_Rect_save(VALUE self, VALUE limit);
 VALUE rb_Rect_eql(VALUE self, VALUE other);
 VALUE rb_Rect_empty(VALUE self);
 VALUE rb_Rect_to_s(VALUE self);
+
+namespace rb {
+	template<>
+	void Mark<RectangleElement>(RectangleElement* rectangle);
+}
 
 #endif

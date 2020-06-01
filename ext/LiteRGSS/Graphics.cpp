@@ -120,7 +120,7 @@ VALUE rb_Graphics_height(VALUE self)
 }
 
 VALUE rb_Graphics_ReloadStack(VALUE self) {
-	CGraphics::Get().syncStackCppFromRuby();
+	// Deprecated
 	return self;
 }
 

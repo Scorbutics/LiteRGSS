@@ -106,21 +106,25 @@ VALUE rb_Window_Initialize(int argc, VALUE* argv, VALUE self)
 	
 	rb_scan_args(argc, argv, "01", &viewport);
 
+	//TODO
 	/* If a viewport was specified */
+	/*
 	if (argc == 1 && rb_obj_is_kind_of(argv[0], rb_cViewport) == Qtrue)
 	{
 		CViewport_Element* viewport;
 		Data_Get_Struct(argv[0], CViewport_Element, viewport);
 		viewport->add(window);
 		window.rViewport = argv[0];
-	}
+	}*/
 	/* Otherwise */
-	else
+	/*else
 	{
 		CGraphics::Get().add(window);
 		window.rViewport = Qnil;
-	}
-	
+	}*/
+
+	window.rViewport = Qnil;
+
 	//window.syncStackCppFromRuby();
 
 	/* Rect definition */

@@ -5,6 +5,10 @@
 
 VALUE rb_cRect = Qnil;
 
+template<>
+void rb::Mark<RectangleElement>(RectangleElement* rectangle) {
+}
+
 void Init_Rect() {
 	rb_cRect = rb_define_class_under(rb_mLiteRGSS, "Rect", rb_cObject);
 

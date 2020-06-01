@@ -1,5 +1,6 @@
-#include "LiteRGSS.h"
 #include "log.h"
+#include "rbAdapter.h"
+#include "common.h"
 
 #include "CGraphics.h"
 
@@ -29,6 +30,7 @@ void rb::Mark<SpriteElement>(SpriteElement* spritePtr) {
 	rb_gc_mark(sprite.rZoomX);
 	rb_gc_mark(sprite.rZoomY);
 	rb_gc_mark(sprite.rRect);
+	rb_gc_mark(sprite.rMirror);
 }
 
 VALUE rb_Sprite_Initialize(int argc, VALUE* argv, VALUE self) {
@@ -41,6 +43,7 @@ VALUE rb_Sprite_Initialize(int argc, VALUE* argv, VALUE self) {
 			rb_raise(rb_eRGSSError, "Invalid viewport provided to instanciate a Sprite.");
 			return Qnil;
 		}
+		//viewport.initAndAdd(sprite);
 		sprite.init(cgss::Sprite::create(*viewport.instance()));
 		sprite.rViewport = argv[0];
 	}
@@ -73,10 +76,7 @@ VALUE rb_Sprite_Copy(VALUE self) {
 VALUE rb_Sprite_Dispose(VALUE self) {
 	auto& sprite = rb::Get<SpriteElement>(self);
 	sprite->dispose();
-	sprite.rViewport = Qnil;
-	sprite.rRect = Qnil;
-	sprite.rBitmap = Qnil;
-	LOG("[Sprite] Disposed");
+	//LOG("[Sprite] Disposed");
 	return Qnil;
 }
 
@@ -325,13 +325,13 @@ VALUE rb_Sprite_Index(VALUE self) {
 }
 
 VALUE rb_Sprite_width(VALUE self) {
-	VALUE rc = rb_Sprite_getRect(self);
-	return rb_Rect_getWidth(rc);
+	auto& rc = rb::Get<RectangleElement>(self);
+	return LONG2FIX(rc->getRect().width);
 }
 
 VALUE rb_Sprite_height(VALUE self) {
-	VALUE rc = rb_Sprite_getRect(self);
-	return rb_Rect_getHeight(rc);
+	auto& rc = rb::Get<RectangleElement>(self);
+	return LONG2FIX(rc->getRect().height);
 }
 
 void Init_Sprite() {

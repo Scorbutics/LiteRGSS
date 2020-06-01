@@ -21,4 +21,8 @@ struct SpriteElement :
 	VALUE rMirror = Qfalse;
 };
 
+namespace rb {
+	template<>
+	void Mark<SpriteElement>(SpriteElement* sprite);
+}
 #endif

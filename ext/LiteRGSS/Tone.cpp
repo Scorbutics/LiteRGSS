@@ -5,6 +5,10 @@ VALUE rb_cTone = Qnil;
 
 void __Tone_Check_LinkedObject(CTone_Element& tone);
 
+template<>
+void rb::Mark<CTone_Element>(CTone_Element* tone) {
+}
+
 void Init_Tone()
 {
 	rb_cTone = rb_define_class_under(rb_mLiteRGSS, "Tone", rb_cObject);
