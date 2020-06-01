@@ -1,6 +1,6 @@
 #include "LiteRGSS.h"
 #include "rbAdapter.h"
-#include "common.h"
+#include "NormalizeNumbers.h"
 #include "CRect_Element.h"
 #include "CShape_Element.h"
 #include "Texture_Bitmap.h"
@@ -122,6 +122,13 @@ VALUE rb_Shape_getBitmap(VALUE self)
 {
 	auto& shape = rb::Get<CShape_Element>(self);
 	return shape.rBitmap;
+}
+
+static inline void rect_copy(sf::IntRect* dest, const sf::IntRect* src) {
+	dest->left = src->left;
+	dest->top = src->top;
+	dest->width = src->width;
+	dest->height = src->height;
 }
 
 VALUE rb_Shape_setBitmap(VALUE self, VALUE bitmap)

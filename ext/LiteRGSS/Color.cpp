@@ -1,7 +1,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include "LiteRGSS.h"
 #include "rbAdapter.h"
-#include "common.h"
+#include "NormalizeNumbers.h"
 #include "Color.h"
 
 VALUE rb_cColor = Qnil;

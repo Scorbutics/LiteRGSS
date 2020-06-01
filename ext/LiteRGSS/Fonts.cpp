@@ -1,6 +1,6 @@
 #include <SFML/Graphics/Font.hpp>
 #include "LiteRGSS.h"
-#include "common.h"
+#include "NormalizeNumbers.h"
 #include "Fonts.h"
 #include "Color.h"
 

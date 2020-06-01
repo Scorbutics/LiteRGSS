@@ -1,5 +1,5 @@
 #include "rbAdapter.h"
-#include "common.h"
+#include "NormalizeNumbers.h"
 #include "Table.h"
 
 VALUE rb_cTable = Qnil;

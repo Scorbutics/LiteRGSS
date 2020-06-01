@@ -1,7 +1,7 @@
 #include "LiteRGSS.h"
 #include "log.h"
 #include "rbAdapter.h"
-#include "common.h"
+#include "NormalizeNumbers.h"
 
 #include "GraphicsSingleton.h"
 #include "Sprite.h"

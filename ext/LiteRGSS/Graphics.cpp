@@ -1,5 +1,5 @@
 #include "LiteRGSS.h"
-#include "common.h"
+#include "NormalizeNumbers.h"
 #include "Graphics.h"
 #include "GraphicsSingleton.h"
 #include "CDrawableStack.h"

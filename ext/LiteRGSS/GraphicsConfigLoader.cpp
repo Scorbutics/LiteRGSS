@@ -1,6 +1,6 @@
 #include "LiteRGSS.h"
 #include "RubyValue.h"
-#include "common.h"
+#include "NormalizeNumbers.h"
 #include "GraphicsConfigLoader.h"
 
 cgss::DisplayWindowVideoSettings GraphicsConfigLoader::loadVideoFromConfigs() const {

@@ -1,5 +1,5 @@
 #include "rbAdapter.h"
-#include "common.h"
+#include "NormalizeNumbers.h"
 #include "Table32.h"
 
 VALUE rb_cTable32 = Qnil;

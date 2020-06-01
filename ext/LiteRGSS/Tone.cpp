@@ -1,7 +1,7 @@
 #include "LiteRGSS.h"
 #include "Tone.h"
 #include "rbAdapter.h"
-#include "common.h"
+#include "NormalizeNumbers.h"
 #include "CTone_Element.h"
 
 VALUE rb_cTone = Qnil;
@@ -34,7 +34,7 @@ VALUE rb_Tone_InitializeCopy(VALUE self, VALUE original)
 {
 	auto* tonev = rb::Get<CTone_Element>(self).getTone();
 	auto* toneov = rb::GetSafe<CTone_Element>(original, rb_cTone).getTone();
-	tone_copy(tonev, toneov);
+	*tonev = *toneov;
 	return self;
 }
 

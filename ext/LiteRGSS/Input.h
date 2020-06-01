@@ -1,6 +1,7 @@
 #ifndef Input_H
 #define Input_H
-
+#include <string>
+#include <SFML/Window/Keyboard.hpp>
 #include "RubyValue.h"
 extern VALUE rb_mInput;
 extern VALUE rb_mMouse;

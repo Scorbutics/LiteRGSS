@@ -1,6 +1,6 @@
 #include "LiteRGSS.h"
 #include "Text.h"
-#include "common.h"
+#include "NormalizeNumbers.h"
 #include "rbAdapter.h"
 #include "Fonts.h"
 #include "CText_Element.h"

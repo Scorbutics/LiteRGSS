@@ -1,6 +1,6 @@
 #include "LiteRGSS.h"
 #include "GraphicsSingleton.h"
-#include "common.h"
+#include "NormalizeNumbers.h"
 #include "rbAdapter.h"
 
 #include "Drawable_Disposable.h"

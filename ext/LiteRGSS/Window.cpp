@@ -2,7 +2,7 @@
 #include "Drawable_Disposable.h"
 #include "Texture_Bitmap.h"
 #include "rbAdapter.h"
-#include "common.h"
+#include "NormalizeNumbers.h"
 #include "CWindow_Element.h"
 #include "CRect_Element.h"
 #include "GraphicsSingleton.h"
@@ -322,6 +322,13 @@ VALUE rb_Window_getCursorRect(VALUE self)
 	window.bindRect(&rect);
 	window.rCursorRect = rc;
 	return rc;
+}
+
+static inline void rect_copy(sf::IntRect* dest, const sf::IntRect* src) {
+	dest->left = src->left;
+	dest->top = src->top;
+	dest->width = src->width;
+	dest->height = src->height;
 }
 
 VALUE rb_Window_setCursorRect(VALUE self, VALUE val)

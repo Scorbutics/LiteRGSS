@@ -2,7 +2,7 @@
 #define LITERGSS_INCLUDE_RUBY_THREAD
 #include "RubyValue.h"
 #include "log.h"
-#include "common.h"
+#include "NormalizeNumbers.h"
 
 #include "Input.h"
 
