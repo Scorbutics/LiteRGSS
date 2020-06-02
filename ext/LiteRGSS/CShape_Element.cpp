@@ -1,4 +1,3 @@
-#include "CViewport_Element.h"
 #include "CShape_Element.h"
 
 void CShape_Element::draw(sf::RenderTarget& target) const

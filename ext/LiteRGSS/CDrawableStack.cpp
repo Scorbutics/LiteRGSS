@@ -1,6 +1,5 @@
 #include "CDrawableStack.h"
-#include "CText_Element.h"
-#include "CSprite_Element.h"
+
 
 void CDrawableStack::draw(sf::View& defview, sf::RenderTarget& target) const  {
 	bool was_viewport = false;
@@ -20,7 +19,7 @@ void CDrawableStack::drawFast(sf::RenderTarget& target) const {
 }
 
 void CDrawableStack::updateContentsOpacity(long opacity) {
-	for (auto& sp : *this) {
+	/*for (auto& sp : *this) {
 		CText_Element* text = dynamic_cast<CText_Element*>(sp);
 		if (text != nullptr) {
 			auto& text2 = text->getText();
@@ -38,5 +37,5 @@ void CDrawableStack::updateContentsOpacity(long opacity) {
 				sprite->getSprite().setColor(col);
 			}
 		}
-	}
+	}*/
 }
