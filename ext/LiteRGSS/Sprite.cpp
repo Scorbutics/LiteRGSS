@@ -8,6 +8,7 @@
 #include "Rect.h"
 #include "Texture_Bitmap.h"
 #include "Viewport.h"
+#include "FramedView_Window.h"
 #include "Drawable_Disposable.h"
 
 VALUE rb_cSprite = Qnil;
@@ -30,41 +31,6 @@ void rb::Mark<SpriteElement>(SpriteElement* spritePtr) {
 	rb_gc_mark(sprite.rZoomY);
 	rb_gc_mark(sprite.rRect);
 	rb_gc_mark(sprite.rMirror);
-}
-
-static VALUE rb_Sprite_Initialize(int argc, VALUE* argv, VALUE self) {
-	auto& sprite = rb::Get<SpriteElement>(self);
-
-	// If a viewport was specified 
-	if(argc == 1 && rb_obj_is_kind_of(argv[0], rb_cViewport) == Qtrue) {
-		auto& viewport = rb::Get<ViewportElement>(argv[0]);		
-		if (viewport.instance() == nullptr) {
-			rb_raise(rb_eRGSSError, "Invalid viewport provided to instanciate a Sprite.");
-			return Qnil;
-		}
-		viewport.initAndAdd(sprite);
-		//sprite.init(cgss::Sprite::create(*viewport.instance()));
-		sprite.rViewport = argv[0];
-	}
-	/*
-	// If a window is specified 
-	else if (argc == 1 && rb_obj_is_kind_of(argv[0], rb_cWindow) == Qtrue)
-	{
-		//TODO
-		auto& window = rb::GetSafe<CWindow_Element>(argv[0], rb_cWindow);
-		window.add(sprite);
-		sprite.rViewport = argv[0];
-		VALUE opacity = LONG2NUM(NUM2LONG(window.rOpacity) * NUM2LONG(window.rBackOpacity) / 255);
-		rb_Sprite_setOpacity(self, opacity);
-	}
-	*/
-	// Otherwise
-	else {
-		sprite.init(GraphicsSingleton::Get().add<cgss::Sprite>());
-	}	
-
-	/* Initializing Instance variables */
-	return self;
 }
 
 static VALUE rb_Sprite_Copy(VALUE self) {
@@ -311,6 +277,36 @@ static VALUE rb_Sprite_width(VALUE self) {
 static VALUE rb_Sprite_height(VALUE self) {
 	auto& rc = rb::Get<RectangleElement>(self);
 	return LONG2FIX(rc->getRect().height);
+}
+
+static VALUE rb_Sprite_Initialize(int argc, VALUE* argv, VALUE self) {
+	auto& sprite = rb::Get<SpriteElement>(self);
+
+	// If a viewport was specified 
+	if(argc == 1 && rb_obj_is_kind_of(argv[0], rb_cViewport) == Qtrue) {
+		auto& viewport = rb::Get<ViewportElement>(argv[0]);		
+		if (viewport.instance() == nullptr) {
+			rb_raise(rb_eRGSSError, "Invalid viewport provided to instanciate a Sprite.");
+			return Qnil;
+		}
+		viewport.initAndAdd(sprite);
+		sprite.rViewport = argv[0];
+	}
+	// If a window is specified 
+	else if (argc == 1 && rb_obj_is_kind_of(argv[0], rb_cWindow) == Qtrue) {
+		auto& window = rb::Get<FramedViewElement>(argv[0]);
+		window.initAndAdd(sprite);
+		sprite.rViewport = argv[0];
+		VALUE opacity = LONG2NUM(NUM2LONG(window.rOpacity) * NUM2LONG(window.rBackOpacity) / 255);
+		rb_Sprite_setOpacity(self, opacity);
+	}
+	// Otherwise
+	else {
+		sprite.init(GraphicsSingleton::Get().add<cgss::Sprite>());
+	}	
+
+	/* Initializing Instance variables */
+	return self;
 }
 
 void Init_Sprite() {
