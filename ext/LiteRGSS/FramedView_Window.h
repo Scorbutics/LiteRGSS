@@ -36,7 +36,7 @@ struct FramedViewElement :
 
     template <class Drawable, class ... Args>
     void initAndAdd(Drawable& drawable, Args&& ... args) {
-        drawable.init(Drawable::create(*instance()), std::forward<Args>(args)...);
+        drawable.init(Drawable::create(*instance(), std::forward<Args>(args)...));
     }
 };
 
