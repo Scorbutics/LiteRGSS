@@ -2,6 +2,10 @@
 #include "GraphicsSingleton.h"
 #include "NormalizeNumbers.h"
 #include "rbAdapter.h"
+#include "CTone_Element.h"
+#include "Tone.h"
+#include "BlendMode.h"
+#include "Color.h"
 
 #include "Drawable_Disposable.h"
 #include "Viewport.h"
@@ -83,7 +87,7 @@ static VALUE rb_Viewport_setRect(VALUE self, VALUE val) {
 	if (!rb::CheckType<RectangleElement>(self, rb_cRect).empty()) {
 		return Qnil;
 	}
-	
+
 	auto* rect = rb::GetPtr<RectangleElement>(val);	
 	if (rect == nullptr || *rect == nullptr) { 
 		viewport->bindRectangle(nullptr);
@@ -99,68 +103,46 @@ static VALUE rb_Viewport_setRect(VALUE self, VALUE val) {
 }
 
 static VALUE rb_Viewport_getTone(VALUE self) {
-	/*auto& viewport = rb::Get<CViewport_Element>(self);
+	auto& viewport = rb::Get<ViewportElement>(self);
 	VALUE tn = viewport.rTone;
-	if (!NIL_P(tn))
-		return tn;*/
+	if (!NIL_P(tn)) {
+		return tn;
+	}
 	/* New tone */
-	/*
+
 	VALUE argv[4] = {LONG2FIX(0), LONG2FIX(0), LONG2FIX(0), LONG2FIX(0)};
 	viewport.rColor = rb_class_new_instance(4, argv, rb_cColor);
 	tn = rb_class_new_instance(4, argv, rb_cTone);
+	/*
 	CTone_Element* tone;
 	Data_Get_Struct(tn, CTone_Element, tone);
 	tone->bindViewport(&viewport);
-	viewport.rTone = tn;
-	viewport.create_render();
-	return tn;
 	*/
-	return Qnil;
+	viewport.rTone = tn;
+	//viewport.create_render();
+	return tn;
 }
 
 static VALUE rb_Viewport_setTone(VALUE self, VALUE val) {
-	/*
 	VALUE tn = rb_Viewport_getTone(self);
-	if (RDATA(tn)->data == nullptr) { return Qnil; }
-	if (rb_obj_is_kind_of(val, rb_cTone) != Qtrue) {
-		rb_raise(rb_eTypeError, "Expected Tone, got %s", RSTRING_PTR(rb_class_name(CLASS_OF(val))));
-		return Qnil;
-	}
-	if (RDATA(val)->data == nullptr) { return Qnil; }
-	auto& viewport = rb::Get<ViewportElement>(self);
-	CTone_Element* tonesrc;
-	Data_Get_Struct(val, CTone_Element, tonesrc);
-	CTone_Element* tonedest;
-	Data_Get_Struct(tn, CTone_Element, tonedest);
-	sf::Glsl::Vec4* stone = tonesrc->getTone();
-	sf::Glsl::Vec4* vtone = viewport.getTone();
-	if (vtone->x != stone->x || vtone->y != stone->y || vtone->z != stone->z || vtone->w != vtone->w) {
-		tone_copy(tonedest->getTone(), stone);
-		tone_copy(vtone, stone);
-		viewport.updatetone();
-	}*/
+	auto& tonesrc = rb::GetSafe<CTone_Element>(val, rb_cTone);
+	auto& tonedst = rb::Get<CTone_Element>(tn);
+	tonedst = tonesrc;
 	return val;
 }
 
 static VALUE rb_Viewport_getColor(VALUE self) {
-	/*
 	VALUE tn = rb_Viewport_getTone(self);
 	auto& viewport = rb::Get<ViewportElement>(self);
 	return viewport.rColor;
-	*/
-	return Qnil;
 }
 
 static VALUE rb_Viewport_setColor(VALUE self, VALUE val) {
-	/*
 	VALUE tn = rb_Viewport_getTone(self);
 	auto& viewport = rb::Get<ViewportElement>(self);
-	if(rb_obj_is_kind_of(val, rb_cColor) != Qtrue) {
-		rb_raise(rb_eTypeError, "Expected Color, got %s", RSTRING_PTR(rb_class_name(CLASS_OF(val))));
-		return Qnil;
-	}
+	auto& color = rb::GetSafe<sf::Color>(val, rb_cColor);
+	// TODO ?
 	viewport.rColor = val;
-	*/
 	return self;
 }
 
@@ -226,24 +208,24 @@ static VALUE rb_Viewport_getRenderState(VALUE self) {
 }
 
 static VALUE rb_Viewport_setRenderState(VALUE self, VALUE val) {
-	//TODO
-	/*
 	sf::RenderStates* render_state;
 	auto& viewport = rb::Get<ViewportElement>(self);
 	rb_Viewport_getColor(self);
 	if (rb_obj_is_kind_of(val, rb_cBlendMode) == Qtrue) {
 		Data_Get_Struct(val, sf::RenderStates, render_state);
 		if (render_state) {
-			viewport.setRenderStates(render_state);
+			//TODO bind it instead of copy !
+			viewport->setRenderStates(*render_state);
 			viewport.rRenderState = val;
+			/*
 			viewport.create_render(); // Make sure the global render is initialized
 			viewport.updatetone();
+			*/
 			return self;
 		}
 	}
-	viewport->setRenderStates(nullptr);
+	//viewport->setRenderStates(nullptr);
 	viewport.rRenderState = Qfalse; // False to prevent intempestive delete
-	*/
 	return self;
 }
 
