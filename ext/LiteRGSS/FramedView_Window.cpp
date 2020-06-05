@@ -4,7 +4,6 @@
 #include "Texture_Bitmap.h"
 #include "rbAdapter.h"
 #include "NormalizeNumbers.h"
-#include "CRect_Element.h"
 #include "GraphicsSingleton.h"
 #include "Rect.h"
 #include "Viewport.h"

@@ -2,7 +2,6 @@
 #include "NormalizeNumbers.h"
 #include "Graphics.h"
 #include "GraphicsSingleton.h"
-#include "CDrawableStack.h"
 #include "BlendMode.h"
 
 VALUE rb_mGraphics = Qnil;

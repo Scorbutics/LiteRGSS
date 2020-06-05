@@ -1,10 +1,10 @@
-#ifndef L_RBADAPTER_HEADER
-#define L_RBADAPTER_HEADER
+#ifndef rbAdapter_H
+#define rbAdapter_H
 #include <string>
 #include <stdexcept>
 #include <functional>
 #include <ruby.h>
-#include "Common/Meta/metadata.h"
+#include <LiteCGSS/Common/Meta/metadata.h>
 
 extern VALUE rb_eRGSSError;
 
@@ -103,14 +103,6 @@ namespace rb {
 
 	template <class T>
 	void Mark(T* data) {}
-
-	template <class T>
-	VALUE AllocDrawable(VALUE klass) {
-		auto value = new T();
-		auto self = Data_Wrap_Struct(klass, Mark<T>, Free<T>, value);
-		value->setSelf(self);
-		return self;
-	}
 
 	template <class T>
 	VALUE Alloc(VALUE klass) {

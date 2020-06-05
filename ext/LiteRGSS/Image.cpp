@@ -2,7 +2,6 @@
 #include "rbAdapter.h"
 #include "lodepng.h"
 #include "Texture_Bitmap.h"
-#include "CRect_Element.h"
 #include "Drawable_Disposable.h"
 #include "Color.h"
 #include "Rect.h"
@@ -136,12 +135,12 @@ VALUE rb_Image_blt_fast(VALUE self, VALUE x, VALUE y, VALUE src_image, VALUE rec
 {
 	auto& img = rb::Get<sf::Image>(self);
 	auto& img2 = rb::GetSafe<sf::Image>(src_image, rb_cImage);
-	auto& s_rect = rb::GetSafe<CRect_Element>(rect, rb_cRect);
+	auto& s_rect = rb::GetSafe<RectangleElement>(rect, rb_cRect);
 	img.copy(
 		img2,
 		NUM2ULONG(x),
 		NUM2ULONG(y),
-		s_rect.getRect()
+		s_rect->getRect()
 	);
 	return self;
 }
@@ -150,12 +149,12 @@ VALUE rb_Image_blt(VALUE self, VALUE x, VALUE y, VALUE src_image, VALUE rect)
 {
 	auto& img = rb::Get<sf::Image>(self);
 	auto& img2 = rb::GetSafe<sf::Image>(src_image, rb_cImage);
-	auto& s_rect = rb::GetSafe<CRect_Element>(rect, rb_cRect);
+	auto& s_rect = rb::GetSafe<RectangleElement>(rect, rb_cRect);
 	img.copy(
 		img2,
 		NUM2ULONG(x),
 		NUM2ULONG(y),
-		s_rect.getRect(),
+		s_rect->getRect(),
 		true
 	);
 	return self;
@@ -285,17 +284,17 @@ VALUE rb_Image_set_pixel(VALUE self, VALUE x, VALUE y, VALUE color)
 VALUE rb_Image_stretch_blt_fast(VALUE self, VALUE dest_rect, VALUE src_image, VALUE src_rect)
 {
 	auto& img = rb::Get<sf::Image>(self);
-	auto& dst_rc = rb::GetSafe<CRect_Element>(dest_rect, rb_cRect);
-	auto& src_rc = rb::GetSafe<CRect_Element>(src_rect, rb_cRect);
+	auto& dst_rc = rb::GetSafe<RectangleElement>(dest_rect, rb_cRect);
+	auto& src_rc = rb::GetSafe<RectangleElement>(src_rect, rb_cRect);
 	sf::Image& src_img = rb::GetSafe<sf::Image>(src_image, rb_cImage);
-	int s_w = src_rc.getRect().width;
-	int d_w = dst_rc.getRect().width;
-	int s_h = src_rc.getRect().height;
-	int d_h = dst_rc.getRect().height;
-	int os_x = src_rc.getRect().left;
-	int os_y = src_rc.getRect().top;
-	int od_x = dst_rc.getRect().left;
-	int od_y = dst_rc.getRect().top;
+	int s_w = src_rc->getRect().width;
+	int d_w = dst_rc->getRect().width;
+	int s_h = src_rc->getRect().height;
+	int d_h = dst_rc->getRect().height;
+	int os_x = src_rc->getRect().left;
+	int os_y = src_rc->getRect().top;
+	int od_x = dst_rc->getRect().left;
+	int od_y = dst_rc->getRect().top;
 	sf::Vector2u simg_size = src_img.getSize();
 	sf::Vector2u dimg_size = img.getSize();
 	int s_x, s_y, d_x, d_y;
@@ -332,18 +331,18 @@ VALUE rb_Image_stretch_blt_fast(VALUE self, VALUE dest_rect, VALUE src_image, VA
 VALUE rb_Image_stretch_blt(VALUE self, VALUE dest_rect, VALUE src_image, VALUE src_rect)
 {
 	auto& img = rb::Get<sf::Image>(self);
-	auto& dst_rc = rb::GetSafe<CRect_Element>(dest_rect, rb_cRect);
-	auto& src_rc = rb::GetSafe<CRect_Element>(src_rect, rb_cRect);
+	auto& dst_rc = rb::GetSafe<RectangleElement>(dest_rect, rb_cRect);
+	auto& src_rc = rb::GetSafe<RectangleElement>(src_rect, rb_cRect);
 	sf::Image& src_img = rb::GetSafe<sf::Image>(src_image, rb_cImage);
 	sf::Color src, dest;
-	int s_w = src_rc.getRect().width;
-	int d_w = dst_rc.getRect().width;
-	int s_h = src_rc.getRect().height;
-	int d_h = dst_rc.getRect().height;
-	int os_x = src_rc.getRect().left;
-	int os_y = src_rc.getRect().top;
-	int od_x = dst_rc.getRect().left;
-	int od_y = dst_rc.getRect().top;
+	int s_w = src_rc->getRect().width;
+	int d_w = dst_rc->getRect().width;
+	int s_h = src_rc->getRect().height;
+	int d_h = dst_rc->getRect().height;
+	int os_x = src_rc->getRect().left;
+	int os_y = src_rc->getRect().top;
+	int od_x = dst_rc->getRect().left;
+	int od_y = dst_rc->getRect().top;
 	sf::Vector2u simg_size = src_img.getSize();
 	sf::Vector2u dimg_size = img.getSize();
 	int s_x, s_y, d_x, d_y;

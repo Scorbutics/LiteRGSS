@@ -1,4 +1,4 @@
-#include "../LiteRGSS/ruby_common.h"
+#include "../LiteRGSS/RubyValue.h"
 #include "../LiteRGSS/rbAdapter.h"
 
 #include "../LiteRGSS/CShaderFactory.h"
