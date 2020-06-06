@@ -1,15 +1,15 @@
 require 'mkmf'
 ext_name = 'LiteRGSS'
 
+# add include path to the internal folder
+# $(srcdir) is a root folder, where "extconf.rb" is stored
+$INCFLAGS << " -I/usr/include/LiteCGSS/ -I$(srcdir)/../../ -I$(srcdir)/../../LiteCGSS/"
+$LDFLAGS << " -L$(srcdir)/../../LiteCGSS_bin"
+
 have_library('sfml-graphics')
 have_library('sfml-window')
 have_library('sfml-system')
 have_library('LiteCGSS_engine')
-
-# add include path to the internal folder
-# $(srcdir) is a root folder, where "extconf.rb" is stored
-$INCFLAGS << " -I/usr/include/LiteCGSS/ -I$(srcdir)/../../LiteCGSS/src/src"
-$LDFLAGS << " -L$(srcdir)/../../LiteCGSS/bin"
 
 $CXXFLAGS += " -std=c++17 "
 

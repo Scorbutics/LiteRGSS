@@ -29,3 +29,5 @@ yard/doc
 yard/*.html
 mkmf.log
 pkg/*
+LiteCGSS
+LiteCGSS_bin
