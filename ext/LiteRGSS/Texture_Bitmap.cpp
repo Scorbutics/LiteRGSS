@@ -59,8 +59,9 @@ static VALUE rb_Bitmap_Initialize(int argc, VALUE *argv, VALUE self) {
 static VALUE rb_Bitmap_Initialize_Copy(VALUE self, VALUE other) {
 	rb_check_frozen(self);
 
-	auto& source = rb::Get<TextureElement>(self);
-	auto& destination = rb::GetSafeOr<TextureElement>(other, rb_cBitmap, [&](const std::string& message) {
+	auto& destination = rb::Get<TextureElement>(self);
+	destination.init();
+	const auto& source = rb::GetSafeOr<TextureElement>(other, rb_cBitmap, [&](const std::string& message) {
 		rb_raise(rb_eTypeError, "Cannot clone %s into Bitmap.", RSTRING_PTR(rb_class_name(CLASS_OF(other))));
 	});
 

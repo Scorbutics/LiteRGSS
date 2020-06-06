@@ -46,6 +46,7 @@ VALUE rb_Rect_initialize(int argc, VALUE* argv, VALUE self) {
 
 VALUE rb_Rect_initialize_copy(VALUE self, VALUE other) {
 	auto& rect = rb::Get<RectangleElement>(self);
+	rect.init();
 	const auto* rect2 = rb::GetSafeOrNull<RectangleElement>(other, rb_cRect);
 	if (rect2 == nullptr || *rect2 == nullptr) { return Qnil; }
 
