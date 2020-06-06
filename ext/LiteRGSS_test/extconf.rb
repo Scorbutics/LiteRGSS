@@ -9,6 +9,7 @@ $LDFLAGS << " -L$(srcdir)/../../LiteCGSS_bin"
 have_library('sfml-graphics')
 have_library('sfml-window')
 have_library('sfml-system')
+have_library('LiteCGSS_engine')
 
 current_dir_path = File.expand_path(File.dirname(__FILE__)) 
 CONFIG["codedir"] = current_dir_path + '/../LiteRGSS'
