@@ -26,7 +26,7 @@ void GraphicsSingleton::init() {
 
 	m_gameWindow.reload(std::move(config));
 
-	LOG("[GraphicsSingleton] Init");
+	//LOG("[GraphicsSingleton] Init");
 
 	/* Input adjustement */
 	L_Input_Reset_Clocks();
