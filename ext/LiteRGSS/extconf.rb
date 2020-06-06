@@ -8,7 +8,8 @@ have_library('LiteCGSS_engine')
 
 # add include path to the internal folder
 # $(srcdir) is a root folder, where "extconf.rb" is stored
-$INCFLAGS << " -I/usr/include/LiteCGSS/"
+$INCFLAGS << " -I/usr/include/LiteCGSS/ -I$(srcdir)/../../LiteCGSS/src/src"
+$LDFLAGS << " -L$(srcdir)/../../LiteCGSS/bin"
 
 $CXXFLAGS += " -std=c++17 "
 
