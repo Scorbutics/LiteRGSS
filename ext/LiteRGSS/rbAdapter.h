@@ -88,8 +88,8 @@ namespace rb {
 
 	template <class T>
 	T* GetSafeOrNull(VALUE self, VALUE expectedType) {
-		if (!CheckType<T>(self, expectedType).empty() ||
-			!CheckDisposed<T>(self).empty()) {
+		if (!CheckType<T, false>(self, expectedType).empty() ||
+			!CheckDisposed<T, false>(self).empty()) {
 			return nullptr;
 		}
 
