@@ -208,14 +208,12 @@ static VALUE rb_Viewport_getRenderState(VALUE self) {
 }
 
 static VALUE rb_Viewport_setRenderState(VALUE self, VALUE val) {
-	sf::RenderStates* render_state;
 	auto& viewport = rb::Get<ViewportElement>(self);
 	rb_Viewport_getColor(self);
 	if (rb_obj_is_kind_of(val, rb_cBlendMode) == Qtrue) {
-		Data_Get_Struct(val, sf::RenderStates, render_state);
-		if (render_state) {
-			//TODO bind it instead of copy !
-			viewport->setRenderStates(*render_state);
+		auto* renderStates = rb::GetPtr<RenderStatesElement>(val);
+		if (renderStates) {
+			viewport->bindRenderStates(renderStates);
 			viewport.rRenderState = val;
 			/*
 			viewport.create_render(); // Make sure the global render is initialized
@@ -224,7 +222,7 @@ static VALUE rb_Viewport_setRenderState(VALUE self, VALUE val) {
 			return self;
 		}
 	}
-	//viewport->setRenderStates(nullptr);
+	viewport->bindRenderStates(nullptr);
 	viewport.rRenderState = Qfalse; // False to prevent intempestive delete
 	return self;
 }

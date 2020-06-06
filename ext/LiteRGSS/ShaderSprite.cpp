@@ -1,19 +1,18 @@
-#include <SFML/Graphics/RenderStates.hpp>
 #include "LiteRGSS.h"
 #include "rbAdapter.h"
-#include "CShaderSprite_Element.h"
-#include "Sprite.h"
+
+#include "ShaderSprite.h"
 #include "BlendMode.h"
 #include "Shader.h"
 
 VALUE rb_cShaderSprite = Qnil;
 
 template<>
-void rb::Mark<CShaderSprite_Element>(CShaderSprite_Element* sprite)
-{
-	if(sprite == nullptr)
+void rb::Mark<ShaderSpriteElement>(ShaderSpriteElement* sprite) {
+	if (sprite == nullptr) {
 		return;
-	/*rb_gc_mark(sprite->rViewport);
+	}
+	rb_gc_mark(sprite->rViewport);
 	rb_gc_mark(sprite->rBitmap);
 	rb_gc_mark(sprite->rX);
 	rb_gc_mark(sprite->rY);
@@ -23,40 +22,33 @@ void rb::Mark<CShaderSprite_Element>(CShaderSprite_Element* sprite)
 	rb_gc_mark(sprite->rAngle);
 	rb_gc_mark(sprite->rZoomX);
 	rb_gc_mark(sprite->rZoomY);
-	rb_gc_mark(sprite->rRect);*/
+	rb_gc_mark(sprite->rRect);
 	rb_gc_mark(sprite->rRenderStates);
 }
 
-VALUE rb_ShaderSprite_getShader(VALUE self)
-{
-	auto& sprite = rb::Get<CShaderSprite_Element>(self);
+VALUE rb_ShaderSprite_getShader(VALUE self) {
+	auto& sprite = rb::Get<ShaderSpriteElement>(self);
 	return sprite.rRenderStates;
 }
 
-VALUE rb_ShaderSprite_setShader(VALUE self, VALUE shader)
-{
-	/*
-	sf::RenderStates* render_state;
-	auto& sprite = rb::Get<CShaderSprite_Element>(self);
-	if (rb_obj_is_kind_of(shader, rb_cBlendMode) == Qtrue) 
-	{
-		Data_Get_Struct(shader, sf::RenderStates, render_state);
-		if (render_state != nullptr)
-		{
+VALUE rb_ShaderSprite_setShader(VALUE self, VALUE shader) {
+	auto& sprite = rb::Get<ShaderSpriteElement>(self);
+	if (rb_obj_is_kind_of(shader, rb_cBlendMode) == Qtrue)  {
+		auto* renderStates = rb::GetPtr<RenderStatesElement>(shader);
+		if (renderStates != nullptr) {
 			sprite.rRenderStates = shader;
-			sprite.setRenderState(render_state);
+			sprite->bindRenderStates(renderStates);
 			return self;
 		}
 	}
 	sprite.rRenderStates = Qnil;
-	sprite.setRenderState(nullptr);
-	*/
+	sprite->bindRenderStates(nullptr);
 	return self;
 }
 
 void Init_ShaderSprite() {
 	rb_cShaderSprite = rb_define_class_under(rb_mLiteRGSS, "ShaderedSprite", rb_cSprite);
-	rb_define_alloc_func(rb_cShaderSprite, rb::Alloc<CShaderSprite_Element>);
+	rb_define_alloc_func(rb_cShaderSprite, rb::Alloc<ShaderSpriteElement>);
 
 	rb_define_method(rb_cShaderSprite, "shader", _rbf rb_ShaderSprite_getShader, 0);
 	rb_define_method(rb_cShaderSprite, "shader=", _rbf rb_ShaderSprite_setShader, 1);

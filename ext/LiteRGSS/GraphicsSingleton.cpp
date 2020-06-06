@@ -13,14 +13,6 @@ GraphicsSingleton::GraphicsSingleton() :
 	m_gameWindow(m_eventDispatcher) {
 }
 
-std::unique_ptr<sf::Shader> GraphicsSingleton::createUniqueShader() const {
-	return m_shaderFactory.createUnique();
-}
-
-sf::Shader* GraphicsSingleton::createNewShader() const {
-	return m_shaderFactory.createNew();
-}
-
 bool GraphicsSingleton::areShadersEnabled() const {
 	return m_shaderFactory.areEnabled();
 }
@@ -223,10 +215,4 @@ void GraphicsSingleton::transition(VALUE self, int argc, VALUE* argv) {
 void GraphicsSingleton::freeze(VALUE self) {
 	//TODO
 	//m_gameWindow.freeze(*game_window, self);
-}
-
-void GraphicsSingleton::warnIfGraphicsUpdate() const {
-	if(InsideGraphicsUpdate) {
-		rb_warn("WARNING : Accessing Ruby data while updating the screen");
-	}
 }

@@ -56,13 +56,10 @@ public:
 		return m_gameWindow.template addView<T>(owner, std::forward<Args>(args)...);
 	}
 
-	std::unique_ptr<sf::Shader> createUniqueShader() const;
-	sf::Shader* createNewShader() const;
 	bool areShadersEnabled() const;
 
 private:
 	std::unique_ptr<GraphicsUpdateMessage> draw();
-	void warnIfGraphicsUpdate() const;
 	GraphicsSingleton();
 
 	void manageErrorMessage(VALUE self, const GraphicsUpdateMessage& message);
