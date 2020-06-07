@@ -1,4 +1,5 @@
 #include <cassert>
+#include <LiteCGSS/Graphics/RenderStates.h>
 #define LITERGSS_INCLUDE_RUBY_THREAD
 #include "RubyValue.h"
 #include "log.h"
@@ -13,12 +14,12 @@ GraphicsSingleton::GraphicsSingleton() :
 	m_gameWindow(m_eventDispatcher) {
 }
 
-bool GraphicsSingleton::areShadersEnabled() const {
-	return m_shaderFactory.areEnabled();
-}
-
 void GraphicsSingleton::init() {
-	m_shaderFactory.warnIfNotAvailable();
+	if (!cgss::RenderStates::areShadersEnabled()) {
+		rb_warn("Shaders are not available :(");
+	} else if (!cgss::RenderStates::areGeometryShadersEnabled()) {
+		rb_warn("Geometry shaders are not available :(");
+	}
 
 	/* Window Loading */
 	auto config = m_configLoader.load();

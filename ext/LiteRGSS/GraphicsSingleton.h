@@ -2,7 +2,6 @@
 #define CGraphics_H
 #include <memory>
 #include "RubyValue.h"
-#include "CShaderFactory.h"
 #include "GraphicsConfigLoader.h"
 #include "CGraphicsUpdateMessage.h"
 
@@ -74,7 +73,6 @@ private:
 	cgss::DisplayWindow m_gameWindow;
 
 	GraphicsConfigLoader m_configLoader;
-	CShaderFactory m_shaderFactory;	
 };
 
 #endif
