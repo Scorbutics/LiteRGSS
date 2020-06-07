@@ -45,6 +45,11 @@ static VALUE rb_Sprite_Dispose(VALUE self) {
 	return Qnil;
 }
 
+VALUE rb_Sprite_Disposed(VALUE self) {
+	auto& sprite = rb::Get<SpriteElement>(self);
+	return sprite->isDisposed() ? Qtrue : Qfalse;
+}
+
 static VALUE rb_Sprite_setBitmap(VALUE self, VALUE bitmap) {
 	auto& sprite = rb::Get<SpriteElement>(self);
 	
@@ -315,6 +320,7 @@ void Init_Sprite() {
 
 	rb_define_method(rb_cSprite, "initialize", _rbf rb_Sprite_Initialize, -1);
 	rb_define_method(rb_cSprite, "dispose", _rbf rb_Sprite_Dispose, 0);
+	rb_define_method(rb_cSprite, "disposed?", _rbf rb_Sprite_Disposed, 0);
 	rb_define_method(rb_cSprite, "bitmap", _rbf rb_Sprite_getBitmap, 0);
 	rb_define_method(rb_cSprite, "bitmap=", _rbf rb_Sprite_setBitmap, 1);
 	rb_define_method(rb_cSprite, "x", _rbf rb_Sprite_getX, 0);

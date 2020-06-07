@@ -78,6 +78,11 @@ VALUE rb_Window_Dispose(VALUE self) {
 	return Qnil;
 }
 
+VALUE rb_Window_Disposed(VALUE self) {
+	auto& framedView = rb::Get<FramedViewElement>(self);
+	return framedView->isDisposed() ? Qtrue : Qfalse;
+}
+
 VALUE rb_Window_setWindowSkin(VALUE self, VALUE val) {
 	auto& framedView = rb::Get<FramedViewElement>(self);
 	if (val != Qnil) {
@@ -455,6 +460,7 @@ void Init_Window() {
 
 	rb_define_method(rb_cWindow, "initialize", _rbf rb_Window_Initialize, -1);
 	rb_define_method(rb_cWindow, "dispose", _rbf rb_Window_Dispose, 0);
+	rb_define_method(rb_cWindow, "disposed?", _rbf rb_Window_Disposed, 0);
 	rb_define_method(rb_cWindow, "update", _rbf rb_Window_update, 0);
 	rb_define_method(rb_cWindow, "windowskin=", _rbf rb_Window_setWindowSkin, 1);
 	rb_define_method(rb_cWindow, "windowskin", _rbf rb_Window_getWindowSkin, 0);

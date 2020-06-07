@@ -42,6 +42,11 @@ VALUE rb_SpriteMap_Dispose(VALUE self) {
 	return Qnil;
 }
 
+VALUE rb_SpriteMap_Disposed(VALUE self) {
+	auto& spriteMap = rb::Get<SpriteMapElement>(self);
+	return spriteMap->isDisposed() ? Qtrue : Qfalse;
+}
+
 VALUE rb_SpriteMap_Viewport(VALUE self) {
 	auto& spriteMap = rb::Get<SpriteMapElement>(self);
 	return spriteMap.rViewport;
@@ -182,6 +187,7 @@ void Init_SpriteMap() {
 
 	rb_define_method(rb_cSpriteMap, "initialize", _rbf rb_SpriteMap_Initialize, -1);
 	rb_define_method(rb_cSpriteMap, "dispose", _rbf rb_SpriteMap_Dispose, 0);
+	rb_define_method(rb_cSpriteMap, "disposed?", _rbf rb_SpriteMap_Disposed, 0);
 	rb_define_method(rb_cSpriteMap, "viewport", _rbf rb_SpriteMap_Viewport, 0);
 	rb_define_method(rb_cSpriteMap, "x", _rbf rb_SpriteMap_X, 0);
 	rb_define_method(rb_cSpriteMap, "x=", _rbf rb_SpriteMap_SetX, 1);

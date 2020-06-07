@@ -54,6 +54,11 @@ static VALUE rb_Viewport_Dispose(VALUE self) {
 	return Qnil;
 }
 
+static VALUE rb_Viewport_Disposed(VALUE self) {
+	auto& viewport = rb::Get<ViewportElement>(self);
+	return viewport->isDisposed() ? Qtrue : Qfalse;
+}
+
 static VALUE rb_Viewport_getOX(VALUE self) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	return rb_int2inum(viewport->getOx());
@@ -252,6 +257,7 @@ void Init_Viewport() {
 	rb_define_method(rb_cViewport, "rect", _rbf rb_Viewport_getRect, 0);
 	rb_define_method(rb_cViewport, "rect=", _rbf rb_Viewport_setRect, 1);
 	rb_define_method(rb_cViewport, "dispose", _rbf rb_Viewport_Dispose, 0);
+	rb_define_method(rb_cViewport, "disposed?", _rbf rb_Viewport_Disposed, 0);
 	rb_define_method(rb_cViewport, "tone", _rbf rb_Viewport_getTone, 0);
 	rb_define_method(rb_cViewport, "tone=", _rbf rb_Viewport_setTone, 1);
 	rb_define_method(rb_cViewport, "color", _rbf rb_Viewport_getColor, 0);

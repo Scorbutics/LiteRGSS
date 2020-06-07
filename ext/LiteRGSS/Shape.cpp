@@ -102,6 +102,11 @@ VALUE rb_Shape_Dispose(VALUE self) {
 	return Qnil;
 }
 
+VALUE rb_Shape_Disposed(VALUE self) {
+	auto& shape = rb::Get<ShapeElement>(self);
+	return shape->isDisposed() ? Qtrue : Qfalse;
+}
+
 VALUE rb_Shape_getBitmap(VALUE self) {
 	auto& shape = rb::Get<ShapeElement>(self);
 	return shape.rBitmap;
@@ -488,6 +493,7 @@ void Init_Shape() {
 	rb_define_method(rb_cShape, "outline_thickness=", _rbf rb_Shape_setOutlineThickness, 1);
 	rb_define_method(rb_cShape, "__index__", _rbf rb_Shape_getIndex, 0);
 	rb_define_method(rb_cShape, "dispose", _rbf rb_Shape_Dispose, 0);
+	rb_define_method(rb_cShape, "disposed?", _rbf rb_Shape_Disposed, 0);
 	rb_define_method(rb_cShape, "radius", _rbf rb_Shape_getRadius, 0);
 	rb_define_method(rb_cShape, "radius=", _rbf rb_Shape_setRadius, 1);
 	rb_define_method(rb_cShape, "type", _rbf rb_Shape_getType, 0);

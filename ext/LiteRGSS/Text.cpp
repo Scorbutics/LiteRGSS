@@ -50,6 +50,11 @@ VALUE rb_Text_Dispose(VALUE self) {
 	return Qnil;
 }
 
+VALUE rb_Text_Disposed(VALUE self) {
+	auto& text = rb::Get<TextElement>(self);
+	return text->isDisposed() ? Qtrue : Qfalse;
+}
+
 VALUE rb_Text_get_num_char(VALUE self) {
 	auto& text = rb::Get<TextElement>(self);
 	//TODO
@@ -423,6 +428,7 @@ void Init_Text() {
 
 	rb_define_method(rb_cText, "initialize", _rbf rb_Text_Initialize, -1);
 	rb_define_method(rb_cText, "dispose", _rbf rb_Text_Dispose, 0);
+	rb_define_method(rb_cText, "disposed?", _rbf rb_Text_Disposed, 0);
 	rb_define_method(rb_cText, "set_position", _rbf rb_Text_setPosition, 2);
 	rb_define_method(rb_cText, "x", _rbf rb_Text_get_x, 0);
 	rb_define_method(rb_cText, "x=", _rbf rb_Text_set_x, 1);
