@@ -38,7 +38,8 @@ static VALUE rb_Bitmap_Initialize(int argc, VALUE *argv, VALUE self) {
 		rb_check_type(string, T_STRING);
 		//LOG("[Bitmap] Init from memory");
 		const char* rawData = RSTRING_PTR(string);
-		auto loader = cgss::TextureMemoryLoader{rawData};
+		const auto length = RSTRING_LEN(string);
+		auto loader = cgss::TextureMemoryLoader{std::vector<unsigned char>{ rawData, rawData + length }};
 		if (!bitmap->load(loader)) {
 			rb_raise(rb_eRGSSError, "Failed to load bitmap from memory.");
 		}
@@ -75,8 +76,9 @@ static VALUE rb_Bitmap_Initialize_Copy(VALUE self, VALUE other) {
 }
 
 static VALUE rb_Bitmap_Dispose(VALUE self) {
-	// LOLNOPE
-	rb_raise(rb_eTypeError, "Cannot dispose a Bitmap.");
+	auto& bitmap = rb::Get<TextureElement>(self);
+	// Just empty - reinit it
+	bitmap.init();
 	return Qnil;
 }
 
@@ -168,7 +170,7 @@ static VALUE rb_Bitmap_toPNG(VALUE self) {
 	auto saver = cgss::TextureMemoryLoader { {} };
 	bitmap->write(saver);
 	auto out = saver.stealMemory();
-	return rb_str_new(out.c_str(), out.size());
+	return rb_str_new(reinterpret_cast<const char*>(&out[0]), out.size());
 }
 
 static VALUE rb_Bitmap_toPNG_file(VALUE self, VALUE filename) {
