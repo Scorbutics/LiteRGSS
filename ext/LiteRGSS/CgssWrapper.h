@@ -19,6 +19,10 @@ public:
         data = ContainerPtr<T>(new T(std::forward<Args>(args)...));
     }
 
+    void steal(ContainerPtr<T> container) {
+        data = std::move(container);
+    }
+
     template <class ... Args>
     static T create(Args&& ... args) {
         return T::create(std::forward<Args>(args)...);

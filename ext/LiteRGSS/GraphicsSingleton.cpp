@@ -8,6 +8,7 @@
 #include "Input.h"
 
 #include "Graphics.h"
+#include "Texture_Bitmap.h"
 #include "GraphicsSingleton.h"
 
 GraphicsSingleton::GraphicsSingleton() : 
@@ -198,22 +199,34 @@ void GraphicsSingleton::resizeScreen(int width, int height) {
 }
 
 void GraphicsSingleton::setShader(sf::RenderStates* shader) {
-	//TODO
-	//m_gameWindow.setShader(shader);
+	m_gameWindow.setShader(shader);
 }
 
 VALUE GraphicsSingleton::takeSnapshot() {
 	auto outputTexture = m_gameWindow.takeSnapshot();
-	//TODO
-	return Qnil;
+	//Allocates memory ruby-side to take a snapshot
+	VALUE bmp = rb_obj_alloc(rb_cBitmap);
+	auto& texture = rb::Get<TextureElement>(bmp);
+	
+	texture.steal(std::move(outputTexture));
+
+	return bmp;
 }
 
 void GraphicsSingleton::transition(VALUE self, int argc, VALUE* argv) {
-	//TODO
-	//m_gameWindow.transition(self, argc, argv);
+	//8 = from RGSS doc
+	long time = 8;
+	if (argc >= 1) {
+		time = rb_num2long(argv[0]);
+	}
+	if (argc < 2 || rb_obj_is_kind_of(argv[1], rb_cBitmap) != Qtrue) {
+		m_gameWindow.transition(time, nullptr);
+	} else {
+		auto& texture = rb::Get<TextureElement>(argv[1]);
+		m_gameWindow.transition(time, texture.instance());
+	}
 }
 
 void GraphicsSingleton::freeze(VALUE self) {
-	//TODO
-	//m_gameWindow.freeze(*game_window, self);
+	m_gameWindow.freeze();
 }
