@@ -105,7 +105,7 @@ VALUE rb_Window_getWindowSkin(VALUE self) {
 VALUE rb_Window_setWidth(VALUE self, VALUE val) {
 	auto& framedView = rb::Get<FramedViewElement>(self);
 	auto width = NUM2ULONG(val);
-	framedView->resize(width, framedView->getRectangle().height);
+	framedView->resize(width, framedView->getHeight());
 	framedView.rWidth = val;
 	return self;
 }
@@ -118,7 +118,7 @@ VALUE rb_Window_getWidth(VALUE self) {
 VALUE rb_Window_setHeight(VALUE self, VALUE val) {
 	auto& framedView = rb::Get<FramedViewElement>(self);
 	auto height = NUM2ULONG(val);
-	framedView->resize(framedView->getRectangle().width, height);
+	framedView->resize(framedView->getWidth(), height);
 	framedView.rHeight = val;
 	return self;
 }
@@ -169,7 +169,7 @@ VALUE rb_Window_getWindowBuilder(VALUE self) {
 VALUE rb_Window_setX(VALUE self, VALUE val) {
 	auto& framedView = rb::Get<FramedViewElement>(self);
 	auto x = NUM2LONG(val);
-	framedView->move(x, framedView->getRectangle().top);
+	framedView->move(x, framedView->getY());
 	framedView.rX = val;
 	return self;
 }
@@ -182,7 +182,7 @@ VALUE rb_Window_getX(VALUE self) {
 VALUE rb_Window_setY(VALUE self, VALUE val) {
 	auto& framedView = rb::Get<FramedViewElement>(self);
 	auto y = NUM2LONG(val);
-	framedView->move(framedView->getRectangle().left, y);
+	framedView->move(framedView->getX(), y);
 	framedView.rY = val;
 	return self;
 }
