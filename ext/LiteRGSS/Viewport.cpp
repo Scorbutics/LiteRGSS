@@ -100,7 +100,7 @@ static VALUE rb_Viewport_setRect(VALUE self, VALUE val) {
 		return Qnil;
 	}
 	/* Setting rect parameter */
-	(*rect)->setRect(viewport->getRectangle());
+	(*rect)->setRect(viewport->getViewportBox());
 	viewport->bindRectangle(rect->instance());
 	viewport.rRect = val;
 	return val;
