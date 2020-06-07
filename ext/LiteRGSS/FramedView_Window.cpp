@@ -52,7 +52,7 @@ VALUE rb_Window_Initialize(int argc, VALUE* argv, VALUE self) {
 			rb_raise(rb_eRGSSError, "Invalid viewport provided to instanciate a Sprite.");
 			return Qnil;
 		}
-		framedView.init(GraphicsSingleton::Get().addViewOn<cgss::FramedView>(*viewport.instance()));
+		framedView.init(GraphicsSingleton::Get().addViewOn<cgss::FramedView>(*viewport.instance(), viewport->weak()));
 		framedView.rViewport = argv[0];
 	} else {
 		framedView.init(GraphicsSingleton::Get().addView<cgss::FramedView>());
