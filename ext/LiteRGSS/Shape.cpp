@@ -25,7 +25,6 @@ void rb::Mark<ShapeElement>(ShapeElement* shape) {
 	rb_gc_mark(shape->rBitmap);
 	rb_gc_mark(shape->rX);
 	rb_gc_mark(shape->rY);
-	rb_gc_mark(shape->rZ);
 	rb_gc_mark(shape->rOX);
 	rb_gc_mark(shape->rOY);
 	rb_gc_mark(shape->rAngle);
@@ -178,14 +177,13 @@ VALUE rb_Shape_setPosition(VALUE self, VALUE x, VALUE y) {
 
 VALUE rb_Shape_getZ(VALUE self) {
 	auto& shape = rb::Get<ShapeElement>(self);
-	return shape.rZ;
+	return LONG2FIX(shape->getZ().z);
 }
 
 VALUE rb_Shape_setZ(VALUE self, VALUE val)
 {
 	auto& shape = rb::Get<ShapeElement>(self);
 	shape->setZ(NUM2LONG(val));
-	shape.rZ = val;
 	return self;
 }
 

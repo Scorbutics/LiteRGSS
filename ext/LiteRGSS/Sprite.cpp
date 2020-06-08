@@ -23,7 +23,6 @@ void rb::Mark<SpriteElement>(SpriteElement* spritePtr) {
 	rb_gc_mark(sprite.rBitmap);
 	rb_gc_mark(sprite.rX);
 	rb_gc_mark(sprite.rY);
-	rb_gc_mark(sprite.rZ);
 	rb_gc_mark(sprite.rOX);
 	rb_gc_mark(sprite.rOY);
 	rb_gc_mark(sprite.rAngle);
@@ -106,13 +105,12 @@ static VALUE rb_Sprite_setZ(VALUE self, VALUE val) {
 	auto& sprite = rb::Get<SpriteElement>(self);
 	const auto newZ = rb_num2long(val);
 	sprite->setZ(newZ);
-	sprite.rZ = val;
 	return val;
 }
 
 static VALUE rb_Sprite_getZ(VALUE self) {
 	auto& sprite = rb::Get<SpriteElement>(self);
-	return sprite.rZ;
+	return LONG2FIX(sprite->getZ().z);
 }
 
 static VALUE rb_Sprite_setOX(VALUE self, VALUE val) {

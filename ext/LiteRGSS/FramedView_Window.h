@@ -14,7 +14,6 @@ struct FramedViewElement :
     VALUE rBitmap = Qnil;
     VALUE rX = LONG2FIX(0);
     VALUE rY = LONG2FIX(0);
-    VALUE rZ = LONG2FIX(0);
     VALUE rOX = LONG2FIX(0);
     VALUE rOY = LONG2FIX(0);
     VALUE rRect = Qnil;

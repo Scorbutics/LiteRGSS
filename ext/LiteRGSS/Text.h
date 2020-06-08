@@ -18,7 +18,6 @@ struct TextElement :
 	VALUE rAlign = Qfalse;
 	VALUE rX = LONG2FIX(0);
 	VALUE rY = LONG2FIX(0);
-	VALUE rZ = LONG2FIX(0);
 };
 
 #endif

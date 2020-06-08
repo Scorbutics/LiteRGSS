@@ -24,7 +24,6 @@ void rb::Mark<TextElement>(TextElement* text) {
 	rb_gc_mark(text->rAlign);
 	rb_gc_mark(text->rX);
 	rb_gc_mark(text->rY);
-	rb_gc_mark(text->rZ);
 }
 
 VALUE rb_Text_getOpacity(VALUE self) {
@@ -144,13 +143,12 @@ VALUE rb_Text_load_color(VALUE self, VALUE id) {
 
 VALUE rb_Text_getZ(VALUE self) {
 	auto& text = rb::Get<TextElement>(self);
-	return text.rZ;
+	return LONG2FIX(text->getZ().z);
 }
 
 VALUE rb_Text_setZ(VALUE self, VALUE val) {
 	auto& text = rb::Get<TextElement>(self);
 	text->setZ(rb_num2long(val));
-	text.rZ = val;
 	return self;
 }
 

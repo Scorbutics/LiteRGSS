@@ -21,7 +21,6 @@ void rb::Mark<ViewportElement>(ViewportElement* viewport) {
 	rb_gc_mark(viewport->rRect);
 	rb_gc_mark(viewport->rTone);
 	rb_gc_mark(viewport->rColor);
-	rb_gc_mark(viewport->rZ);
 	rb_gc_mark(viewport->rAngle);
 	rb_gc_mark(viewport->rZoom);
 	rb_gc_mark(viewport->rRenderState);
@@ -170,14 +169,13 @@ static VALUE rb_Viewport_Update(VALUE self) {
 
 static VALUE rb_Viewport_getZ(VALUE self) {
 	auto& viewport = rb::Get<ViewportElement>(self);
-	return viewport.rZ;
+	return LONG2FIX(viewport->getZ().z);
 }
 
 static VALUE rb_Viewport_setZ(VALUE self, VALUE val) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	const auto z = rb_num2long(val);
 	viewport->setZ(z);
-	viewport.rZ = val;
 	return self;
 }
 

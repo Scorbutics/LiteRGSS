@@ -19,7 +19,6 @@ void rb::Mark<FramedViewElement>(FramedViewElement* framedView) {
 	rb_gc_mark(framedView->rBitmap);
 	rb_gc_mark(framedView->rX);
 	rb_gc_mark(framedView->rY);
-	rb_gc_mark(framedView->rZ);
 	rb_gc_mark(framedView->rOX);
 	rb_gc_mark(framedView->rOY);
 	rb_gc_mark(framedView->rRect);
@@ -203,13 +202,12 @@ VALUE rb_Window_setPosition(VALUE self, VALUE x, VALUE y) {
 VALUE rb_Window_setZ(VALUE self, VALUE val) {
 	auto& framedView = rb::Get<FramedViewElement>(self);
 	framedView->setZ(NUM2LONG(val));
-	framedView.rZ = val;
 	return self;
 }
 
 VALUE rb_Window_getZ(VALUE self) {
 	auto& framedView = rb::Get<FramedViewElement>(self);
-	return framedView.rZ;
+	return LONG2FIX(framedView->getZ().z);;
 }
 
 VALUE rb_Window_setOX(VALUE self, VALUE val) {

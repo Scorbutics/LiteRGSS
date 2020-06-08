@@ -16,7 +16,6 @@ void rb::Mark<ShaderSpriteElement>(ShaderSpriteElement* sprite) {
 	rb_gc_mark(sprite->rBitmap);
 	rb_gc_mark(sprite->rX);
 	rb_gc_mark(sprite->rY);
-	rb_gc_mark(sprite->rZ);
 	rb_gc_mark(sprite->rOX);
 	rb_gc_mark(sprite->rOY);
 	rb_gc_mark(sprite->rAngle);
