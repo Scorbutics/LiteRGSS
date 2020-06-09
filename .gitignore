@@ -31,3 +31,4 @@ mkmf.log
 pkg/*
 LiteCGSS
 LiteCGSS_bin
+*.log
