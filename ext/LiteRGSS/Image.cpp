@@ -127,7 +127,7 @@ VALUE rb_Image_Copy_to_Bitmap(VALUE self, VALUE bitmap)
 {
 	auto& img = rb::Get<sf::Image>(self);
 	auto& bmp = rb::GetSafe<TextureElement>(bitmap, rb_cBitmap);
-	bmp->getTexture().update(img);
+	bmp->update(&img);
 	return self;
 }
 
