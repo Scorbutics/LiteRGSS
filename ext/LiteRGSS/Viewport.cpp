@@ -7,6 +7,7 @@
 #include "BlendMode.h"
 #include "Color.h"
 
+#include "Texture_Bitmap.h"
 #include "Drawable_Disposable.h"
 #include "Viewport.h"
 #include "Rect.h"
@@ -240,6 +241,11 @@ static VALUE rb_Viewport_Index(VALUE self) {
 	return rb_uint2inum(viewport->getZ().index);
 }
 
+static VALUE rb_Viewport_snapToBitmap(VALUE self) {
+	auto& viewport = rb::Get<ViewportElement>(self);
+	return TextureElement::snapToTexture(*viewport.instance());
+}
+
 void Init_Viewport() {
 	rb_cViewport = rb_define_class_under(rb_mLiteRGSS, "Viewport", rb_cDrawable);
 
@@ -273,6 +279,7 @@ void Init_Viewport() {
 	rb_define_method(rb_cViewport, "blendmode=", _rbf rb_Viewport_setRenderState, 1);
 	rb_define_method(rb_cViewport, "reload_stack", _rbf rb_Viewport_ReloadStack, 0);
 	rb_define_method(rb_cViewport, "__index__", _rbf rb_Viewport_Index, 0);
+	rb_define_method(rb_cViewport, "snap_to_bitmap", _rbf rb_Viewport_snapToBitmap, 0);
 
 	rb_define_method(rb_cViewport, "clone", _rbf rb_Viewport_Copy, 0);
 	rb_define_method(rb_cViewport, "dup", _rbf rb_Viewport_Copy, 0);

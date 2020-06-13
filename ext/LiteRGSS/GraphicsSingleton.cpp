@@ -203,14 +203,7 @@ void GraphicsSingleton::setShader(sf::RenderStates* shader) {
 }
 
 VALUE GraphicsSingleton::takeSnapshot() {
-	auto outputTexture = m_gameWindow.takeSnapshot();
-	//Allocates memory ruby-side to take a snapshot
-	VALUE bmp = rb_obj_alloc(rb_cBitmap);
-	auto& texture = rb::Get<TextureElement>(bmp);
-	
-	texture.steal(std::move(outputTexture));
-
-	return bmp;
+	return TextureElement::snapToTexture(m_gameWindow);
 }
 
 void GraphicsSingleton::transition(VALUE self, int argc, VALUE* argv) {
