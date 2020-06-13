@@ -17,10 +17,12 @@ public:
     template <class ... Args>
     void init(Args&& ... args) {
         data = ContainerPtr<T>(new T(std::forward<Args>(args)...));
+        setup();
     }
 
     void steal(ContainerPtr<T> container) {
         data = std::move(container);
+        setup();
     }
 
     template <class ... Args>
@@ -58,6 +60,9 @@ public:
     bool operator!=(const CgssWrapper<T, ContPtr>& wrapper) const {
         return *data != *wrapper.data;
     }
+
+protected:
+    virtual void setup() {}
 
 private:
 	void protect() const {
