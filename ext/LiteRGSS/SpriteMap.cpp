@@ -129,7 +129,7 @@ VALUE rb_SpriteMap_SetOrigin(VALUE self, VALUE x, VALUE y) {
 
 VALUE rb_SpriteMap_Reset(VALUE self) {
 	auto& spriteMap = rb::Get<SpriteMapElement>(self);
-	spriteMap->clear();
+	spriteMap->reset();
 	return self;
 }
 
