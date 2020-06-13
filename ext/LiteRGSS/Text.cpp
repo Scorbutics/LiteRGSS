@@ -254,7 +254,6 @@ VALUE rb_Text_set_width(VALUE self, VALUE val) {
 	rb_check_type(val, T_FIXNUM);
 	auto& text = rb::Get<TextElement>(self);
 	text->resize(NUM2LONG(val), text->getHeight());
-	fprintf(stderr, "Set text width. Dimensions width = %l height = %l", text->getWidth(), text->getHeight());
 	text.rwidth = val;
 	return val;
 }
@@ -268,7 +267,6 @@ VALUE rb_Text_set_height(VALUE self, VALUE val) {
 	rb_check_type(val, T_FIXNUM);
 	auto& text = rb::Get<TextElement>(self);
 	text->resize(text->getWidth(), NUM2LONG(val));
-	fprintf(stderr, "Set text height. Dimensions width = %l height = %l", text->getWidth(), text->getHeight());
 	text.rheight = val;
 	return val;
 }
@@ -396,21 +394,12 @@ VALUE rb_Text_Initialize(int argc, VALUE* argv, VALUE self) {
 	text.rY = y;
 	text->move(NUM2LONG(x), NUM2LONG(y));
 
-	fprintf(stderr, "Text init position\n");
-
-	fprintf(stderr, "x = %ld y = %ld\n", x, y);
-
 	rb_check_type(width, T_FIXNUM);
 	text.rwidth = width;
 	rb_check_type(height, T_FIXNUM);
 	text.rheight = height;
 
-	fprintf(stderr, "Text init resize\n");
-
 	text->resize(NUM2LONG(width), NUM2LONG(height));
-
-	fprintf(stderr, "width = %ld height = %ld\n", NUM2LONG(width), NUM2LONG(height));
-
 	/* Aligment */
 	if(!NIL_P(align)) {
 		long ralign = rb_num2long(align);
