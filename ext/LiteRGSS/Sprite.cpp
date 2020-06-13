@@ -273,13 +273,15 @@ static VALUE rb_Sprite_Index(VALUE self) {
 }
 
 static VALUE rb_Sprite_width(VALUE self) {
-	auto& rc = rb::Get<RectangleElement>(self);
-	return LONG2FIX(rc->getRect().width);
+	auto rc = rb_Sprite_getRect(self);
+	auto& rect = rb::Get<RectangleElement>(rc);
+	return LONG2FIX(rect->getRect().width);
 }
 
 static VALUE rb_Sprite_height(VALUE self) {
-	auto& rc = rb::Get<RectangleElement>(self);
-	return LONG2FIX(rc->getRect().height);
+	auto rc = rb_Sprite_getRect(self);
+	auto& rect = rb::Get<RectangleElement>(rc);
+	return LONG2FIX(rect->getRect().height);
 }
 
 static VALUE rb_Sprite_Initialize(int argc, VALUE* argv, VALUE self) {
