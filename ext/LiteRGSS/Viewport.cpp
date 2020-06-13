@@ -201,7 +201,7 @@ static VALUE rb_Viewport_setZoom(VALUE self, VALUE val) {
 	auto& viewport = rb::Get<ViewportElement>(self);
 	const auto zoom = 1.0 / normalize_double(NUM2DBL(val), 0.001, 1000.0);
 	viewport.rZoom = DBL2NUM(zoom);
-	viewport->setScale(zoom);
+	viewport->setZoom(NUM2DBL(val));
 	return self;
 }
 
