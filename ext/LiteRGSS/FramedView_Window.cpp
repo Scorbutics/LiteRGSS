@@ -153,16 +153,23 @@ VALUE rb_Window_setWindowBuilder(VALUE self, VALUE val) {
 		rb_raise(rb_eArgError, "framedView Builder should be 6 Integer long.");
 	}
 
-	long windowBuilder[6];
-
-	// Type check
-	for (long i = 0; i < 6; i++) {
-		windowBuilder[i] = NUM2ULONG(rb_ary_entry(val, i));
+	if (rb_array_len(val) == 8) {
+		std::array<long, 8> windowBuilder;
+		for (long i = 0; i < 8; i++) {
+			windowBuilder[i] = NUM2ULONG(rb_ary_entry(val, i));
+		}
+		framedView->setBuilder(windowBuilder);
+	} else {
+		std::array<long, 6> windowBuilder;
+		for (long i = 0; i < 6; i++) {
+			windowBuilder[i] = NUM2ULONG(rb_ary_entry(val, i));
+		}
+		framedView->setBuilder(windowBuilder);
 	}
+
 	// Freeze framedView builder
 	rb_obj_freeze(val);
 
-	framedView->setBuilder(windowBuilder);
 	framedView.rWindowBuilder = val;
 	return self;
 }
