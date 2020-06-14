@@ -6,7 +6,7 @@
 #include "Texture_Bitmap.h"
 #include "Shader.h"
 #include "Drawable_Disposable.h"
-#include "BlendMode.h"
+#include "RenderStates_BlendMode.h"
 #include "Color.h"
 #include "Rect.h"
 #include "Viewport.h"
@@ -354,8 +354,8 @@ VALUE rb_Shape_getColor(VALUE self) {
 
 VALUE rb_Shape_setColor(VALUE self, VALUE val) {
 	auto& shape = rb::Get<ShapeElement>(self);
-	auto& color = rb::GetSafe<sf::Color>(val, rb_cColor);
-	shape->setFillColor(color);
+	auto& color = rb::GetSafe<ColorElement>(val, rb_cColor);
+	shape->setFillColor(color.getValue());
 	shape.rColor = val;
 	return self;
 }
@@ -377,8 +377,8 @@ VALUE rb_Shape_getOutlineColor(VALUE self) {
 
 VALUE rb_Shape_setOutlineColor(VALUE self, VALUE val) {
 	auto& shape = rb::Get<ShapeElement>(self);
-	auto& color = rb::GetSafe<sf::Color>(val, rb_cColor);
-	shape->setOutlineColor(color);
+	auto& color = rb::GetSafe<ColorElement>(val, rb_cColor);
+	shape->setOutlineColor(color.getValue());
 	shape.rOutlineColor = val;
 	return self;
 }

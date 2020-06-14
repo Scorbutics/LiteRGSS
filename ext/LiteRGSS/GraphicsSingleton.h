@@ -3,7 +3,7 @@
 #include <memory>
 #include "RubyValue.h"
 #include "GraphicsConfigLoader.h"
-#include "CGraphicsUpdateMessage.h"
+#include "GraphicsUpdateMessage.h"
 
 #include "Views/DisplayWindow.h"
 

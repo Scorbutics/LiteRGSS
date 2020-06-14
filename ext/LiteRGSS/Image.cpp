@@ -190,8 +190,7 @@ VALUE rb_Image_fill_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height
 	auto& img = rb::Get<sf::Image>(self);
 	if (rb_obj_is_kind_of(color, rb_cColor) != Qtrue)
 		return self;
-	sf::Color* rcolor;
-	Data_Get_Struct(color, sf::Color, rcolor);
+	auto* rcolor = rb::GetPtr<ColorElement>(color);
 	rb_check_type(x, T_FIXNUM);
 	rb_check_type(y, T_FIXNUM);
 	rb_check_type(width, T_FIXNUM);
@@ -204,10 +203,11 @@ VALUE rb_Image_fill_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height
 	long y2 = NUM2LONG(height) + y1;
 	if (y1 < 0)
 		y1 = 0;
+	auto realColor = rcolor == nullptr ? sf::Color{} : rcolor->getValue();
 	while (y1 < y2)
 	{
 		for (long x3 = x1; x3 < x2; x3++)
-			img.setPixel(x3, y1, *rcolor);
+			img.setPixel(x3, y1, realColor);
 		y1++;
 	}
 	return self;
@@ -275,7 +275,7 @@ VALUE rb_Image_set_pixel(VALUE self, VALUE x, VALUE y, VALUE color)
 	sf::Vector2u size = img.getSize();
 	if (px < size.x && py < size.y)
 	{
-		auto& color2 = rb::GetSafe<sf::Color>(color, rb_cColor);
+		auto& color2 = rb::GetSafe<ColorElement>(color, rb_cColor).getValue();
 		img.setPixel(px, py, color2);
 	}
 	return self;
@@ -390,7 +390,7 @@ VALUE rb_Image_stretch_blt(VALUE self, VALUE dest_rect, VALUE src_image, VALUE s
 VALUE rb_Image_create_mask(VALUE self, VALUE color, VALUE alpha)
 {
 	auto& img = rb::Get<sf::Image>(self);
-	auto& col = rb::GetSafe<sf::Color>(color, rb_cColor);
+	auto& col = rb::GetSafe<ColorElement>(color, rb_cColor).getValue();
 	img.createMaskFromColor(col, NUM2ULONG(alpha));
 	return self;
 }

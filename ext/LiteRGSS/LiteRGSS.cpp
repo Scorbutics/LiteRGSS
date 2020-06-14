@@ -15,7 +15,7 @@
 #include "Table.h"
 #include "Table32.h"
 #include "Yuki.h"
-#include "BlendMode.h"
+#include "RenderStates_BlendMode.h"
 #include "Shader.h"
 #include "ShaderSprite.h"
 #include "Yuki_Gif.h"

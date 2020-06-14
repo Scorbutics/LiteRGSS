@@ -2,9 +2,8 @@
 #include "GraphicsSingleton.h"
 #include "NormalizeNumbers.h"
 #include "rbAdapter.h"
-#include "CTone_Element.h"
 #include "Tone.h"
-#include "BlendMode.h"
+#include "RenderStates_BlendMode.h"
 #include "Color.h"
 
 #include "Texture_Bitmap.h"
@@ -13,6 +12,14 @@
 #include "Rect.h"
 
 VALUE rb_cViewport = Qnil;
+
+void ViewportElement::updateFromValue(const sf::Glsl::Vec4* toneValue) {
+	(*this)->setTone(toneValue);
+}
+
+void ViewportElement::updateFromValue(const sf::Color* colorValue) {
+	(*this)->setColor(colorValue);
+}
 
 template<>
 void rb::Mark<ViewportElement>(ViewportElement* viewport) {
@@ -114,25 +121,24 @@ static VALUE rb_Viewport_getTone(VALUE self) {
 		return tn;
 	}
 	/* New tone */
-	//TODO : delete or handle
 	VALUE argv[4] = {LONG2FIX(0), LONG2FIX(0), LONG2FIX(0), LONG2FIX(0)};
+	
 	viewport.rColor = rb_class_new_instance(4, argv, rb_cColor);
+	auto& color = rb::GetSafe<ColorElement>(viewport.rColor, rb_cColor);
+	color.bind(&viewport);
+
 	tn = rb_class_new_instance(4, argv, rb_cTone);
-	/*
-	CTone_Element* tone;
-	Data_Get_Struct(tn, CTone_Element, tone);
-	tone->bindViewport(&viewport);
-	*/
+	auto& tone = rb::GetSafe<ToneElement>(tn, rb_cTone);
+	tone.bind(&viewport);
 	viewport.rTone = tn;
-	//viewport.create_render();
 	return tn;
 }
 
 static VALUE rb_Viewport_setTone(VALUE self, VALUE val) {
 	VALUE tn = rb_Viewport_getTone(self);
-	auto& tonesrc = rb::GetSafe<CTone_Element>(val, rb_cTone);
-	auto& tonedst = rb::Get<CTone_Element>(tn);
-	tonedst = tonesrc;
+	auto& tonesrc = rb::GetSafe<ToneElement>(val, rb_cTone);
+	auto& tonedst = rb::Get<ToneElement>(tn);
+	tonedst.setValue(tonesrc.getValue());
 	return val;
 }
 
@@ -145,8 +151,8 @@ static VALUE rb_Viewport_getColor(VALUE self) {
 static VALUE rb_Viewport_setColor(VALUE self, VALUE val) {
 	VALUE tn = rb_Viewport_getTone(self);
 	auto& viewport = rb::Get<ViewportElement>(self);
-	auto& color = rb::GetSafe<sf::Color>(val, rb_cColor);
-	// TODO ?
+	auto& color = rb::GetSafe<ColorElement>(val, rb_cColor);
+	color.bind(&viewport);
 	viewport.rColor = val;
 	return self;
 }
@@ -219,10 +225,6 @@ static VALUE rb_Viewport_setRenderState(VALUE self, VALUE val) {
 		if (renderStates) {
 			viewport->bindRenderStates(renderStates);
 			viewport.rRenderState = val;
-			/*
-			viewport.create_render(); // Make sure the global render is initialized
-			viewport.updatetone();
-			*/
 			return self;
 		}
 	}

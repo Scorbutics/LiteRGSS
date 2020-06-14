@@ -162,7 +162,7 @@ static VALUE rb_Bitmap_fill_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALU
 	rb_check_type(height, T_FIXNUM);
 
 	auto& bitmap = rb::Get<TextureElement>(self);
-	auto& rcolor = rb::GetSafe<sf::Color>(color, rb_cColor);
+	auto& rcolor = rb::GetSafe<ColorElement>(color, rb_cColor).getValue();
 
 	long xValue = NUM2LONG(x);
 	xValue = xValue < 0 ? 0 : xValue;

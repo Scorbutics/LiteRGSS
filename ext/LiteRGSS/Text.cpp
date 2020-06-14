@@ -93,8 +93,8 @@ VALUE rb_Text_get_fill_color(VALUE self) {
 
 VALUE rb_Text_set_fill_color(VALUE self, VALUE val) {
 	auto& text = rb::Get<TextElement>(self);
-	auto& color = rb::GetSafe<sf::Color>(val, rb_cColor);
-	text->setFillColor(color);
+	auto& color = rb::GetSafe<ColorElement>(val, rb_cColor);
+	text->setFillColor(color.getValue());
 	return val;
 }
 
@@ -111,7 +111,7 @@ VALUE rb_Text_get_outline_color(VALUE self) {
 
 VALUE rb_Text_set_outline_color(VALUE self, VALUE val) {
 	auto& text = rb::Get<TextElement>(self);
-	auto& color = rb::GetSafe<sf::Color>(val, rb_cColor);
+	auto& color = rb::GetSafe<ColorElement>(val, rb_cColor).getValue();
 	text->setOutlineColor(color);
 	return val;
 }

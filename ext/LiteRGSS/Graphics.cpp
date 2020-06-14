@@ -2,7 +2,7 @@
 #include "NormalizeNumbers.h"
 #include "Graphics.h"
 #include "GraphicsSingleton.h"
-#include "BlendMode.h"
+#include "RenderStates_BlendMode.h"
 
 VALUE rb_mGraphics = Qnil;
 VALUE rb_eStoppedGraphics = Qnil;

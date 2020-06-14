@@ -2,101 +2,98 @@
 #include "Tone.h"
 #include "rbAdapter.h"
 #include "NormalizeNumbers.h"
-#include "CTone_Element.h"
 
 VALUE rb_cTone = Qnil;
 
-void __Tone_Check_LinkedObject(CTone_Element& tone);
-
 template<>
-void rb::Mark<CTone_Element>(CTone_Element* tone) {
+void rb::Mark<ToneElement>(ToneElement* tone) {
 }
 
 VALUE rb_Tone_Initialize(int argc, VALUE* argv, VALUE self)
 {
 	VALUE red, green, blue, alpha;
 	rb_scan_args(argc, argv, "13", &red, &green, &blue, &alpha);
-	auto& tone = rb::Get<CTone_Element>(self);
-	auto* tonev = tone.getTone();
+	auto& tone = rb::Get<ToneElement>(self);
+	auto tonev = tone.getValue();
 	if(RTEST(red))
-		tonev->x = normalize_long(rb_num2long(red), -255, 255) / 255.0f;
+		tonev.x = normalize_long(rb_num2long(red), -255, 255) / 255.0f;
 	if(RTEST(green))
-		tonev->y = normalize_long(rb_num2long(green), -255, 255) / 255.0f;
+		tonev.y = normalize_long(rb_num2long(green), -255, 255) / 255.0f;
 	if(RTEST(blue))
-		tonev->z = normalize_long(rb_num2long(blue), -255, 255) / 255.0f;
+		tonev.z = normalize_long(rb_num2long(blue), -255, 255) / 255.0f;
 	if(RTEST(alpha))
-		tonev->w = normalize_long(rb_num2long(alpha), 0, 255) / 255.0f;
-	__Tone_Check_LinkedObject(tone);
+		tonev.w = normalize_long(rb_num2long(alpha), 0, 255) / 255.0f;
+	tone.setValue(std::move(tonev));
 	return self;
 }
 
 VALUE rb_Tone_InitializeCopy(VALUE self, VALUE original)
 {
-	auto* tonev = rb::Get<CTone_Element>(self).getTone();
-	auto* toneov = rb::GetSafe<CTone_Element>(original, rb_cTone).getTone();
-	*tonev = *toneov;
+	auto& tonev = rb::Get<ToneElement>(self);
+	auto toneov = rb::GetSafe<ToneElement>(original, rb_cTone).getValue();
+	tonev.setValue(std::move(toneov));
 	return self;
 }
 
 VALUE rb_Tone_getRed(VALUE self)
 {
-	auto* tonev = rb::Get<CTone_Element>(self).getTone();
-	return rb_int2inum(static_cast<long>(tonev->x * 255.0f));
+	auto& tonev = rb::Get<ToneElement>(self).getValue();
+	return rb_int2inum(static_cast<long>(tonev.x * 255.0f));
 }
 
 VALUE rb_Tone_setRed(VALUE self, VALUE val)
 {
-	auto& tone = rb::Get<CTone_Element>(self);
-	auto* tonev = tone.getTone();
-	tonev->x = normalize_long(rb_num2long(val), -255, 255) / 255.0f;
-	__Tone_Check_LinkedObject(tone);
+	auto& tone = rb::Get<ToneElement>(self);
+	auto tonev = tone.getValue();
+	tonev.x = normalize_long(rb_num2long(val), -255, 255) / 255.0f;
+	tone.setValue(std::move(tonev));
 	return self;
 }
 
 VALUE rb_Tone_getGreen(VALUE self)
 {
-	auto* tonev = rb::Get<CTone_Element>(self).getTone();
-	return rb_int2inum(static_cast<long>(tonev->y * 255.0f));
+	auto& tonev = rb::Get<ToneElement>(self).getValue();
+	return rb_int2inum(static_cast<long>(tonev.y * 255.0f));
 }
 
 VALUE rb_Tone_setGreen(VALUE self, VALUE val)
 {
-	auto& tone = rb::Get<CTone_Element>(self);
-	auto* tonev = tone.getTone();
-	tonev->y = normalize_long(rb_num2long(val), -255, 255) / 255.0f;
-	__Tone_Check_LinkedObject(tone);
+	auto& tone = rb::Get<ToneElement>(self);
+	auto tonev = tone.getValue();
+	tonev.y = normalize_long(rb_num2long(val), -255, 255) / 255.0f;
+	tone.setValue(std::move(tonev));
 	return self;
 }
 
 VALUE rb_Tone_getBlue(VALUE self)
 {
-	auto& tone = rb::Get<CTone_Element>(self);
-	auto* tonev = tone.getTone();
-	return rb_int2inum(static_cast<long>(tonev->z * 255.0f));
+	auto& tone = rb::Get<ToneElement>(self);
+	auto& tonev = tone.getValue();
+	return rb_int2inum(static_cast<long>(tonev.z * 255.0f));
 }
 
 VALUE rb_Tone_setBlue(VALUE self, VALUE val)
 {
-	auto& tone = rb::Get<CTone_Element>(self);
-	auto* tonev = tone.getTone();
-	tonev->z = normalize_long(rb_num2long(val), -255, 255) / 255.0f;
-	__Tone_Check_LinkedObject(tone);
+	auto& tone = rb::Get<ToneElement>(self);
+	auto tonev = tone.getValue();
+	tonev.z = normalize_long(rb_num2long(val), -255, 255) / 255.0f;
+	tone.setValue(std::move(tonev));
 	return self;
 }
 
 VALUE rb_Tone_getGray(VALUE self)
 {
-	auto& tone = rb::Get<CTone_Element>(self);
-	auto* tonev = tone.getTone();
-	return rb_int2inum(static_cast<long>(tonev->w * 255.0f));
+	auto& tone = rb::Get<ToneElement>(self);
+	auto& tonev = tone.getValue();
+	return rb_int2inum(static_cast<long>(tonev.w * 255.0f));
 }
 
 VALUE rb_Tone_setGray(VALUE self, VALUE val)
 {
-	auto& tone = rb::Get<CTone_Element>(self);
-	auto* tonev = tone.getTone();
-	tonev->w = normalize_long(rb_num2long(val), 0, 255) / 255.0f;
-	__Tone_Check_LinkedObject(tone);
+	auto& tone = rb::Get<ToneElement>(self);
+	auto tonev = tone.getValue();
+	tonev.w = normalize_long(rb_num2long(val), 0, 255) / 255.0f;
+	tone.setValue(std::move(tonev));
 	return self;
 }
 
@@ -104,30 +101,30 @@ VALUE rb_Tone_eql(VALUE self, VALUE other)
 {
 	if(rb_obj_is_kind_of(other, rb_cTone) != Qtrue)
 		return Qfalse;
-	auto* tonev = rb::Get<CTone_Element>(self).getTone();
-	CTone_Element* otone;
-	Data_Get_Struct(other, CTone_Element, otone);
+	auto& tonev = rb::Get<ToneElement>(self).getValue();
+	ToneElement* otone;
+	Data_Get_Struct(other, ToneElement, otone);
 	if(otone == nullptr)
 		return Qfalse;
-	sf::Glsl::Vec4* otonev = otone->getTone();
-	if(tonev->x != otonev->x)
+	const auto& otonev = otone->getValue();
+	if(tonev.x != otonev.x)
 		return Qfalse;
-	if(tonev->y != otonev->y)
+	if(tonev.y != otonev.y)
 		return Qfalse;
-	if(tonev->z != otonev->z)
+	if(tonev.z != otonev.z)
 		return Qfalse;
-	if(tonev->w != otonev->w)
+	if(tonev.w != otonev.w)
 		return Qfalse;
 	return Qtrue;
 }
 
 VALUE rb_Tone_to_s(VALUE self)
 {
-	auto* tonev = rb::Get<CTone_Element>(self).getTone();
-	return rb_sprintf("(%d, %d, %d, %d)", static_cast<int>(tonev->x * 255), 
-		static_cast<int>(tonev->y * 255),
-		static_cast<int>(tonev->z * 255),
-		static_cast<int>(tonev->w * 255));
+	auto& tonev = rb::Get<ToneElement>(self).getValue();
+	return rb_sprintf("(%d, %d, %d, %d)", static_cast<int>(tonev.x * 255), 
+		static_cast<int>(tonev.y * 255),
+		static_cast<int>(tonev.z * 255),
+		static_cast<int>(tonev.w * 255));
 }
 
 VALUE rb_Tone_Load(VALUE self, VALUE str)
@@ -149,30 +146,19 @@ VALUE rb_Tone_Load(VALUE self, VALUE str)
 
 VALUE rb_Tone_Save(VALUE self, VALUE limit)
 {
-	auto* tonev = rb::Get<CTone_Element>(self).getTone();
+	auto& tonev = rb::Get<ToneElement>(self).getValue();
 	double tone_data[4];
-	tone_data[0] = static_cast<double>(tonev->x * 255);
-	tone_data[1] = static_cast<double>(tonev->y * 255);
-	tone_data[2] = static_cast<double>(tonev->z * 255);
-	tone_data[3] = static_cast<double>(tonev->w * 255);
+	tone_data[0] = static_cast<double>(tonev.x * 255);
+	tone_data[1] = static_cast<double>(tonev.y * 255);
+	tone_data[2] = static_cast<double>(tonev.z * 255);
+	tone_data[3] = static_cast<double>(tonev.w * 255);
 	return rb_str_new(reinterpret_cast<const char*>(tone_data), sizeof(double) * 4);
-}
-
-void __Tone_Check_LinkedObject(CTone_Element& tone)
-{
-	/*
-	CViewport_Element* view = tone.getViewport();
-	if(view == nullptr)
-		return;
-	tone_copy(view->getTone(), tone.getTone());
-	view->updatetone();
-	*/
 }
 
 void Init_Tone()
 {
 	rb_cTone = rb_define_class_under(rb_mLiteRGSS, "Tone", rb_cObject);
-	rb_define_alloc_func(rb_cTone, rb::Alloc<CTone_Element>);
+	rb_define_alloc_func(rb_cTone, rb::Alloc<ToneElement>);
 
 	rb_define_method(rb_cTone, "initialize", _rbf rb_Tone_Initialize, -1);
 	rb_define_method(rb_cTone, "set", _rbf rb_Tone_Initialize, -1);

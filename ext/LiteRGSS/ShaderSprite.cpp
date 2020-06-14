@@ -2,7 +2,7 @@
 #include "rbAdapter.h"
 
 #include "ShaderSprite.h"
-#include "BlendMode.h"
+#include "RenderStates_BlendMode.h"
 #include "Shader.h"
 
 VALUE rb_cShaderSprite = Qnil;

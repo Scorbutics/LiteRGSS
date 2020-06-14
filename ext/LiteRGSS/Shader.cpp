@@ -1,6 +1,5 @@
 #include "LiteRGSS.h"
 #include "Shader.h"
-#include "CTone_Element.h"
 #include "GraphicsSingleton.h"
 #include "Texture_Bitmap.h"
 #include "Tone.h"
@@ -47,17 +46,16 @@ VALUE rb_Shader_setFloatUniform(VALUE self, VALUE name, VALUE uniform) {
 			renderStates.setShaderUniform(rb_string_value_cstr(&name), vect2);
 		}
 	} else if (rb_obj_is_kind_of(uniform, rb_cColor) == Qtrue) {
-		sf::Color* color;
-		Data_Get_Struct(uniform, sf::Color, color);
+		auto* color = rb::GetPtr<ColorElement>(uniform);
 		if (color != nullptr) {
-			sf::Glsl::Vec4 vect4(color->r / 255.0, color->g / 255.0, color->b / 255.0, color->a / 255.0);
+			auto& colorValue = color->getValue();
+			sf::Glsl::Vec4 vect4(colorValue.r / 255.0, colorValue.g / 255.0, colorValue.b / 255.0, colorValue.a / 255.0);
 			renderStates.setShaderUniform(rb_string_value_cstr(&name), vect4);
 		}
 	} else if (rb_obj_is_kind_of(uniform, rb_cTone) == Qtrue) {
-		CTone_Element* tone;
-		Data_Get_Struct(uniform, CTone_Element, tone);
+		auto* tone = rb::GetPtr<ToneElement>(uniform);
 		if (tone != nullptr) {
-			renderStates.setShaderUniform(rb_string_value_cstr(&name), *tone->getTone());
+			renderStates.setShaderUniform(rb_string_value_cstr(&name), tone->getValue());
 		}
 	} else {
 		renderStates.setShaderUniform(rb_string_value_cstr(&name), static_cast<float>(NUM2DBL(uniform)));

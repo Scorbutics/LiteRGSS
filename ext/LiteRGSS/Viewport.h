@@ -4,12 +4,16 @@
 #include <LiteCGSS/Views/Viewport.h>
 #include "CgssWrapper.h"
 #include "RubyValue.h"
+#include "ToneBindable.h"
+#include "ColorBindable.h"
 
 extern VALUE rb_cViewport;
 void Init_Viewport();
 
 struct ViewportElement : 
-    public CgssInstance<cgss::Viewport> {
+    public CgssInstance<cgss::Viewport>,
+    public ToneBindable,
+    public ColorBindable {
         
     VALUE rRect = Qnil;
     VALUE rTone = Qnil;
@@ -23,6 +27,8 @@ struct ViewportElement :
         drawable.init(Drawable::create(*instance(), std::forward<Args>(args)...));
     }
 
+    void updateFromValue(const sf::Glsl::Vec4* toneValue) override;
+    void updateFromValue(const sf::Color* colorValue) override;
 };
 
 #endif
