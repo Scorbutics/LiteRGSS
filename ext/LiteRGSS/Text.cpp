@@ -56,23 +56,18 @@ VALUE rb_Text_Disposed(VALUE self) {
 
 VALUE rb_Text_get_num_char(VALUE self) {
 	auto& text = rb::Get<TextElement>(self);
-	//TODO
-	//return RB_UINT2NUM(text.getText().getNumCharToDraw());
-	return RB_UINT2NUM(1);
+	return RB_UINT2NUM(text->getNumCharToDraw());
 }
 
 VALUE rb_Text_set_draw_shadow(VALUE self, VALUE val) {
 	auto& text = rb::Get<TextElement>(self);
-	//TODO
-	//text.getText().setDrawShadow(RTEST(val));
+	text->setDrawShadow(RTEST(val));
 	return self;
 }
 
 VALUE rb_Text_get_draw_shadow(VALUE self) {
 	auto& text = rb::Get<TextElement>(self);
-	//TODO
-	//return (text.getText().getDrawShadow() ? Qtrue : Qfalse);
-	return Qfalse;
+	return (text->getDrawShadow() ? Qtrue : Qfalse);
 }
 
 VALUE rb_Text_getRealWidth(VALUE self) {
@@ -131,13 +126,11 @@ VALUE rb_Text_load_color(VALUE self, VALUE id) {
 	auto& text = rb::Get<TextElement>(self);
 	rb_Text_set_fill_color(self, rb_Fonts_get_fill_color(rb_mFonts, id));
 	
-	//TODO
-	/*
-	if(text.getText().getDrawShadow())
+	if (text->getDrawShadow()) {
 		rb_Text_set_outline_color(self, rb_Fonts_get_shadow_color(rb_mFonts, id));
-	else
-	*/
+	} else {
 		rb_Text_set_outline_color(self, rb_Fonts_get_outline_color(rb_mFonts, id));
+	}
 	return self;
 }
 
@@ -286,8 +279,7 @@ VALUE rb_Text_set_Text(VALUE self, VALUE str) {
 	auto& text = rb::Get<TextElement>(self);
 	rb_check_type(str, T_STRING);
 	text.rtext = str;
-	//TODO
-	//text.getText().setLineHeight(rb_num2dbl(text.rheight));
+	text->setLineHeight(rb_num2dbl(text.rheight));
 	std::string stru8(RSTRING_PTR(str));
 	text->setString(sf::String::fromUtf8(stru8.begin(), stru8.end()));
 	return str;
@@ -297,12 +289,8 @@ VALUE rb_Text_get_text_width(VALUE self, VALUE val) {
 	auto& text = rb::Get<TextElement>(self);
 	rb_check_type(val, T_STRING);
 	std::string stru8(RSTRING_PTR(val));
-	//TODO
-	//sf::Uint32 width = text.getText().getTextWidth(sf::String::fromUtf8(stru8.begin(), stru8.end()));
-	//return RB_UINT2NUM(width);
-	auto tmp = sf::Text{};
-	tmp.setString(sf::String::fromUtf8(stru8.begin(), stru8.end()));
-	return rb_int2inum(tmp.getLocalBounds().width);
+	sf::Uint32 width = text->getTextWidth(sf::String::fromUtf8(stru8.begin(), stru8.end()));
+	return RB_UINT2NUM(width);
 }
 
 VALUE rb_Text_get_Text(VALUE self) {
@@ -323,9 +311,7 @@ VALUE rb_Text_set_visible(VALUE self, VALUE val) {
 
 VALUE rb_Text_set_num_char(VALUE self, VALUE val) {
 	auto& text = rb::Get<TextElement>(self);
-	//TODO
-	//text.getText().setNumCharToDraw(rb_num2ulong(val));
-	//rb_Text_UpdateI(text);
+	text->setNumCharToDraw(rb_num2ulong(val));
 	return self;
 }
 
@@ -405,8 +391,8 @@ VALUE rb_Text_Initialize(int argc, VALUE* argv, VALUE self) {
 		long ralign = rb_num2long(align);
 		if (ralign <= 2 && ralign >= 0) {
 			text.rAlign = align;
+			text->setAlign(ralign);
 		}
-		text->setAlign(ralign);
 	}
 	/* Outline size */
 	if(!NIL_P(outlinesize)) {
