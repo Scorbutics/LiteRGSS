@@ -37,14 +37,11 @@ VALUE rb_SpriteMap_Initialize(int argc, VALUE* argv, VALUE self) {
 }
 
 VALUE rb_SpriteMap_Dispose(VALUE self) {
-	auto& spriteMap = rb::Get<SpriteMapElement>(self);
-	spriteMap->dispose();
-	return Qnil;
+	return rb::Dispose<SpriteMapElement>(self);
 }
 
 VALUE rb_SpriteMap_Disposed(VALUE self) {
-	auto& spriteMap = rb::Get<SpriteMapElement>(self);
-	return spriteMap->isDisposed() ? Qtrue : Qfalse;
+	return RDATA(self)->data == nullptr ? Qtrue : Qfalse;
 }
 
 VALUE rb_SpriteMap_Viewport(VALUE self) {

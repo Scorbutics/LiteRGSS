@@ -79,14 +79,11 @@ VALUE rb_Window_getViewport(VALUE self) {
 }
 
 VALUE rb_Window_Dispose(VALUE self) {
-	auto& framedView = rb::Get<FramedViewElement>(self);
-	framedView->dispose();
-	return Qnil;
+	return rb::Dispose<FramedViewElement>(self);
 }
 
 VALUE rb_Window_Disposed(VALUE self) {
-	auto& framedView = rb::Get<FramedViewElement>(self);
-	return framedView->isDisposed() ? Qtrue : Qfalse;
+	return RDATA(self)->data == nullptr ? Qtrue : Qfalse;
 }
 
 VALUE rb_Window_setWindowSkin(VALUE self, VALUE val) {

@@ -85,10 +85,7 @@ static VALUE rb_Bitmap_Initialize_Copy(VALUE self, VALUE other) {
 }
 
 static VALUE rb_Bitmap_Dispose(VALUE self) {
-	auto& bitmap = rb::Get<TextureElement>(self);
-	// Just empty - reinit it
-	bitmap.init();
-	return Qnil;
+	return rb::RawDispose<TextureElement>(self);
 }
 
 static VALUE rb_Bitmap_Width(VALUE self) {

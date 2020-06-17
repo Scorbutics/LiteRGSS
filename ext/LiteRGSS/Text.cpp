@@ -44,14 +44,11 @@ VALUE rb_Text_Copy(VALUE self) {
 }
 
 VALUE rb_Text_Dispose(VALUE self) {
-	auto& text = rb::Get<TextElement>(self);
-	text->dispose();
-	return Qnil;
+	return rb::Dispose<TextElement>(self);
 }
 
 VALUE rb_Text_Disposed(VALUE self) {
-	auto& text = rb::Get<TextElement>(self);
-	return text->isDisposed() ? Qtrue : Qfalse;
+	return RDATA(self)->data == nullptr ? Qtrue : Qfalse;
 }
 
 VALUE rb_Text_get_num_char(VALUE self) {

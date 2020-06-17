@@ -110,13 +110,20 @@ namespace rb {
 	}
 
 	template <class T>
-	VALUE Dispose(VALUE self) {
+	VALUE RawDispose(VALUE self) {
 		if (RDATA(self)->data == nullptr) {
 			return Qnil;
 		}
 		delete GetPtr<T>(self);
 		RDATA(self)->data = nullptr;
 		return Qnil;
+	}
+
+	template <class T>
+	VALUE Dispose(VALUE self) {
+		auto& element = rb::Get<T>(self);
+		element->detach();
+		return RawDispose<T>(self);
 	}
 }
 #endif

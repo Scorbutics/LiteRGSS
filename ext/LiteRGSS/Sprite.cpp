@@ -38,15 +38,11 @@ static VALUE rb_Sprite_Copy(VALUE self) {
 }
 
 static VALUE rb_Sprite_Dispose(VALUE self) {
-	auto& sprite = rb::Get<SpriteElement>(self);
-	sprite->dispose();
-	//LOG("[Sprite] Disposed");
-	return Qnil;
+	return rb::Dispose<SpriteElement>(self);
 }
 
 VALUE rb_Sprite_Disposed(VALUE self) {
-	auto& sprite = rb::Get<SpriteElement>(self);
-	return sprite->isDisposed() ? Qtrue : Qfalse;
+	return RDATA(self)->data == nullptr ? Qtrue : Qfalse;
 }
 
 static VALUE rb_Sprite_setBitmap(VALUE self, VALUE bitmap) {

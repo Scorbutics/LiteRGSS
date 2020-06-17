@@ -98,7 +98,7 @@ VALUE rb_Image_Initialize_Copy(VALUE self, VALUE other)
 
 VALUE rb_Image_Dispose(VALUE self)
 {
-	return rb::Dispose<sf::Image>(self);
+	return rb::RawDispose<sf::Image>(self);
 }
 
 VALUE rb_Image_Width(VALUE self)

@@ -56,14 +56,11 @@ static VALUE rb_Viewport_Initialize(int argc, VALUE* argv, VALUE self) {
 
 
 static VALUE rb_Viewport_Dispose(VALUE self) {
-	auto& viewport = rb::Get<ViewportElement>(self);
-	viewport->dispose();
-	return Qnil;
+	return rb::Dispose<ViewportElement>(self);
 }
 
 static VALUE rb_Viewport_Disposed(VALUE self) {
-	auto& viewport = rb::Get<ViewportElement>(self);
-	return viewport->isDisposed() ? Qtrue : Qfalse;
+	return RDATA(self)->data == nullptr ? Qtrue : Qfalse;
 }
 
 static VALUE rb_Viewport_getOX(VALUE self) {

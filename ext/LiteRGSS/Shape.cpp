@@ -96,14 +96,11 @@ VALUE rb_Shape_Initialize(int argc, VALUE* argv, VALUE self) {
 }
 
 VALUE rb_Shape_Dispose(VALUE self) {
-	auto& shape = rb::Get<ShapeElement>(self);
-	shape->dispose();
-	return Qnil;
+	return rb::Dispose<ShapeElement>(self);
 }
 
 VALUE rb_Shape_Disposed(VALUE self) {
-	auto& shape = rb::Get<ShapeElement>(self);
-	return shape->isDisposed() ? Qtrue : Qfalse;
+	return RDATA(self)->data == nullptr ? Qtrue : Qfalse;
 }
 
 VALUE rb_Shape_getBitmap(VALUE self) {
