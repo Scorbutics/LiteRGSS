@@ -279,7 +279,6 @@ VALUE rb_Text_set_Text(VALUE self, VALUE str) {
 	auto& text = rb::Get<TextElement>(self);
 	rb_check_type(str, T_STRING);
 	text.rtext = str;
-	text->setLineHeight(rb_num2dbl(text.rheight));
 	std::string stru8(RSTRING_PTR(str));
 	text->setString(sf::String::fromUtf8(stru8.begin(), stru8.end()));
 	return str;
