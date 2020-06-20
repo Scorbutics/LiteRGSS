@@ -1,5 +1,6 @@
 #include "LiteRGSS.h"
 #include "rbAdapter.h"
+#include "Image.h"
 #include "lodepng.h"
 #include "Texture_Bitmap.h"
 #include "Drawable_Disposable.h"
@@ -11,10 +12,10 @@
 VALUE rb_cImage = Qnil;
 
 template<>
-void rb::Mark<sf::Image>(sf::Image* image) {
+void rb::Mark<ImageElement>(ImageElement* image) {
 }
 
-bool rb_Image_LoadLodePNG(sf::Image& img, char* str, long from_memory_size)
+bool rb_Image_LoadLodePNG(ImageElement& img, char* str, long from_memory_size)
 {
 	unsigned char* out = nullptr;
 	unsigned w;
@@ -46,7 +47,7 @@ VALUE rb_Image_Initialize(int argc, VALUE *argv, VALUE self)
 {
 	VALUE string;
 	VALUE fromMemory;
-	auto& img = rb::Get<sf::Image>(self);
+	auto& img = rb::Get<ImageElement>(self);
 	rb_scan_args(argc, argv, "11", &string, &fromMemory);
 	/* Load From filename */
 	if(NIL_P(fromMemory))
@@ -86,10 +87,10 @@ VALUE rb_Image_Initialize_Copy(VALUE self, VALUE other)
 		rb_raise(rb_eTypeError, "Cannot clone %s into Image.", RSTRING_PTR(rb_class_name(CLASS_OF(other))));
 		return self;
 	}
-	sf::Image* img;
-	sf::Image* imgo;
-	Data_Get_Struct(self, sf::Image, img);
-	Data_Get_Struct(other, sf::Image, imgo);
+	ImageElement* img;
+	ImageElement* imgo;
+	Data_Get_Struct(self, ImageElement, img);
+	Data_Get_Struct(other, ImageElement, imgo);
 	if(imgo == nullptr)
 		rb_raise(rb_eRGSSError, "Disposed Image.");
 	img->create(imgo->getSize().x, imgo->getSize().y, imgo->getPixelsPtr());
@@ -98,26 +99,26 @@ VALUE rb_Image_Initialize_Copy(VALUE self, VALUE other)
 
 VALUE rb_Image_Dispose(VALUE self)
 {
-	return rb::RawDispose<sf::Image>(self);
+	return rb::RawDispose<ImageElement>(self);
 }
 
 VALUE rb_Image_Width(VALUE self)
 {
-	auto& img = rb::Get<sf::Image>(self);
+	auto& img = rb::Get<ImageElement>(self);
 	sf::Vector2u size = img.getSize();
 	return rb_int2inum(size.x);
 }
 
 VALUE rb_Image_Height(VALUE self)
 {
-	auto& img = rb::Get<sf::Image>(self);
+	auto& img = rb::Get<ImageElement>(self);
 	sf::Vector2u size = img.getSize();
 	return rb_int2inum(size.y);
 }
 
 VALUE rb_Image_Rect(VALUE self)
 {
-	auto& img = rb::Get<sf::Image>(self);
+	auto& img = rb::Get<ImageElement>(self);
 	sf::Vector2u size = img.getSize();
 	VALUE argv[4] = {LONG2FIX(0), LONG2FIX(0), rb_int2inum(size.x), rb_int2inum(size.y)};
 	return rb_class_new_instance(4, argv, rb_cRect);
@@ -125,7 +126,7 @@ VALUE rb_Image_Rect(VALUE self)
 
 VALUE rb_Image_Copy_to_Bitmap(VALUE self, VALUE bitmap)
 {
-	auto& img = rb::Get<sf::Image>(self);
+	auto& img = rb::Get<ImageElement>(self);
 	auto& bmp = rb::GetSafe<TextureElement>(bitmap, rb_cBitmap);
 	bmp->update(&img);
 	return self;
@@ -133,8 +134,8 @@ VALUE rb_Image_Copy_to_Bitmap(VALUE self, VALUE bitmap)
 
 VALUE rb_Image_blt_fast(VALUE self, VALUE x, VALUE y, VALUE src_image, VALUE rect)
 {
-	auto& img = rb::Get<sf::Image>(self);
-	auto& img2 = rb::GetSafe<sf::Image>(src_image, rb_cImage);
+	auto& img = rb::Get<ImageElement>(self);
+	auto& img2 = rb::GetSafe<ImageElement>(src_image, rb_cImage);
 	auto& s_rect = rb::GetSafe<RectangleElement>(rect, rb_cRect);
 	img.copy(
 		img2,
@@ -147,8 +148,8 @@ VALUE rb_Image_blt_fast(VALUE self, VALUE x, VALUE y, VALUE src_image, VALUE rec
 
 VALUE rb_Image_blt(VALUE self, VALUE x, VALUE y, VALUE src_image, VALUE rect)
 {
-	auto& img = rb::Get<sf::Image>(self);
-	auto& img2 = rb::GetSafe<sf::Image>(src_image, rb_cImage);
+	auto& img = rb::Get<ImageElement>(self);
+	auto& img2 = rb::GetSafe<ImageElement>(src_image, rb_cImage);
 	auto& s_rect = rb::GetSafe<RectangleElement>(rect, rb_cRect);
 	img.copy(
 		img2,
@@ -162,7 +163,7 @@ VALUE rb_Image_blt(VALUE self, VALUE x, VALUE y, VALUE src_image, VALUE rect)
 
 VALUE rb_Image_clear_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height)
 {
-	auto& img = rb::Get<sf::Image>(self);
+	auto& img = rb::Get<ImageElement>(self);
 	rb_check_type(x, T_FIXNUM);
 	rb_check_type(y, T_FIXNUM);
 	rb_check_type(width, T_FIXNUM);
@@ -187,7 +188,7 @@ VALUE rb_Image_clear_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE heigh
 
 VALUE rb_Image_fill_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height, VALUE color)
 {
-	auto& img = rb::Get<sf::Image>(self);
+	auto& img = rb::Get<ImageElement>(self);
 	if (rb_obj_is_kind_of(color, rb_cColor) != Qtrue)
 		return self;
 	auto* rcolor = rb::GetPtr<ColorElement>(color);
@@ -215,7 +216,7 @@ VALUE rb_Image_fill_rect(VALUE self, VALUE x, VALUE y, VALUE width, VALUE height
 
 VALUE rb_Image_toPNG(VALUE self)
 {
-	auto& img = rb::Get<sf::Image>(self);
+	auto& img = rb::Get<ImageElement>(self);
 	unsigned char* out;
 	size_t size;
 	if (lodepng_encode32(&out, &size, img.getPixelsPtr(), img.getSize().x, img.getSize().y) != 0)
@@ -232,7 +233,7 @@ VALUE rb_Image_toPNG(VALUE self)
 VALUE rb_Image_toPNG_file(VALUE self, VALUE filename)
 {
 	rb_check_type(filename, T_STRING);
-	auto& img = rb::Get<sf::Image>(self);
+	auto& img = rb::Get<ImageElement>(self);
 	if (lodepng_encode32_file(RSTRING_PTR(filename), img.getPixelsPtr(), img.getSize().x, img.getSize().y) != 0)
 		return Qfalse;
 	return Qtrue;
@@ -240,7 +241,7 @@ VALUE rb_Image_toPNG_file(VALUE self, VALUE filename)
 
 VALUE rb_Image_get_pixel(VALUE self, VALUE x, VALUE y)
 {
-	auto& img = rb::Get<sf::Image>(self);
+	auto& img = rb::Get<ImageElement>(self);
 	unsigned long px = NUM2ULONG(x);
 	unsigned long py = NUM2ULONG(y);
 	sf::Vector2u size = img.getSize();
@@ -255,7 +256,7 @@ VALUE rb_Image_get_pixel(VALUE self, VALUE x, VALUE y)
 
 VALUE rb_Image_get_pixel_alpha(VALUE self, VALUE x, VALUE y)
 {
-	auto& img = rb::Get<sf::Image>(self);
+	auto& img = rb::Get<ImageElement>(self);
 	unsigned long px = NUM2ULONG(x);
 	unsigned long py = NUM2ULONG(y);
 	sf::Vector2u size = img.getSize();
@@ -269,7 +270,7 @@ VALUE rb_Image_get_pixel_alpha(VALUE self, VALUE x, VALUE y)
 
 VALUE rb_Image_set_pixel(VALUE self, VALUE x, VALUE y, VALUE color)
 {
-	auto& img = rb::Get<sf::Image>(self);
+	auto& img = rb::Get<ImageElement>(self);
 	unsigned long px = NUM2ULONG(x);
 	unsigned long py = NUM2ULONG(y);
 	sf::Vector2u size = img.getSize();
@@ -283,10 +284,10 @@ VALUE rb_Image_set_pixel(VALUE self, VALUE x, VALUE y, VALUE color)
 
 VALUE rb_Image_stretch_blt_fast(VALUE self, VALUE dest_rect, VALUE src_image, VALUE src_rect)
 {
-	auto& img = rb::Get<sf::Image>(self);
+	auto& img = rb::Get<ImageElement>(self);
 	auto& dst_rc = rb::GetSafe<RectangleElement>(dest_rect, rb_cRect);
 	auto& src_rc = rb::GetSafe<RectangleElement>(src_rect, rb_cRect);
-	sf::Image& src_img = rb::GetSafe<sf::Image>(src_image, rb_cImage);
+	ImageElement& src_img = rb::GetSafe<ImageElement>(src_image, rb_cImage);
 	int s_w = src_rc->getRect().width;
 	int d_w = dst_rc->getRect().width;
 	int s_h = src_rc->getRect().height;
@@ -330,10 +331,10 @@ VALUE rb_Image_stretch_blt_fast(VALUE self, VALUE dest_rect, VALUE src_image, VA
 
 VALUE rb_Image_stretch_blt(VALUE self, VALUE dest_rect, VALUE src_image, VALUE src_rect)
 {
-	auto& img = rb::Get<sf::Image>(self);
+	auto& img = rb::Get<ImageElement>(self);
 	auto& dst_rc = rb::GetSafe<RectangleElement>(dest_rect, rb_cRect);
 	auto& src_rc = rb::GetSafe<RectangleElement>(src_rect, rb_cRect);
-	sf::Image& src_img = rb::GetSafe<sf::Image>(src_image, rb_cImage);
+	ImageElement& src_img = rb::GetSafe<ImageElement>(src_image, rb_cImage);
 	sf::Color src, dest;
 	int s_w = src_rc->getRect().width;
 	int d_w = dst_rc->getRect().width;
@@ -389,7 +390,7 @@ VALUE rb_Image_stretch_blt(VALUE self, VALUE dest_rect, VALUE src_image, VALUE s
 
 VALUE rb_Image_create_mask(VALUE self, VALUE color, VALUE alpha)
 {
-	auto& img = rb::Get<sf::Image>(self);
+	auto& img = rb::Get<ImageElement>(self);
 	auto& col = rb::GetSafe<ColorElement>(color, rb_cColor).getValue();
 	img.createMaskFromColor(col, NUM2ULONG(alpha));
 	return self;
@@ -399,7 +400,7 @@ VALUE rb_Image_create_mask(VALUE self, VALUE color, VALUE alpha)
 void Init_Image()
 {
 	rb_cImage = rb_define_class_under(rb_mLiteRGSS, "Image", rb_cDisposable);
-	rb_define_alloc_func(rb_cImage, rb::Alloc<sf::Image>);
+	rb_define_alloc_func(rb_cImage, rb::Alloc<ImageElement>);
 	rb_define_method(rb_cImage, "initialize", _rbf rb_Image_Initialize, -1);
 	rb_define_method(rb_cImage, "initialize_copy", _rbf rb_Image_Initialize_Copy, 1);
 	rb_define_method(rb_cImage, "dispose", _rbf rb_Image_Dispose, 0);
