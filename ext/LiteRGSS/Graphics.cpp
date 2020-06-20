@@ -33,8 +33,7 @@ VALUE rb_Graphics_transition(int argc, VALUE* argv, VALUE self) {
 	return self;
 }
 
-VALUE rb_Graphics_list_res(VALUE self)
-{
+VALUE rb_Graphics_list_res(VALUE self) {
 	VALUE array = rb_ary_new();
 	auto modes = sf::VideoMode::getFullscreenModes();
 	for (const auto& mode : modes) {
@@ -45,43 +44,36 @@ VALUE rb_Graphics_list_res(VALUE self)
 	return array;
 }
 
-VALUE rb_Graphics_update(VALUE self)
-{
+VALUE rb_Graphics_update(VALUE self) {
 	GraphicsSingleton::Get().update(self);
 	return self;
 }
 
-VALUE rb_Graphics_update_no_input_count(VALUE self)
-{
+VALUE rb_Graphics_update_no_input_count(VALUE self) {
 	GraphicsSingleton::Get().update(self, false);
 	return self;
 }
 
-VALUE rb_Graphics_update_only_input(VALUE self)
-{
+VALUE rb_Graphics_update_only_input(VALUE self) {
 	GraphicsSingleton::Get().updateOnlyInput(self);
 	return self;
 }
 
-VALUE rb_Graphics_get_frame_count(VALUE self)
-{
+VALUE rb_Graphics_get_frame_count(VALUE self) {
 	return RB_UINT2NUM(GraphicsSingleton::Get().frameCount());
 }
 
-VALUE rb_Graphics_set_frame_count(VALUE self, VALUE val)
-{
+VALUE rb_Graphics_set_frame_count(VALUE self, VALUE val) {
 	auto frame_count = rb_num2ulong(val);
 	GraphicsSingleton::Get().setFrameCount(frame_count);
 	return val;
 }
 
-VALUE rb_Graphics_width(VALUE self)
-{
+VALUE rb_Graphics_width(VALUE self) {
 	return rb_int2inum(GraphicsSingleton::Get().screenWidth());
 }
 
-VALUE rb_Graphics_height(VALUE self)
-{
+VALUE rb_Graphics_height(VALUE self) {
 	return rb_int2inum(GraphicsSingleton::Get().screenHeight());
 }
 
@@ -90,40 +82,32 @@ VALUE rb_Graphics_ReloadStack(VALUE self) {
 	return self;
 }
 
-VALUE rb_Graphics_getBrightness(VALUE self)
-{
+VALUE rb_Graphics_getBrightness(VALUE self) {
 	return LONG2FIX(GraphicsSingleton::Get().brightness());
 }
 
-VALUE rb_Graphics_setBrightness(VALUE self, VALUE brightness)
-{
+VALUE rb_Graphics_setBrightness(VALUE self, VALUE brightness) {
 	GraphicsSingleton::Get().setBrightness(normalize_long(rb_num2long(brightness), 0, 255));
 	return self;
 }
 
-VALUE rb_Graphics_getShader(VALUE self)
-{
+VALUE rb_Graphics_getShader(VALUE self) {
 	return rb_ivar_get(self, rb_iGraphicsShader);
 }
 
-VALUE rb_Graphics_setShader(VALUE self, VALUE shader)
-{
+VALUE rb_Graphics_setShader(VALUE self, VALUE shader) {
 	sf::RenderStates* render_state;
-	if (rb_obj_is_kind_of(shader, rb_cBlendMode) == Qtrue)
-	{
+	if (rb_obj_is_kind_of(shader, rb_cBlendMode) == Qtrue) {
 		rb_ivar_set(self, rb_iGraphicsShader, shader);
 		Data_Get_Struct(shader, sf::RenderStates, render_state);
 		GraphicsSingleton::Get().setShader(render_state);
-	}
-	else if (shader == Qnil)
-	{
+	} else if (shader == Qnil) {
 		GraphicsSingleton::Get().setShader(nullptr);
 	}
 	return self;
 }
 
-VALUE rb_Graphics_resize_screen(VALUE self, VALUE width, VALUE height)
-{
+VALUE rb_Graphics_resize_screen(VALUE self, VALUE width, VALUE height) {
 	ID swidth = rb_intern("ScreenWidth");
 	ID sheight = rb_intern("ScreenHeight");
 	/* Adjust screen resolution */
