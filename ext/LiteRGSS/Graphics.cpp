@@ -159,7 +159,7 @@ void Init_Graphics() {
 	rb_define_module_function(rb_mGraphics, "brightness=", _rbf rb_Graphics_setBrightness, 1);
 	rb_define_module_function(rb_mGraphics, "shader", _rbf rb_Graphics_getShader, 0);
 	rb_define_module_function(rb_mGraphics, "shader=", _rbf rb_Graphics_setShader, 1);
-	rb_define_module_function(rb_mGraphics, "set_icon=", _rbf rb_Graphics_set_icon, 1);
+	rb_define_module_function(rb_mGraphics, "icon=", _rbf rb_Graphics_set_icon, 1);
 	rb_define_module_function(rb_mGraphics, "resize_screen", _rbf rb_Graphics_resize_screen, 2);
 	
 	rb_iGraphicsShader = rb_intern("@__GraphicsShader");
