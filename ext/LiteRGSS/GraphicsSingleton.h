@@ -39,6 +39,7 @@ public:
 	void transition(VALUE self, int argc, VALUE* argv);
 	void resizeScreen(int width, int height); 
 	void setShader(sf::RenderStates* shader);
+	void setIcon(const sf::Image& icon);
 
 	template <class T, class ... Args>
 	T add(Args&& ... args) {

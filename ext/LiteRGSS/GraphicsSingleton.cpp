@@ -204,6 +204,10 @@ void GraphicsSingleton::setShader(sf::RenderStates* shader) {
 	m_gameWindow.setShader(shader);
 }
 
+void GraphicsSingleton::setIcon(const sf::Image& icon) {
+	m_gameWindow.setIcon(icon);
+}
+
 VALUE GraphicsSingleton::takeSnapshot() {
 	return TextureElement::snapToTexture(m_gameWindow);
 }

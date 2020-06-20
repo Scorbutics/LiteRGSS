@@ -1,5 +1,7 @@
 #include "LiteRGSS.h"
 #include "NormalizeNumbers.h"
+#include "rbAdapter.h"
+#include "Image.h"
 #include "Graphics.h"
 #include "GraphicsSingleton.h"
 #include "RenderStates_BlendMode.h"
@@ -127,6 +129,12 @@ VALUE rb_Graphics_resize_screen(VALUE self, VALUE width, VALUE height) {
 	return self;
 }
 
+VALUE rb_Graphics_set_icon(VALUE self, VALUE icon) {
+	const auto& iconImage = rb::GetSafe<ImageElement>(icon, rb_cImage);
+	GraphicsSingleton::Get().setIcon(iconImage);
+	return self;
+}
+
 void Init_Graphics() {
 	rb_mGraphics = rb_define_module_under(rb_mLiteRGSS, "Graphics");
 	/* Defining the Stopped Graphics Error */
@@ -151,6 +159,7 @@ void Init_Graphics() {
 	rb_define_module_function(rb_mGraphics, "brightness=", _rbf rb_Graphics_setBrightness, 1);
 	rb_define_module_function(rb_mGraphics, "shader", _rbf rb_Graphics_getShader, 0);
 	rb_define_module_function(rb_mGraphics, "shader=", _rbf rb_Graphics_setShader, 1);
+	rb_define_module_function(rb_mGraphics, "set_icon=", _rbf rb_Graphics_set_icon, 1);
 	rb_define_module_function(rb_mGraphics, "resize_screen", _rbf rb_Graphics_resize_screen, 2);
 	
 	rb_iGraphicsShader = rb_intern("@__GraphicsShader");
