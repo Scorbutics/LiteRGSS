@@ -135,6 +135,11 @@ VALUE rb_Graphics_set_icon(VALUE self, VALUE icon) {
 	return self;
 }
 
+VALUE rb_Graphics_sort_z(VALUE self) {
+	GraphicsSingleton::Get().sortZ();
+	return self;
+}
+
 void Init_Graphics() {
 	rb_mGraphics = rb_define_module_under(rb_mLiteRGSS, "Graphics");
 	/* Defining the Stopped Graphics Error */
@@ -144,6 +149,7 @@ void Init_Graphics() {
 	rb_define_module_function(rb_mGraphics, "start", _rbf rb_Graphics_start, 0);
 	rb_define_module_function(rb_mGraphics, "stop", _rbf rb_Graphics_stop, 0);
 	rb_define_module_function(rb_mGraphics, "update", _rbf rb_Graphics_update, 0);
+	rb_define_module_function(rb_mGraphics, "sort_z", _rbf rb_Graphics_sort_z, 0);
 	rb_define_module_function(rb_mGraphics, "snap_to_bitmap", _rbf rb_Graphics_snap_to_bitmap, 0);
 	rb_define_module_function(rb_mGraphics, "freeze", _rbf rb_Graphics_freeze, 0);
 	rb_define_module_function(rb_mGraphics, "transition", _rbf rb_Graphics_transition, -1);

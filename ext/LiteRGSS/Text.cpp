@@ -356,7 +356,7 @@ VALUE rb_Text_Initialize(int argc, VALUE* argv, VALUE self) {
 			return Qnil;
 		}
 		viewportEl.initAndAdd(text);
-		text.rViewport = argv[0];
+		text.rViewport = viewport;
 	}
 	/* If a window is specified */
 	else if (rb_obj_is_kind_of(viewport, rb_cWindow) == Qtrue) {

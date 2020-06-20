@@ -208,6 +208,10 @@ void GraphicsSingleton::setIcon(const sf::Image& icon) {
 	m_gameWindow.setIcon(icon);
 }
 
+void GraphicsSingleton::sortZ() {
+	m_gameWindow.sortZ();
+}
+
 VALUE GraphicsSingleton::takeSnapshot() {
 	return TextureElement::snapToTexture(m_gameWindow);
 }

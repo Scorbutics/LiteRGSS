@@ -245,6 +245,12 @@ static VALUE rb_Viewport_snapToBitmap(VALUE self) {
 	return TextureElement::snapToTexture(*viewport.instance());
 }
 
+static VALUE rb_Viewport_sort_z(VALUE self) {
+	auto& viewport = rb::Get<ViewportElement>(self);
+	viewport->sortZ();
+	return self;
+}
+
 void Init_Viewport() {
 	rb_cViewport = rb_define_class_under(rb_mLiteRGSS, "Viewport", rb_cDrawable);
 
@@ -257,6 +263,7 @@ void Init_Viewport() {
 	rb_define_method(rb_cViewport, "oy=", _rbf rb_Viewport_setOY, 1);
 	rb_define_method(rb_cViewport, "rect", _rbf rb_Viewport_getRect, 0);
 	rb_define_method(rb_cViewport, "rect=", _rbf rb_Viewport_setRect, 1);
+	rb_define_method(rb_cViewport, "sort_z", _rbf rb_Viewport_sort_z, 0);
 	rb_define_method(rb_cViewport, "dispose", _rbf rb_Viewport_Dispose, 0);
 	rb_define_method(rb_cViewport, "disposed?", _rbf rb_Viewport_Disposed, 0);
 	rb_define_method(rb_cViewport, "tone", _rbf rb_Viewport_getTone, 0);

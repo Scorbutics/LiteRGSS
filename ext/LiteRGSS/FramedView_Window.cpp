@@ -380,6 +380,12 @@ VALUE rb_Window_update(VALUE self) {
 	return self;
 }
 
+VALUE rb_Window_sort_z(VALUE self) {
+	auto& framedView = rb::Get<FramedViewElement>(self);
+	framedView->sortZ();
+	return self;
+}
+
 VALUE rb_Window_getOpacity(VALUE self) {
 	auto& framedView = rb::Get<FramedViewElement>(self);
 	return framedView.rOpacity;
@@ -470,6 +476,7 @@ void Init_Window() {
 	rb_define_method(rb_cWindow, "dispose", _rbf rb_Window_Dispose, 0);
 	rb_define_method(rb_cWindow, "disposed?", _rbf rb_Window_Disposed, 0);
 	rb_define_method(rb_cWindow, "update", _rbf rb_Window_update, 0);
+	rb_define_method(rb_cWindow, "sort_z", _rbf rb_Window_sort_z, 0);
 	rb_define_method(rb_cWindow, "windowskin=", _rbf rb_Window_setWindowSkin, 1);
 	rb_define_method(rb_cWindow, "windowskin", _rbf rb_Window_getWindowSkin, 0);
 	rb_define_method(rb_cWindow, "width=", _rbf rb_Window_setWidth, 1);

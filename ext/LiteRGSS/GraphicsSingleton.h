@@ -30,6 +30,7 @@ public:
 	void stop();
 	bool isGameWindowOpen() const;
 	void update(VALUE self, bool input = true);
+	void sortZ();
 	void updateOnlyInput(VALUE self);
 
 	void windowDraw();
