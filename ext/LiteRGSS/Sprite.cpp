@@ -61,7 +61,7 @@ static VALUE rb_Sprite_setBitmap(VALUE self, VALUE bitmap) {
 
 	if (!NIL_P(sprite.rRect)) {
 		auto& rect = rb::Get<RectangleElement>(sprite.rRect);
-		rect->setRect(sprite->getTextureRect());
+		rect->setValue(sprite->getTextureRect());
 	}
 	return self;
 }
@@ -233,14 +233,14 @@ static VALUE rb_Sprite_getRect(VALUE self) {
 	return rb_Rect_LazyInitDrawable(sprite.rRect, *sprite.instance(), sprite->getTextureRect());
 }
 
-static VALUE rb_Sprite_setRect(VALUE self, VALUE val) {
+static VALUE rb_Sprite_setValue(VALUE self, VALUE val) {
 	VALUE rc = rb_Sprite_getRect(self);
 
 	auto* rect1 = rb::GetSafeOrNull<RectangleElement>(val, rb_cRect);
 	auto& rect2 = rb::Get<RectangleElement>(rc);
 
-	auto rectangle = rect1 == nullptr || *rect1 == nullptr ? cgss::Rectangle{} : (*rect1->instance());
-	rect2->setRect(rectangle.getRect());
+	auto rectangle = rect1 == nullptr || *rect1 == nullptr ? sf::IntRect{} : rect1->instance()->getValue();
+	rect2->setValue(std::move(rectangle));
 
 	return val;
 }
@@ -271,13 +271,13 @@ static VALUE rb_Sprite_Index(VALUE self) {
 static VALUE rb_Sprite_width(VALUE self) {
 	auto rc = rb_Sprite_getRect(self);
 	auto& rect = rb::Get<RectangleElement>(rc);
-	return LONG2FIX(rect->getRect().width);
+	return LONG2FIX(rect->getValue().width);
 }
 
 static VALUE rb_Sprite_height(VALUE self) {
 	auto rc = rb_Sprite_getRect(self);
 	auto& rect = rb::Get<RectangleElement>(rc);
-	return LONG2FIX(rect->getRect().height);
+	return LONG2FIX(rect->getValue().height);
 }
 
 static VALUE rb_Sprite_Initialize(int argc, VALUE* argv, VALUE self) {
@@ -343,7 +343,7 @@ void Init_Sprite() {
 	rb_define_method(rb_cSprite, "opacity", _rbf rb_Sprite_getOpacity, 0);
 	rb_define_method(rb_cSprite, "opacity=", _rbf rb_Sprite_setOpacity, 1);
 	rb_define_method(rb_cSprite, "src_rect", _rbf rb_Sprite_getRect, 0);
-	rb_define_method(rb_cSprite, "src_rect=", _rbf rb_Sprite_setRect, 1);
+	rb_define_method(rb_cSprite, "src_rect=", _rbf rb_Sprite_setValue, 1);
 	rb_define_method(rb_cSprite, "viewport", _rbf rb_Sprite_Viewport, 0);
 	rb_define_method(rb_cSprite, "mirror", _rbf rb_Sprite_getMirror, 0);
 	rb_define_method(rb_cSprite, "mirror=", _rbf rb_Sprite_setMirror, 1);

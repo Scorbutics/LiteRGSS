@@ -137,7 +137,7 @@ VALUE rb_SpriteMap_Set(int argc, VALUE* argv, VALUE self) {
 	auto& bmp = rb::GetSafe<TextureElement>(bitmap, rb_cBitmap);
 	auto& rect_el = rb::GetSafe<RectangleElement>(rect, rb_cRect);
 
-	spriteMap->setTile(NUM2LONG(index), rect_el->getRect(), bmp->getTexture());
+	spriteMap->setTile(NUM2LONG(index), rect_el->getValue(), bmp->getTexture());
 	return self;
 }
 
@@ -148,7 +148,7 @@ VALUE rb_SpriteMap_SetRect(int argc, VALUE* argv, VALUE self) {
 
 	if (NIL_P(y)) {
 		auto& rect_el = rb::GetSafe<RectangleElement>(x, rb_cRect);
-		spriteMap->setTileRect(NUM2LONG(index), rect_el->getRect());
+		spriteMap->setTileRect(NUM2LONG(index), rect_el->getValue());
 	} else {
 		sf::IntRect rect = sf::IntRect(NUM2INT(x), NUM2INT(y), NUM2INT(width), NUM2INT(height));
 		spriteMap->setTileRect(NUM2LONG(index), rect);

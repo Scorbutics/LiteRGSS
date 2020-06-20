@@ -33,14 +33,14 @@ VALUE rb_Rect_initialize(int argc, VALUE* argv, VALUE self) {
 	}
 
 	/* Rect definition */
-	sf::IntRect srect = rect->getRect();
+	sf::IntRect srect = rect->getValue();
 	srect.left = rb_num2long(x);
 	srect.top = rb_num2long(y);
 	srect.width = rb_num2long(width);
 	srect.height = rb_num2long(height);
-	rect->setRect(std::move(srect));
+	rect->setValue(std::move(srect));
 	/* Pointed element nullification */
-	rect->bindElement(nullptr);
+	rect->bind(nullptr);
 	return self;
 }
 
@@ -50,8 +50,8 @@ VALUE rb_Rect_initialize_copy(VALUE self, VALUE other) {
 	const auto* rect2 = rb::GetSafeOrNull<RectangleElement>(other, rb_cRect);
 	if (rect2 == nullptr || *rect2 == nullptr) { return Qnil; }
 
-	rect->setRect((*rect2)->getRect());
-	rect->bindElement(nullptr);
+	rect->setValue((*rect2)->getValue());
+	rect->bind(nullptr);
 	return self;
 }
 
@@ -66,7 +66,7 @@ VALUE rb_Rect_set(int argc, VALUE* argv, VALUE self) {
 	VALUE x, y, width, height;
 	rb_scan_args(argc, argv, "13", &x, &y, &width, &height);
 	auto& rect = rb::Get<RectangleElement>(self);
-	auto srect = rect->getRect();
+	auto srect = rect->getValue();
 
 	if (!NIL_P(x)) {
 		srect.left = rb_num2long(x);
@@ -84,13 +84,13 @@ VALUE rb_Rect_set(int argc, VALUE* argv, VALUE self) {
 		srect.height = rb_num2long(height);
 	}
 
-	rect->setRect(std::move(srect));
+	rect->setValue(std::move(srect));
 	return self;
 }
 
 VALUE rb_Rect_getX(VALUE self) {
 	auto& rect = rb::Get<RectangleElement>(self);
-	return rb_int2inum(rect->getRect().left);
+	return rb_int2inum(rect->getValue().left);
 }
 
 VALUE rb_Rect_setX(VALUE self, VALUE val) {
@@ -101,7 +101,7 @@ VALUE rb_Rect_setX(VALUE self, VALUE val) {
 
 VALUE rb_Rect_getY(VALUE self) {
 	auto& rect = rb::Get<RectangleElement>(self);
-	return rb_int2inum(rect->getRect().top);
+	return rb_int2inum(rect->getValue().top);
 }
 
 VALUE rb_Rect_setY(VALUE self, VALUE val) {
@@ -112,7 +112,7 @@ VALUE rb_Rect_setY(VALUE self, VALUE val) {
 
 VALUE rb_Rect_getWidth(VALUE self) {
 	auto& rect = rb::Get<RectangleElement>(self);
-	return rb_int2inum(rect->getRect().width);
+	return rb_int2inum(rect->getValue().width);
 }
 
 VALUE rb_Rect_setWidth(VALUE self, VALUE val) {
@@ -123,7 +123,7 @@ VALUE rb_Rect_setWidth(VALUE self, VALUE val) {
 
 VALUE rb_Rect_getHeight(VALUE self) {
 	auto& rect = rb::Get<RectangleElement>(self);
-	return rb_int2inum(rect->getRect().height);
+	return rb_int2inum(rect->getValue().height);
 }
 
 VALUE rb_Rect_setHeight(VALUE self, VALUE val) {
@@ -149,7 +149,7 @@ VALUE rb_Rect_load(VALUE self, VALUE str) {
 
 VALUE rb_Rect_save(VALUE self, VALUE limit) {
 	auto& rect = rb::Get<RectangleElement>(self);
-	const sf::IntRect& srect = rect->getRect();
+	const sf::IntRect& srect = rect->getValue();
 	int rc[4];
 	rc[0] = srect.left;
 	rc[1] = srect.top;
@@ -164,7 +164,7 @@ static VALUE rb_Rect_eql_rect(RectangleElement& rect, VALUE self) {
 }
 
 static VALUE rb_Rect_eql_array(RectangleElement& rect, VALUE oth) {
-	const sf::IntRect& or1 = rect->getRect();
+	const sf::IntRect& or1 = rect->getValue();
 	if (RARRAY_LEN(oth) != 4) {
 		return Qfalse;
 	}
@@ -201,13 +201,13 @@ VALUE rb_Rect_eql(VALUE self, VALUE other) {
 
 VALUE rb_Rect_empty(VALUE self) {
 	auto& rect = rb::Get<RectangleElement>(self);
-	rect->setRect({0, 0, 0, 0});
+	rect->setValue({0, 0, 0, 0});
 	return self;
 }
 
 VALUE rb_Rect_to_s(VALUE self) {
 	auto& rect = rb::Get<RectangleElement>(self);
-	const sf::IntRect& srect = rect->getRect();
+	const sf::IntRect& srect = rect->getValue();
 	return rb_sprintf("(%d, %d, %d, %d)", srect.left, srect.top, srect.width, srect.height);
 }
 

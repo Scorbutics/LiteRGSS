@@ -129,14 +129,14 @@ VALUE rb_Shape_getRect(VALUE self) {
 	return rb_Rect_LazyInitDrawable(shape.rRect, *shape.instance(), shape->getRectangle());
 }
 
-VALUE rb_Shape_setRect(VALUE self, VALUE rect) {
+VALUE rb_Shape_setValue(VALUE self, VALUE rect) {
 	VALUE rc = rb_Shape_getRect(self);
 
 	auto* rect1 = rb::GetSafeOrNull<RectangleElement>(rect, rb_cRect);
 	auto& rect2 = rb::Get<RectangleElement>(rc);
 
-	auto rectangle = rect1 == nullptr || *rect1 == nullptr ? cgss::Rectangle{} : (*rect1->instance());
-	rect2->setRect(rectangle.getRect());
+	auto rectangle = rect1 == nullptr || *rect1 == nullptr ? sf::IntRect{} : rect1->instance()->getValue();
+	rect2->setValue(rectangle);
 	return self;
 }
 
@@ -453,7 +453,7 @@ void Init_Shape() {
 	rb_define_method(rb_cShape, "bitmap", _rbf rb_Shape_getBitmap, 0);
 	rb_define_method(rb_cShape, "bitmap=", _rbf rb_Shape_setBitmap, 1);
 	rb_define_method(rb_cShape, "src_rect", _rbf rb_Shape_getRect, 0);
-	rb_define_method(rb_cShape, "src_rect=", _rbf rb_Shape_setRect, 1);
+	rb_define_method(rb_cShape, "src_rect=", _rbf rb_Shape_setValue, 1);
 	rb_define_method(rb_cShape, "x", _rbf rb_Shape_getX, 0);
 	rb_define_method(rb_cShape, "x=", _rbf rb_Shape_setX, 1);
 	rb_define_method(rb_cShape, "y", _rbf rb_Shape_getY, 0);

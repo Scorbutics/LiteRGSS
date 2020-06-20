@@ -124,7 +124,7 @@ static VALUE rb_Bitmap_blt(VALUE self, VALUE x, VALUE y, VALUE src_bitmap, VALUE
 	}
 
 	auto rectangle = cgss::Rectangle{};
-	rectangle.setRect(s_rect->getRect());
+	rectangle.setValue(s_rect->getValue());
 	bitmap->blit(
 		NUM2ULONG(x),
 		NUM2ULONG(y),

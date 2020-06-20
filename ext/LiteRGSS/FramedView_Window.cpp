@@ -13,7 +13,7 @@ VALUE rb_cWindow = Qnil;
 bool FramedViewElement::onViewportChange(cgss::ViewportChangeEvent& event) {
 	auto& viewportRect = rb::Get<RectangleElement>(rRect);
 	auto& viewportBox = event.viewportBox;
-	viewportRect->setRect(viewportBox);
+	viewportRect->setValue(viewportBox);
 	return true;
 }
 
@@ -277,7 +277,7 @@ VALUE rb_Window_setCursorRect(VALUE self, VALUE val) {
 
 	const auto& rectSource = rb::GetSafe<RectangleElement>(val, rb_cRect);
 	if (rectSource.instance() == nullptr) { return Qnil; }
-	framedView->setCursorRectangle(rectSource->getRect());
+	framedView->setCursorRectangle(rectSource->getValue());
 
 	return self;
 }

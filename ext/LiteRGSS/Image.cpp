@@ -141,7 +141,7 @@ VALUE rb_Image_blt_fast(VALUE self, VALUE x, VALUE y, VALUE src_image, VALUE rec
 		img2,
 		NUM2ULONG(x),
 		NUM2ULONG(y),
-		s_rect->getRect()
+		s_rect->getValue()
 	);
 	return self;
 }
@@ -155,7 +155,7 @@ VALUE rb_Image_blt(VALUE self, VALUE x, VALUE y, VALUE src_image, VALUE rect)
 		img2,
 		NUM2ULONG(x),
 		NUM2ULONG(y),
-		s_rect->getRect(),
+		s_rect->getValue(),
 		true
 	);
 	return self;
@@ -288,14 +288,14 @@ VALUE rb_Image_stretch_blt_fast(VALUE self, VALUE dest_rect, VALUE src_image, VA
 	auto& dst_rc = rb::GetSafe<RectangleElement>(dest_rect, rb_cRect);
 	auto& src_rc = rb::GetSafe<RectangleElement>(src_rect, rb_cRect);
 	ImageElement& src_img = rb::GetSafe<ImageElement>(src_image, rb_cImage);
-	int s_w = src_rc->getRect().width;
-	int d_w = dst_rc->getRect().width;
-	int s_h = src_rc->getRect().height;
-	int d_h = dst_rc->getRect().height;
-	int os_x = src_rc->getRect().left;
-	int os_y = src_rc->getRect().top;
-	int od_x = dst_rc->getRect().left;
-	int od_y = dst_rc->getRect().top;
+	int s_w = src_rc->getValue().width;
+	int d_w = dst_rc->getValue().width;
+	int s_h = src_rc->getValue().height;
+	int d_h = dst_rc->getValue().height;
+	int os_x = src_rc->getValue().left;
+	int os_y = src_rc->getValue().top;
+	int od_x = dst_rc->getValue().left;
+	int od_y = dst_rc->getValue().top;
 	sf::Vector2u simg_size = src_img.getSize();
 	sf::Vector2u dimg_size = img.getSize();
 	int s_x, s_y, d_x, d_y;
@@ -336,14 +336,14 @@ VALUE rb_Image_stretch_blt(VALUE self, VALUE dest_rect, VALUE src_image, VALUE s
 	auto& src_rc = rb::GetSafe<RectangleElement>(src_rect, rb_cRect);
 	ImageElement& src_img = rb::GetSafe<ImageElement>(src_image, rb_cImage);
 	sf::Color src, dest;
-	int s_w = src_rc->getRect().width;
-	int d_w = dst_rc->getRect().width;
-	int s_h = src_rc->getRect().height;
-	int d_h = dst_rc->getRect().height;
-	int os_x = src_rc->getRect().left;
-	int os_y = src_rc->getRect().top;
-	int od_x = dst_rc->getRect().left;
-	int od_y = dst_rc->getRect().top;
+	int s_w = src_rc->getValue().width;
+	int d_w = dst_rc->getValue().width;
+	int s_h = src_rc->getValue().height;
+	int d_h = dst_rc->getValue().height;
+	int os_x = src_rc->getValue().left;
+	int os_y = src_rc->getValue().top;
+	int od_x = dst_rc->getValue().left;
+	int od_y = dst_rc->getValue().top;
 	sf::Vector2u simg_size = src_img.getSize();
 	sf::Vector2u dimg_size = img.getSize();
 	int s_x, s_y, d_x, d_y;
