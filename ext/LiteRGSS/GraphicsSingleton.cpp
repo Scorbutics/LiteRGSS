@@ -114,6 +114,8 @@ void GraphicsSingleton::updateProcessEvent(GraphicsUpdateMessage& message) {
 			case sf::Event::EventType::TextEntered:
 				L_EnteredText.append((char*)sf::String(event.text.unicode).toUtf8().c_str());
 				break;
+			default:
+				break;
 		}
 	}
 }

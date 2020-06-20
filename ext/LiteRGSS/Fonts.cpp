@@ -80,7 +80,7 @@ VALUE rb_Fonts_define_shadow_color(VALUE self, VALUE id, VALUE color)
 
 VALUE rb_Fonts_get_default_size(VALUE self, VALUE id)
 {
-	long lid = rb_num2long(id);
+	std::size_t lid = rb_num2long(id);
 	if(lid >= rb_Fonts_Size_Tbl.size())
 	{
 		return LONG2FIX(16);

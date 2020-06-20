@@ -90,7 +90,7 @@ VALUE rb_Color_eql(VALUE self, VALUE other) {
 VALUE rb_Color_Load(VALUE self, VALUE str) {
 	rb_check_type(str, T_STRING);
 	VALUE arr[4];
-	if(RSTRING_LEN(str) < (sizeof(double) * 4)) {
+	if(RSTRING_LEN(str) < static_cast<long>(sizeof(double) * 4)) {
 		arr[2] = arr[1] = arr[0] = LONG2FIX(1);
 		return rb_class_new_instance(3, arr, self);
 	}

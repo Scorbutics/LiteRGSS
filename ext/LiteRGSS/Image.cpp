@@ -301,24 +301,24 @@ VALUE rb_Image_stretch_blt_fast(VALUE self, VALUE dest_rect, VALUE src_image, VA
 	for (int y = 0; y < d_h; y++)
 	{
 		d_y = y + od_y;
-		if (d_y >= dimg_size.y)
+		if (d_y >= static_cast<int>(dimg_size.y))
 			break;
 		if (d_y < 0)
 			continue;
 		s_y = y * s_h / d_h + os_y;
-		if (s_y >= simg_size.y)
+		if (s_y >= static_cast<int>(simg_size.y))
 			break;
 		if (s_y < 0)
 			continue;
 		for (int x = 0; x < d_w; x++)
 		{
 			d_x = x + od_x;
-			if (d_x >= dimg_size.x)
+			if (d_x >= static_cast<int>(dimg_size.x))
 				break;
 			if (d_x < 0)
 				continue;
 			s_x = x * s_w / d_w + os_x;
-			if (s_x >= simg_size.x)
+			if (s_x >= static_cast<int>(simg_size.x))
 				break;
 			if (s_x < 0)
 				continue;
@@ -350,24 +350,24 @@ VALUE rb_Image_stretch_blt(VALUE self, VALUE dest_rect, VALUE src_image, VALUE s
 	for (int y = 0; y < d_h; y++)
 	{
 		d_y = y + od_y;
-		if (d_y >= dimg_size.y)
+		if (d_y >= static_cast<int>(dimg_size.y))
 			break;
 		if (d_y < 0)
 			continue;
 		s_y = y * s_h / d_h + os_y;
-		if (s_y >= simg_size.y)
+		if (s_y >= static_cast<int>(simg_size.y))
 			break;
 		if (s_y < 0)
 			continue;
 		for (int x = 0; x < d_w; x++)
 		{
 			d_x = x + od_x;
-			if (d_x >= dimg_size.x)
+			if (d_x >= static_cast<int>(dimg_size.x))
 				break;
 			if (d_x < 0)
 				continue;
 			s_x = x * s_w / d_w + os_x;
-			if (s_x >= simg_size.x)
+			if (s_x >= static_cast<int>(simg_size.x))
 				break;
 			if (s_x < 0)
 				continue;

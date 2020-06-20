@@ -318,7 +318,7 @@ VALUE rb_Shape_getType(VALUE self) {
 VALUE rb_Shape_getPoint(VALUE self, VALUE index) {
 	auto& shape = rb::Get<ShapeElement>(self);
 	long lindex = NUM2LONG(index);
-	if (lindex < 0 || lindex >= shape->getPointCount()) {
+	if (lindex < 0 || static_cast<std::size_t>(lindex) >= shape->getPointCount()) {
 		return Qnil;
 	}
 	sf::Vector2f point = shape->getPoint(lindex);

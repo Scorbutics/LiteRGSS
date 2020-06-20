@@ -11,7 +11,7 @@ have_library('sfml-window')
 have_library('sfml-system')
 have_library('LiteCGSS_engine')
 
-$CXXFLAGS += " -std=c++17 "
+$CXXFLAGS += " -std=c++17 -Wall "
 
 # override normal build configuration to build debug friendly library
 # if installed via 'gem install oops-null -- --enable-debug'

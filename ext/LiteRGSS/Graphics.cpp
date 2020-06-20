@@ -37,9 +37,10 @@ VALUE rb_Graphics_list_res(VALUE self)
 {
 	VALUE array = rb_ary_new();
 	auto modes = sf::VideoMode::getFullscreenModes();
-	for(int i = 0; i < modes.size(); i++) {
-		if(modes[i].bitsPerPixel == 32)
-			rb_ary_push(array, rb_ary_new3(2, rb_int2inum(modes[i].width), rb_int2inum(modes[i].height)));
+	for (const auto& mode : modes) {
+		if (mode.bitsPerPixel == 32) {
+			rb_ary_push(array, rb_ary_new3(2, rb_int2inum(mode.width), rb_int2inum(mode.height)));
+		}
 	}
 	return array;
 }

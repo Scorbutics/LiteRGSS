@@ -135,7 +135,7 @@ VALUE rb_Rect_setHeight(VALUE self, VALUE val) {
 VALUE rb_Rect_load(VALUE self, VALUE str) {
 	rb_check_type(str, T_STRING);
 	VALUE arr[4];
-	if (RSTRING_LEN(str) < (sizeof(int) * 4)) {
+	if (RSTRING_LEN(str) < static_cast<long>(sizeof(int) * 4)) {
 		arr[1] = arr[0] = LONG2FIX(1);
 		return rb_class_new_instance(2, arr, self);
 	}

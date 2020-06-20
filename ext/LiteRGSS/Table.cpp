@@ -255,29 +255,29 @@ VALUE rb_Table_Copy(VALUE self, VALUE source, VALUE dest_offset_x, VALUE dest_of
 	auto& source_table = rb::GetSafe<rb_Table_Struct>(source, rb_cTable);
 	long offsetx = NUM2LONG(dest_offset_x);
 	long offsety = NUM2LONG(dest_offset_y);
-	if (offsetx < 0 || offsetx >= table.header.xsize)
+	if (offsetx < 0 || static_cast<std::size_t>(offsetx) >= table.header.xsize)
 		return Qfalse;
-	if (offsety < 0 || offsety >= table.header.ysize)
+	if (offsety < 0 || static_cast<std::size_t>(offsety) >= table.header.ysize)
 		return Qfalse;
 
 	// Usefull variables
-	long target_z = table.header.zsize;
+	std::size_t target_z = table.header.zsize;
 	if (source_table.header.zsize < target_z)
 		target_z = source_table.header.zsize;
 
-	long target_x = offsetx + source_table.header.xsize;
+	std::size_t target_x = offsetx + source_table.header.xsize;
 	if (table.header.xsize < target_x)
 		target_x = table.header.xsize;
 
-	long target_y = offsety + source_table.header.ysize;
+	std::size_t target_y = offsety + source_table.header.ysize;
 	if (table.header.ysize < target_y)
 		target_y = table.header.ysize;
 
-	long deltay = table.header.xsize;
-	long deltaz = deltay * table.header.ysize;
+	std::size_t deltay = table.header.xsize;
+	std::size_t deltaz = deltay * table.header.ysize;
 
-	long deltay2 = source_table.header.xsize;
-	long deltaz2 = deltay2 * source_table.header.ysize;
+	std::size_t deltay2 = source_table.header.xsize;
+	std::size_t deltaz2 = deltay2 * source_table.header.ysize;
 
 	short *zheap1, *zheap2, *yheap1, *yheap2, *xheap1, *xheap2;
 
@@ -285,13 +285,13 @@ VALUE rb_Table_Copy(VALUE self, VALUE source, VALUE dest_offset_x, VALUE dest_of
 	zheap2 = source_table.heap;
 
 	// Copy loops
-	long y, z;
+	std::size_t y, z;
 	for (z = 0; z < target_z; z++)
 	{
 		yheap1 = zheap1;
 		yheap2 = zheap2;
 
-		for (y = offsety; y < target_y; y++)
+		for (y = static_cast<std::size_t>(offsety); y < target_y; y++)
 		{
 			xheap1 = yheap1;
 			xheap2 = yheap2;
@@ -317,30 +317,28 @@ VALUE rb_Table_CopyModulo(VALUE self, VALUE source, VALUE source_origin_x, VALUE
 	long offsety = NUM2LONG(dest_offset_y);
 	long ox2 = NUM2LONG(source_origin_x);
 	long oy2 = NUM2LONG(source_origin_y);
-	if (offsetx < 0 || offsetx >= table.header.xsize)
+	if (offsetx < 0 || static_cast<std::size_t>(offsetx) >= table.header.xsize)
 		return Qfalse;
-	if (offsety < 0 || offsety >= table.header.ysize)
+	if (offsety < 0 || static_cast<std::size_t>(offsety) >= table.header.ysize)
 		return Qfalse;
-	if (ox2 < 0 || ox2 >= source_table.header.xsize)
+	if (ox2 < 0 || static_cast<std::size_t>(ox2) >= source_table.header.xsize)
 		return Qfalse;
-	if (oy2 < 0 || oy2 >= source_table.header.ysize)
+	if (oy2 < 0 || static_cast<std::size_t>(oy2) >= source_table.header.ysize)
 		return Qfalse;
 
-	long src_xsize = (long)source_table.header.xsize;
-	long src_ysize = (long)source_table.header.ysize;
+	std::size_t src_xsize = source_table.header.xsize;
+	std::size_t src_ysize = source_table.header.ysize;
 
 	// Usefull variables
-
-
-	long target_z = table.header.zsize;
+	std::size_t target_z = table.header.zsize;
 	if (source_table.header.zsize < target_z)
 		target_z = source_table.header.zsize;
 
-	long target_x = offsetx + NUM2LONG(dest_width);
+	std::size_t target_x = offsetx + NUM2LONG(dest_width);
 	if (table.header.xsize < target_x)
 		target_x = table.header.xsize;
 
-	long target_y = offsety + NUM2LONG(dest_height);
+	std::size_t target_y = offsety + NUM2LONG(dest_height);
 	if (table.header.ysize < target_y)
 		target_y = table.header.ysize;
 
@@ -357,22 +355,22 @@ VALUE rb_Table_CopyModulo(VALUE self, VALUE source, VALUE source_origin_x, VALUE
 	long deltay2 = source_table.header.xsize;
 	long deltaz2 = deltay2 * source_table.header.ysize;
 
-	short *zheap1, *zheap2, *yheap1, *yheap2, *xheap1, *xheap2;
-	long target_x2, target_y2;
+	short *zheap1, *zheap2, *yheap1, *yheap2;
+	long target_y2;
 
 	zheap1 = table.heap + (offsety * deltay + offsetx);
 	zheap2 = source_table.heap;
 
 	// Copy loops
-	long j, y, z;
-
+	long j, y;
+	std::size_t z;
 	for (z = 0; z < target_z; z++)
 	{
 		yheap1 = zheap1;
 		// Y Init Loop (top copied from oy2 to what it can copy in height)
 		yheap2 = zheap2 + oy2 * deltay2;
 		target_y2 = target_y - offsety;
-		if (target_y2 > (src_ysize - oy2))
+		if (target_y2 > static_cast<long>(src_ysize - oy2))
 			target_y2 = (src_ysize - oy2);
 
 		//printf("target_y2 = %d; %d %d\n", target_y2, src_ysize, target_y - offsety);
@@ -389,7 +387,7 @@ VALUE rb_Table_CopyModulo(VALUE self, VALUE source, VALUE source_origin_x, VALUE
 		for (j = 0; j < n; j++)
 		{
 			yheap2 = zheap2;
-			for (y = 0; y < src_ysize; y++)
+			for (y = 0; y < static_cast<long>(src_ysize); y++)
 			{
 				rb_Table_internal_copyModuloYpart(yheap1, yheap2, ox2, target_x, offsetx, src_xsize, m);
 				yheap1 += deltay;
@@ -400,8 +398,8 @@ VALUE rb_Table_CopyModulo(VALUE self, VALUE source, VALUE source_origin_x, VALUE
 		// Y end loop
 		yheap2 = zheap2;
 		target_y2 = target_y - offsety + oy2 - (n + 1) * src_ysize;
-		if (target_y2 > src_ysize)
-			target_y2 = src_ysize;
+		if (target_y2 > static_cast<long>(src_ysize))
+			target_y2 = static_cast<long>(src_ysize);
 
 		for (y = 0; y < target_y2; y++)
 		{

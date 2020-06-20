@@ -117,7 +117,8 @@ static VALUE rb_Viewport_getTone(VALUE self) {
 	if (!NIL_P(tn)) {
 		return tn;
 	}
-	/* New tone */
+
+	/* New tone + new color */
 	VALUE argv[4] = {LONG2FIX(0), LONG2FIX(0), LONG2FIX(0), LONG2FIX(0)};
 	
 	viewport.rColor = rb_class_new_instance(4, argv, rb_cColor);
@@ -140,13 +141,13 @@ static VALUE rb_Viewport_setTone(VALUE self, VALUE val) {
 }
 
 static VALUE rb_Viewport_getColor(VALUE self) {
-	VALUE tn = rb_Viewport_getTone(self);
+	rb_Viewport_getTone(self);
 	auto& viewport = rb::Get<ViewportElement>(self);
 	return viewport.rColor;
 }
 
 static VALUE rb_Viewport_setColor(VALUE self, VALUE val) {
-	VALUE tn = rb_Viewport_getTone(self);
+	rb_Viewport_getTone(self);
 	auto& viewport = rb::Get<ViewportElement>(self);
 	auto& color = rb::GetSafe<ColorElement>(val, rb_cColor);
 	color.bind(&viewport);
@@ -166,7 +167,6 @@ static VALUE rb_Viewport_setVisible(VALUE self, VALUE val) {
 }
 
 static VALUE rb_Viewport_Update(VALUE self) {
-	auto& viewport = rb::Get<ViewportElement>(self);
 	// Deprecated
 	return self;
 }
